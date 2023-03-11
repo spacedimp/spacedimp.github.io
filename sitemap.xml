@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://spacedimp.com/</loc>
+    </url>
+    <url>
+        <loc>https://spacedimp.com/blog/</loc>
+    </url>
+    <url>
+        <loc>https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/</loc>
+        <lastmod>2023-03-11</lastmod>
+    </url>
+    <url>
+        <loc>https://spacedimp.com/gpg/</loc>
+    </url>
+</urlset>
