@@ -405,4 +405,7 @@ nav ul li a:hover {
 	color: #F73859;
 }
 
-
+.four-msg {
+	padding: 100px;
+	text-align: center;
+}
