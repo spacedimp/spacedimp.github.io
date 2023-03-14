@@ -7,6 +7,10 @@
         <loc>https://spacedimp.com/blog/</loc>
     </url>
     <url>
+        <loc>https://spacedimp.com/blog/security-hardening-linux-os/</loc>
+        <lastmod>2023-03-14</lastmod>
+    </url>
+    <url>
         <loc>https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/</loc>
         <lastmod>2023-03-11</lastmod>
     </url>

@@ -1,0 +1,57 @@
+<!doctype html><html><head><title> Security Hardening Linux OS </title><link href=/css/base.css rel=stylesheet><meta content="width=device-width,initial-scale=1" name=viewport><body><nav><ul><li><a href=https://spacedimp.com/>Home</a><li><a href=https://spacedimp.com/blog/>Blog</a></ul></nav><h1>Security Hardening Linux OS</h1><p>2023-03-14<h2 id=these-are-some-extra-steps-that-you-can-implement-to-harden-a-linux-system>These are some extra steps that you can implement to harden a Linux system.</h2><hr><br><h3 id=usbguard-prevents-unauthorized-usb-devices-from-connecting><a href=https://usbguard.github.io/>USBGuard</a> prevents unauthorized USB devices from connecting.</h3><p>The <a href=https://usbguard.github.io/documentation/compilation.html>installation</a> page goes through the process of setting it up.<p>For Fedora users it's as simple as:<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>sudo</span><span> dnf install usbguard
+</span></code></pre><p>Make sure any USB you want to allow through is connected to a port. Then generate an initial ruleset:<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=font-style:italic;color:#5c6370># You might need to switch to root to run this 
+</span><span style=color:#e06c75>sudo</span><span> usbguard generate-policy > /etc/usbguard/rules.conf
+</span></code></pre><p>Enable the service on startup:<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>sudo</span><span> systemctl start usbguard
+</span><span style=color:#e06c75>sudo</span><span> systemctl enable usbguard
+</span></code></pre><p>Allowing a new USB device is as simple as:<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=font-style:italic;color:#5c6370># Plug in a new device and find it using
+</span><span style=color:#e06c75>sudo</span><span> usbguard list-devices
+</span></code></pre><p>New devices should be automatically blocked and appear as<blockquote><p>22: block id 08...</blockquote><p>To allow the device simply run:<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=font-style:italic;color:#5c6370># Note that this won't make it permanent.
+</span><span style=color:#e06c75>sudo</span><span> usbguard allow-device 22 
+</span></code></pre><p>To allow the device permanently run:<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>sudo</span><span> usbguard allow-device 22</span><span style=color:#e06c75> -p
+</span></code></pre><h3 id=nts-over-ntp>NTS over NTP</h3><p>Network Time Protocol allows your device to synchronize its time with highly accurate atomic clock servers. However, it's very old and abused for DDoS <a href=https://www.cloudflare.com/learning/ddos/ntp-amplification-ddos-attack/>amplification</a> attacks.<p>NTS extends NTP by adding encrypted cookies that authenticate that the time data has not been tampered with. This cookie is recomputed every exchange of client/server to prevent linkability.<p>NTS also provides a unique identifier to detect spoofed packets.<p>As well as an AHEAD algorithm used to encrypt the cookie.<p><a href="https://datatracker.ietf.org/doc/html/draft-ietf-ntp-using-nts-for-ntp-19?ref=dans-notes">Here's</a> the full draft.<p>Chrony can be easily configured for NTS as follows:<p>Edit <code>/etc/chrony.conf</code> (make sure it's installed first)<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=font-style:italic;color:#5c6370># List of NTS servers:
+</span><span>
+</span><span style=color:#e06c75>server</span><span> nts.netnod.se       iburst nts
+</span><span>
+</span><span style=color:#e06c75>server</span><span> nts.time.nl         iburst nts
+</span><span>
+</span><span style=color:#e06c75>server</span><span> ptbtime1.ptb.de     iburst nts
+</span><span style=color:#e06c75>server</span><span> ptbtime2.ptb.de     iburst nts
+</span><span style=color:#e06c75>server</span><span> ptbtime3.ptb.de     iburst nts
+</span><span>
+</span><span style=font-style:italic;color:#5c6370># NTS cookie jar to minimise NTS-KE requests upon chronyd restart
+</span><span style=color:#e06c75>ntsdumpdir</span><span> /var/lib/chrony
+</span></code></pre><p>then restart chrony<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>sudo</span><span> systemctl restart chronyd
+</span></code></pre><h3 id=icmp-tunneling>ICMP tunneling</h3><p>ICMP is another protocol that can be abused by an attacker to exfiltrate private data. It can also be abused as a DDoS attack.<p>In Fedora ICMP's echo request/ echo reply can be disabled with the firwall:<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=font-style:italic;color:#5c6370># first check if they're already disabled 
+</span><span style=color:#e06c75>firewall-cmd --query-icmp-block</span><span>=echo-request
+</span><span style=color:#e06c75>firewall-cmd --query-icmp-block</span><span>=echo-reply
+</span><span>
+</span><span style=font-style:italic;color:#5c6370># if they both say not then disable them
+</span><span style=color:#e06c75>sudo</span><span> firewall-cmd</span><span style=color:#e06c75> --add-icmp-block</span><span>=echo-request
+</span><span style=color:#e06c75>sudo</span><span> firewall-cmd</span><span style=color:#e06c75> --add-icmp-block</span><span>=echo-reply
+</span></code></pre><p>I won't cover firewalls in this small guide as they should each be configured to the user's needs as well as the specific OS.<p>Blocking ICMP pings is generally seen as bad practice. Better would be using whitelist filters in the firewall, instead of blocking them all.<h3 id=hardening-the-kernel>Hardening the Kernel</h3><p>The simplest way to pass arguments to the kernel is with sysctl.<p>Simply edit <code>/etc/sysctl.conf</code><pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=font-style:italic;color:#5c6370># blocks kernel pointers from being exposed to an attacker
+</span><span style=color:#e06c75>kernel.kptr_restrict</span><span>=</span><span style=color:#98c379>2
+</span><span style=color:#e06c75>vm.mmap_rnd_bits</span><span>=</span><span style=color:#98c379>32
+</span><span style=color:#e06c75>vm.mmap_rnd_compat_bits</span><span>=</span><span style=color:#98c379>16
+</span><span>
+</span><span style=font-style:italic;color:#5c6370># avoid kernel memory address exposures
+</span><span style=color:#e06c75>kernel.dmesg_restrict</span><span>=</span><span style=color:#98c379>1
+</span><span>
+</span><span style=font-style:italic;color:#5c6370># disallow kernel/cpu profiling from non root
+</span><span style=color:#e06c75>kernel.dmesg_restrict</span><span>=</span><span style=color:#98c379>1
+</span><span style=color:#e06c75>kernel.perf_event_paranoid</span><span>=</span><span style=color:#98c379>3
+</span><span>
+</span><span style=font-style:italic;color:#5c6370># disallow kernel swapping while running
+</span><span style=color:#e06c75>kernel.kexec_load_disabled</span><span>=</span><span style=color:#98c379>1
+</span><span>
+</span><span style=font-style:italic;color:#5c6370># Avoid non-ancestor ptrace access to running processes and their credentials.
+</span><span style=color:#e06c75>kernel.yama.ptrace_scope</span><span>=</span><span style=color:#98c379>1
+</span><span>
+</span><span style=font-style:italic;color:#5c6370># Disable User Namespaces, as it opens up a large attack surface to unprivileged users.
+</span><span style=color:#e06c75>user.max_user_namespaces</span><span>=</span><span style=color:#98c379>0
+</span><span>
+</span><span style=font-style:italic;color:#5c6370># Turn off unprivileged eBPF access.
+</span><span style=color:#e06c75>kernel.unprivileged_bpf_disabled</span><span>=</span><span style=color:#98c379>1
+</span><span style=font-style:italic;color:#5c6370># harden BPF JIT
+</span><span style=color:#e06c75>net.core.bpf_jit_harden</span><span>=</span><span style=color:#98c379>2
+</span></code></pre><p>Then make the changes without rebooting:<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>sudo</span><span> sysctl</span><span style=color:#e06c75> -p</span><span> /etc/sysctl.conf
+</span></code></pre><p>More hardening parameters can be found <a href=https://madaidans-insecurities.github.io/guides/linux-hardening.html>here</a> and also <a href=https://wiki.archlinux.org/title/Sysctl>here</a>.<footer class=footer><p>Spacedimp<div class=footer-donate><p>Donations are always appreciated!</div><p>BTC: bc1qspads00vpdvsfaq7jwegrx8la8j9mz2qxuahfu<p>ETH: 0x42e598E67cB9b3F4bEB05c76B3838ba3477fB656<p>XMR: 89L5emwBMbzdrNuMN5NwPVSSztdrWLaWAYnZy95mV3RHPgyLCge9RqvMnu4X6eu8aTMocsq7Tw2ViBHSamQaEWjk5toNx1m<p><a href=/gpg>GPG</a> fingerprint: 040B FE93 9DF9 D855 404D 80BE C674 E53F EB54 B7F0</footer>
