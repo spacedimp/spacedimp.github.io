@@ -415,5 +415,6 @@ nav ul li a:hover {
 }
 
 .rss-footer {
+	display: inline-block;
 	text-align: left;
 }
