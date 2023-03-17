@@ -413,3 +413,7 @@ nav ul li a:hover {
 .logo {
 	height: 106px;
 }
+
+.rss-footer {
+	text-align: left;
+}
