@@ -4,8 +4,575 @@
     <link href="https://spacedimp.com/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://spacedimp.com"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2023-03-14T00:00:00+00:00</updated>
+    <updated>2023-04-05T00:00:00+00:00</updated>
     <id>https://spacedimp.com/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Using Rust, Tauri, and SvelteKit to Build a Note Taking App</title>
+        <published>2023-04-05T00:00:00+00:00</published>
+        <updated>2023-04-05T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://spacedimp.com/blog/using-rust-tauri-and-sveltekit-to-build-a-note-taking-app/" type="text/html"/>
+        <id>https://spacedimp.com/blog/using-rust-tauri-and-sveltekit-to-build-a-note-taking-app/</id>
+        <content type="html">&lt;h2 id=&quot;in-this-blog-post-i-ll-be-guiding-you-through-the-process-of-building-a-note-taking-app-using-tauri-move-over-electron&quot;&gt;In this blog post, I&#x27;ll be guiding you through the process of building a note taking app using Tauri. Move over Electron :)&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;gif&#x2F;noteapp.gif&quot; alt=&quot;Alt text&quot; title=&quot;demo of an app built using Rust, Tauri, and SvelteKit&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Tauri allows us to build fast, cross-platform, and small sized apps using HTML, CSS, and JavaScript. &lt;&#x2F;p&gt;
+&lt;p&gt;It accomplishes this by using &lt;a href=&quot;https:&#x2F;&#x2F;tauri.app&#x2F;v1&#x2F;references&#x2F;webview-versions&#x2F;&quot;&gt;WebViews&lt;&#x2F;a&gt;. A WebView lets you embed 
+web content (HTML,CSS, JavaScript) into an application without needing a full-fledged web browser. &lt;&#x2F;p&gt;
+&lt;p&gt;Rust is used for the backend logic and &lt;a href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Learn&#x2F;Tools_and_testing&#x2F;Client-side_JavaScript_frameworks&#x2F;Svelte_getting_started&quot;&gt;SvelteKit&lt;&#x2F;a&gt; for the frontend.&lt;&#x2F;p&gt;
+&lt;p&gt;Each OS uses a different WebView rendering engine: &lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Windows uses WebView2&lt;&#x2F;li&gt;
+&lt;li&gt;Linux uses WebKit&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;setting-up-the-project&quot;&gt;Setting up the project&lt;&#x2F;h2&gt;
+&lt;p&gt;Make sure Rust and the Tauri dependencies are installed as described &lt;a href=&quot;https:&#x2F;&#x2F;tauri.app&#x2F;v1&#x2F;guides&#x2F;getting-started&#x2F;prerequisites&quot;&gt;here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;SvelteKit requires Node.js. I install it using Fedora&#x27;s package manager. &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; dnf install nodejs
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Instead of npm, I&#x27;ll install pnpm as the Node.js package manager &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; npm install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -g&lt;&#x2F;span&gt;&lt;span&gt; pnpm
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now we can initialize a new svelte project.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; mkdir notes &amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span&gt; notes
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; pnpm create svelte 
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; hit enter to create the project in the current directory
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; use down arrow key to select Skeleton project
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; use down arrow key to select Yes, using Typescript syntax
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; use space bar to select 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F; &lt;&#x2F;span&gt;&lt;span&gt;* Add ESLint for code linting
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F; &lt;&#x2F;span&gt;&lt;span&gt;* Add Prettier for code formatting
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; @next gets latest version
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; pnpm add&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -D&lt;&#x2F;span&gt;&lt;span&gt; @sveltejs&#x2F;adapter-static@next
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;edit svelte.config.js&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;js&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-js &quot;&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; change adapter-auto to adapter-static 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;adapter &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;@sveltejs&#x2F;adapter-static&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; add prerender entries 
+&lt;&#x2F;span&gt;&lt;span&gt;kit: {
+&lt;&#x2F;span&gt;&lt;span&gt;		adapter: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;adapter&lt;&#x2F;span&gt;&lt;span&gt;(),
+&lt;&#x2F;span&gt;&lt;span&gt;		prerender: {
+&lt;&#x2F;span&gt;&lt;span&gt;			entries: [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;*&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;&#x2F;edit&#x2F;*&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;		}
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Disable SSR by creating src&#x2F;routes&#x2F;+layout.ts &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;ts&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-ts &quot;&gt;&lt;code class=&quot;language-ts&quot; data-lang=&quot;ts&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;prerender &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;ssr &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Check your node.js version and make sure pnpm uses the correct one &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; node&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -v 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;v18.15.0 
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; edit .npmrc 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; vi .npmrc 
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; add your version number as so
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;use-node-version&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;18.15.0
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Setup Tauri &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; pnpm add&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -D&lt;&#x2F;span&gt;&lt;span&gt; @tauri-apps&#x2F;cli
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; pnpm tauri init
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; What is your app name? notes
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; What should the window title be? notes
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; Where are your web assets ..? ..&#x2F;build
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; What is the URL of your dev server? http:&#x2F;&#x2F;localhost:5173
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; What is your frontend dev command? pnpm run dev
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; What is your frontend build command? pnpm run build
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Run the app &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; will be slow the first time running but after much faster
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; pnpm tauri dev
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;setting-up-components&quot;&gt;Setting up components&lt;&#x2F;h2&gt;
+&lt;p&gt;I recommend for beginners to go through the official Svelte tutorial &lt;a href=&quot;https:&#x2F;&#x2F;svelte.dev&#x2F;tutorial&#x2F;basics&quot;&gt;here&lt;&#x2F;a&gt; to grasp its fundamentals.&lt;&#x2F;p&gt;
+&lt;p&gt;This is an excerpt of what a component is:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In Svelte, an application is composed from one or more components. A component is a reusable self-contained block of code that encapsulates HTML, CSS and JavaScript that belong together, written into a .svelte file. The &#x27;hello world&#x27; example in the code editor is a simple component.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;I&#x27;ll be creating two components inside of &lt;code&gt;src&#x2F;lib&lt;&#x2F;code&gt;. One called &lt;code&gt;Notes.svelte&lt;&#x2F;code&gt; will display all notes created. The other called &lt;code&gt;CreateNote.svelte&lt;&#x2F;code&gt; will be a text box where we can add new notes.&lt;&#x2F;p&gt;
+&lt;p&gt;Create &lt;code&gt;src&#x2F;lib&#x2F;Notes.svelte&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;ts&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-ts &quot;&gt;&lt;code class=&quot;language-ts&quot; data-lang=&quot;ts&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;script lang&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;ts&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;title &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;First Note&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;notes&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;p&amp;gt; {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;title&lt;&#x2F;span&gt;&lt;span&gt;} &amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;p&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Create &lt;code&gt;src&#x2F;lib&#x2F;CreateNote.svelte&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;ts&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-ts &quot;&gt;&lt;code class=&quot;language-ts&quot; data-lang=&quot;ts&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;script lang&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;ts&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newNote&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newTitle&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;new-note&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;h1&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Create a Note &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;h1&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;textarea &lt;&#x2F;span&gt;&lt;span&gt;bind:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span&gt;={&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newTitle&lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;new-note-title&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;placeholder&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Note title&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&amp;lt;&#x2F;textarea&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;textarea &lt;&#x2F;span&gt;&lt;span&gt;bind:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span&gt;={&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newNote&lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;new-note-box&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;placeholder&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Note body&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&amp;lt;&#x2F;textarea&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;A page is a route to a certain path. &lt;code&gt;src&#x2F;routes&#x2F;+page.svelte&lt;&#x2F;code&gt; will be the homepage, for instance.&lt;&#x2F;p&gt;
+&lt;p&gt;Import the components into the page by editing &lt;code&gt;src&#x2F;routes&#x2F;+page.svelte&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;ts&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-ts &quot;&gt;&lt;code class=&quot;language-ts&quot; data-lang=&quot;ts&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;script lang&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;ts&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Notes &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;$lib&#x2F;Notes.svelte&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;CreateNote &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;$lib&#x2F;CreateNote.svelte&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;container&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;CreateNote&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Notes&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You could place CSS style tags into each Page or Component, but I prefer a global CSS file.&lt;&#x2F;p&gt;
+&lt;p&gt;Create &lt;code&gt;static&#x2F;global.css&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;CSS&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-CSS &quot;&gt;&lt;code class=&quot;language-CSS&quot; data-lang=&quot;CSS&quot;&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;* CSS reset *&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;before, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;*&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;after &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  box-sizing: border-box;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;* &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  margin: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;html&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;body &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  height: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;100%&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;body &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  line-height: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;1.5&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  -webkit-font-smoothing: antialiased;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;img&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;picture&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;video&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;canvas&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;svg &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  display: block;
+&lt;&#x2F;span&gt;&lt;span&gt;  max-width: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;100%&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;input&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;button&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;textarea&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;select &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  font: inherit;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;p&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;h1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;h2&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;h3&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;h4&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;h5&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;h6 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  overflow-wrap: break-word;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;#root&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;#__next &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  isolation: isolate;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;* Component and Page CSS *&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;#container &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;	box-sizing: border-box;
+&lt;&#x2F;span&gt;&lt;span&gt;	width: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;100%&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	height: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;100%&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	display: flex;
+&lt;&#x2F;span&gt;&lt;span&gt;	white-space: nowrap;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;#notes &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;	background: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;#eee&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Add it to &lt;code&gt;src&#x2F;app.html&lt;&#x2F;code&gt; inside of the head tag&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;html&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-html &quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;link &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;rel&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;stylesheet&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;type&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;text&#x2F;css&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;href&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;%sveltekit.assets%&#x2F;global.css&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;I&#x27;ll be saving the notes in the frontend. For this we require Tauri&#x27;s frontend API.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; pnpm add&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -D&lt;&#x2F;span&gt;&lt;span&gt; @tauri-apps&#x2F;api
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We must tell Tauri which paths are available to our app. In this case I&#x27;ll be writing to a file called db.bson in the user&#x27;s home&#x2F;notes-db directory.&lt;&#x2F;p&gt;
+&lt;p&gt;Edit &lt;code&gt;src-tauri&#x2F;tauri.conf.json&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;tauri&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: {
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;allowlist&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: {
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;all&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;	  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;fs&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: {
+&lt;&#x2F;span&gt;&lt;span&gt;	  	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;scope&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;$HOME&#x2F;notes-db&#x2F;*&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;$HOME&#x2F;notes-db&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;],
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;all&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span&gt;	  },
+&lt;&#x2F;span&gt;&lt;span&gt;	  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;path&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: {
+&lt;&#x2F;span&gt;&lt;span&gt;	  	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;all&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span&gt;	  }
+&lt;&#x2F;span&gt;&lt;span&gt;    },
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Also scroll down in the conf.json file and find &amp;quot;identifier&amp;quot; . It should be unique to your app. I&#x27;ll set it to com.random.random.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;bundle&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: {
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;identifier&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;com.random.random&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;handling-data-in-the-backend&quot;&gt;Handling data in the backend&lt;&#x2F;h2&gt;
+&lt;p&gt;I&#x27;ve chosen to store the data as bson (Binary JSON). Read more about bson &lt;a href=&quot;https:&#x2F;&#x2F;www.mongodb.com&#x2F;json-and-bson&quot;&gt;here&lt;&#x2F;a&gt;. Basically it&#x27;s how MongoDB stores JSON data on disk as binary.&lt;&#x2F;p&gt;
+&lt;p&gt;Tauri lets the frontend pass data back and forth to the backend (Rust) using Tauri commands. &lt;&#x2F;p&gt;
+&lt;p&gt;For the sake of brevity I&#x27;ll just show the complete Rust backend code.&lt;&#x2F;p&gt;
+&lt;p&gt;Edit &lt;code&gt;src-tauri&#x2F;src&#x2F;main.rs&lt;&#x2F;code&gt; with:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#![&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cfg_attr&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;all&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;not&lt;&#x2F;span&gt;&lt;span&gt;(debug_assertions), target_os = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;windows&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;  windows_subsystem = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;windows&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;)]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;bson::{Document};
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;serde::{Serialize, Deserialize};
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;std::io::{Cursor};
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use&lt;&#x2F;span&gt;&lt;span&gt; serde_json;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;derive&lt;&#x2F;span&gt;&lt;span&gt;(Serialize, Deserialize, Debug)]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;struct &lt;&#x2F;span&gt;&lt;span&gt;Note {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;bson_uuid&lt;&#x2F;span&gt;&lt;span&gt;: String,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;date_time&lt;&#x2F;span&gt;&lt;span&gt;: bson::DateTime,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;title&lt;&#x2F;span&gt;&lt;span&gt;: String,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;body&lt;&#x2F;span&gt;&lt;span&gt;: String,
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; builds a new Note object for the froteend
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; we then convert it to a bson document 
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; lastly we convert it into a vec of bytes to store on disk (frontend handles appending then saving this to disk)
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;tauri&lt;&#x2F;span&gt;&lt;span&gt;::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;command&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;saveNote&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;title&lt;&#x2F;span&gt;&lt;span&gt;: &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;str&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;body&lt;&#x2F;span&gt;&lt;span&gt;: &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;str&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; Vec&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt; {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; note = Note { bson_uuid: bson::Uuid::new().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;to_string&lt;&#x2F;span&gt;&lt;span&gt;(), date_time: bson::DateTime::now(), title: title.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;to_string&lt;&#x2F;span&gt;&lt;span&gt;(), body: body.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;to_string&lt;&#x2F;span&gt;&lt;span&gt;() };
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; note_doc = bson::to_document(&amp;amp;note).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;bson::to_vec(&amp;amp;note_doc).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; after the frontend edits or deletes a note 
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; it must be saved back to db.bson
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;tauri&lt;&#x2F;span&gt;&lt;span&gt;::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;command&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;editNote&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;data&lt;&#x2F;span&gt;&lt;span&gt;: &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;str&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; Vec&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt; {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; vecNotes: Vec&amp;lt;Note&amp;gt; = serde_json::from_str(data).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;(); 
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; vecDocs: Vec&amp;lt;Document&amp;gt; = vecNotes.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;iter&lt;&#x2F;span&gt;&lt;span&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;map&lt;&#x2F;span&gt;&lt;span&gt;(|&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;e&lt;&#x2F;span&gt;&lt;span&gt;| bson::to_document(&amp;amp;e).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;() ).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;collect&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; docsArray: Vec&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt; = vecDocs.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;clone&lt;&#x2F;span&gt;&lt;span&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;into_iter&lt;&#x2F;span&gt;&lt;span&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;flat_map&lt;&#x2F;span&gt;&lt;span&gt;(|&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;e&lt;&#x2F;span&gt;&lt;span&gt;| bson::to_vec(&amp;amp;e.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;clone&lt;&#x2F;span&gt;&lt;span&gt;()).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;()).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;collect&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;return&lt;&#x2F;span&gt;&lt;span&gt; docsArray; 
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; loading the raw data from db.bson requires us to convert it to JSON
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; for the frontend to interact with
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;tauri&lt;&#x2F;span&gt;&lt;span&gt;::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;command&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;loadNotes&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;data&lt;&#x2F;span&gt;&lt;span&gt;: &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;str&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; String{
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; check if database is empty. 
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; Return if it is otherwise the program will crash 
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;if&lt;&#x2F;span&gt;&lt;span&gt; data.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;chars&lt;&#x2F;span&gt;&lt;span&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;count&lt;&#x2F;span&gt;&lt;span&gt;() == &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;0 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;String::from(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;no data&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;   }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; frontend passes the database as a string array of bytes 
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; parse it into bytes 
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; mybytes: Vec&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt; = data
+&lt;&#x2F;span&gt;&lt;span&gt;       .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;trim_matches&lt;&#x2F;span&gt;&lt;span&gt;(|&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;c&lt;&#x2F;span&gt;&lt;span&gt;| c == &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;[&amp;#39; &lt;&#x2F;span&gt;&lt;span&gt;|| c== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;]&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;       .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;split&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;,&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;       .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;map&lt;&#x2F;span&gt;&lt;span&gt;(|&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;s&lt;&#x2F;span&gt;&lt;span&gt;| s.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;parse&lt;&#x2F;span&gt;&lt;span&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;())
+&lt;&#x2F;span&gt;&lt;span&gt;       .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;collect&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;  
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; now we iterate through the bytes and convert it 
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; to a Vec of bson Document 
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let mut&lt;&#x2F;span&gt;&lt;span&gt; curs = Cursor::new(mybytes);
+&lt;&#x2F;span&gt;&lt;span&gt;   curs.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;set_position&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; array_len = curs.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;get_ref&lt;&#x2F;span&gt;&lt;span&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span&gt;() as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;u64&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let mut&lt;&#x2F;span&gt;&lt;span&gt; docs = Vec::new();
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;_ in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;..array_len {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;match &lt;&#x2F;span&gt;&lt;span&gt;Document::from_reader(&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;mut&lt;&#x2F;span&gt;&lt;span&gt; curs) {
+&lt;&#x2F;span&gt;&lt;span&gt;            Ok(doc) =&amp;gt; {println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;\n\n&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, doc); docs.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;(doc);},
+&lt;&#x2F;span&gt;&lt;span&gt;            Err(e) =&amp;gt; {
+&lt;&#x2F;span&gt;&lt;span&gt;                println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Error &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{:?}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, e);
+&lt;&#x2F;span&gt;&lt;span&gt;                &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;break&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;            }
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;   }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; return to the frontend an array of bson documents as JSON
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;serde_json::to_string(&amp;amp;docs).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;  tauri::Builder::default()
+&lt;&#x2F;span&gt;&lt;span&gt;    .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;invoke_handler&lt;&#x2F;span&gt;&lt;span&gt;(tauri::generate_handler![saveNote, editNote, loadNotes])
+&lt;&#x2F;span&gt;&lt;span&gt;    .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;run&lt;&#x2F;span&gt;&lt;span&gt;(tauri::generate_context!())
+&lt;&#x2F;span&gt;&lt;span&gt;    .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;expect&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;error while running tauri application&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;I create a Tauri app with three functions available to the frontend: saveNote, editNote, loadNotes&lt;&#x2F;p&gt;
+&lt;p&gt;saveNote will be called from the frontend and be passed two values: title, body. I then createa new Note struct with those values then convert it to a bson::Document. Lastly I convert the document to a bson::Array (Vec of bytes) and return it to the frontend to handle storing it to disk.&lt;&#x2F;p&gt;
+&lt;p&gt;editNote receives from the frontend an updated&#x2F;modified version of the data stored on disk. The frontend requires this function to rebuild the bson database. We then return the binary bson back to the frontend to store to disk.&lt;&#x2F;p&gt;
+&lt;p&gt;loadNotes takes what&#x27;s stored on disk &amp;quot;[123],[100],etc..&amp;quot; and converts it to JSON for the frontend.&lt;&#x2F;p&gt;
+&lt;p&gt;Also, edit &lt;code&gt;src-tauri&#x2F;Cargo.toml&lt;&#x2F;code&gt; to include bson as a dependency&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;toml&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;&lt;span&gt;[dependencies]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;bson &lt;&#x2F;span&gt;&lt;span&gt;= {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;version &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;2.6.0&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;handling-data-in-the-frontend&quot;&gt;Handling data in the frontend&lt;&#x2F;h2&gt;
+&lt;p&gt;Svelte&#x27;s &lt;a href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Learn&#x2F;Tools_and_testing&#x2F;Client-side_JavaScript_frameworks&#x2F;Svelte_stores&quot;&gt;writable&lt;&#x2F;a&gt; store allows each component or page to individually modify&#x2F;read a global state. Whenever it changes, all components get the newly changed value.&lt;&#x2F;p&gt;
+&lt;p&gt;Create and edit &lt;code&gt;src&#x2F;lib&#x2F;store.js&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;js&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-js &quot;&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;writable &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;svelte&#x2F;store&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;homeDir&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;join &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;@tauri-apps&#x2F;api&#x2F;path&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;exists&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;BaseDirectory&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;createDir&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;writeBinaryFile&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;readBinaryFile &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;@tauri-apps&#x2F;api&#x2F;fs&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;invoke&lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;@tauri-apps&#x2F;api&#x2F;tauri&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; This value gets initialized when loadStore() is called
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; contains all bson stored on disk but as JSON
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;myStore &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;writable&lt;&#x2F;span&gt;&lt;span&gt;({});
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; initialize myStore with the contents in the database
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; let Rust convert the binary to an array of JSON
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;export async function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;loadStore&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;binData &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;readBinaryFile&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;.&#x2F;notes-db&#x2F;db.bson&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, {dir: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;BaseDirectory&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Home&lt;&#x2F;span&gt;&lt;span&gt;});
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;invoke&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;loadNotes&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, {data: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;binData&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;toString&lt;&#x2F;span&gt;&lt;span&gt;()}).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;then&lt;&#x2F;span&gt;&lt;span&gt;((&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;dat&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;myStore&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;set&lt;&#x2F;span&gt;&lt;span&gt;(JSON.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;parse&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;dat&lt;&#x2F;span&gt;&lt;span&gt;));
+&lt;&#x2F;span&gt;&lt;span&gt;		});
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; send the updated JSON to the backend as a string
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; the backend converts it to an array of bson documents as bytes and we store it to db.bson 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;export async function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;editStore&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newVal&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;jsonToString &lt;&#x2F;span&gt;&lt;span&gt;= JSON.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;stringify&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newVal&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; send the updated store to the backend
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;invoke&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;editNote&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, {data: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;jsonToString&lt;&#x2F;span&gt;&lt;span&gt;}).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;then&lt;&#x2F;span&gt;&lt;span&gt;((&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;dat&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; store the updated bson to disk
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;data &lt;&#x2F;span&gt;&lt;span&gt;= new Uint8Array(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;dat&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;writeBinaryFile&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;.&#x2F;notes-db&#x2F;db.bson&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;data&lt;&#x2F;span&gt;&lt;span&gt;, {dir: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;BaseDirectory&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Home&lt;&#x2F;span&gt;&lt;span&gt;});
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;loadStore&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;	});
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Edit &lt;code&gt;src&#x2F;routes&#x2F;+pages.svelte&lt;&#x2F;code&gt; to call loadStore from above. Also to pass the store to the components.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;ts&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-ts &quot;&gt;&lt;code class=&quot;language-ts&quot; data-lang=&quot;ts&quot;&gt;&lt;span&gt;&amp;lt;script&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;myStore&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;loadStore &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;$lib&#x2F;store.js&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;homeDir&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;join &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;@tauri-apps&#x2F;api&#x2F;path&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;exists&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;BaseDirectory&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;createDir&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;writeBinaryFile&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;readBinaryFile &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;@tauri-apps&#x2F;api&#x2F;fs&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;invoke&lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;@tauri-apps&#x2F;api&#x2F;tauri&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;onMount &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;svelte&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Notes &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;$lib&#x2F;Notes.svelte&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;CreateNote &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;$lib&#x2F;CreateNote.svelte&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;var &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;db&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; gets called whenever the page&#x2F;component gets mounted
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;onMount&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;async &lt;&#x2F;span&gt;&lt;span&gt;() &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; get the user&amp;#39;s home directory
+&lt;&#x2F;span&gt;&lt;span&gt; 		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;home &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;homeDir&lt;&#x2F;span&gt;&lt;span&gt;();	
+&lt;&#x2F;span&gt;&lt;span&gt; 		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; append the directory we&amp;#39;ll create
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;db &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;join&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;home&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;notes-db&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; check if notes-db directory exists. If not then create it
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;checkDB &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;exists&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;notes-db&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, {dir: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;BaseDirectory&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Home&lt;&#x2F;span&gt;&lt;span&gt;});
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(!&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;checkDB&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; if the directory doesn&amp;#39;t exist then create it
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;createDir&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;notes-db&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, {dir: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;BaseDirectory&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Home&lt;&#x2F;span&gt;&lt;span&gt;, recursive: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;true &lt;&#x2F;span&gt;&lt;span&gt;});
+&lt;&#x2F;span&gt;&lt;span&gt;		}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; check if db.bson exists. If not then create it. 
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;checkFile &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;exists&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;.&#x2F;notes-db&#x2F;db.bson&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, {dir: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;BaseDirectory&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Home&lt;&#x2F;span&gt;&lt;span&gt;});
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(!&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;checkFile&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;writeBinaryFile&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;.&#x2F;notes-db&#x2F;db.bson&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, new Uint8Array([]), {dir: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;BaseDirectory&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Home&lt;&#x2F;span&gt;&lt;span&gt;});		
+&lt;&#x2F;span&gt;&lt;span&gt;		}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; load myStore with what&amp;#39;s on disk
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;loadStore&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;  });
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;container&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;CreateNote&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;** Pass myStore to the component **&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Notes allNotes&lt;&#x2F;span&gt;&lt;span&gt;={&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$myStore&lt;&#x2F;span&gt;&lt;span&gt;} &#x2F;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Edit &lt;code&gt;src&#x2F;lib&#x2F;Notes.svelte&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;ts&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-ts &quot;&gt;&lt;code class=&quot;language-ts&quot; data-lang=&quot;ts&quot;&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;script lang&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;ts&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; This value gets bound to myStore 
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; &amp;lt;Notes allNotes={$myStore}&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;export let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;allNotes&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; bson stores Date as milliseconds
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; Convert the date from milliseconds to human readbale
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;numToDate&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;num&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;toInt &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;parseInt&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;num&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;10&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;date &lt;&#x2F;span&gt;&lt;span&gt;= new Date(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;toInt&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;options &lt;&#x2F;span&gt;&lt;span&gt;= {
+&lt;&#x2F;span&gt;&lt;span&gt;			year: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;numeric&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;			month: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;long&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;			day: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;numeric&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;			hour: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;numeric&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;			minute: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;numeric&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;		};
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;date&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;toLocaleString&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;undefined&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;options&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; Loop through each note and render it
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;notes&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	{#&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;allNotes&lt;&#x2F;span&gt;&lt;span&gt;.length &amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;	{#&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;each allNotes &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;as &lt;&#x2F;span&gt;&lt;span&gt;note }
+&lt;&#x2F;span&gt;&lt;span&gt;		&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;note&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;			&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;a href&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;edit&#x2F;{note.bson_uuid}&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Edit&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;a&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;			&amp;lt;p&amp;gt; {note.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;title&lt;&#x2F;span&gt;&lt;span&gt;} &amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;p&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;			&amp;lt;p&amp;gt; { &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;numToDate&lt;&#x2F;span&gt;&lt;span&gt;(note.date_time.$date.$numberLong) } &amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;p&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;		&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	{&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;each&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;** either still loading or no data exists **&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;	{:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;else&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;		&amp;lt;p&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Try saving a note&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;p&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	{&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;if&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Edit &lt;code&gt;src&#x2F;lib&#x2F;CreateNote.svelte&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;ts&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-ts &quot;&gt;&lt;code class=&quot;language-ts&quot; data-lang=&quot;ts&quot;&gt;&lt;span&gt;&amp;lt;script&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;invoke &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;@tauri-apps&#x2F;api&#x2F;tauri&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;loadStore &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;$lib&#x2F;store.js&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;BaseDirectory&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;writeBinaryFile&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;readBinaryFile&lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;@tauri-apps&#x2F;api&#x2F;fs&amp;#39;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; bound to value of title textarea
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newNote&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; bound to value of body textarea
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newTitle&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; This isn&amp;#39;t bound to $myStore as above
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; This gets assigned the raw binary stored on disk
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;allNotes&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;async function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;save&lt;&#x2F;span&gt;&lt;span&gt;(){
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; sets allNotes to contain the binary stored on disk
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;load&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; Let the backend handle creating a new binary document
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;invoke&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;saveNote&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, {title: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newTitle&lt;&#x2F;span&gt;&lt;span&gt;, body: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newNote&lt;&#x2F;span&gt;&lt;span&gt;} ).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;then&lt;&#x2F;span&gt;&lt;span&gt;((&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;response&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; Here I simply merge the returned data with allNotes
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;loaded &lt;&#x2F;span&gt;&lt;span&gt;= new Uint8Array(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;allNotes&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;response &lt;&#x2F;span&gt;&lt;span&gt;= new Uint8Array(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;response&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mergeArray &lt;&#x2F;span&gt;&lt;span&gt;= new Uint8Array(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;loaded&lt;&#x2F;span&gt;&lt;span&gt;.length + &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;response&lt;&#x2F;span&gt;&lt;span&gt;.length);
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mergeArray&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;set&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;loaded&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mergeArray&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;set&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;response&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;loaded&lt;&#x2F;span&gt;&lt;span&gt;.length);
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; and save it to disk
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;writeBinaryFile&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;.&#x2F;notes-db&#x2F;db.bson&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mergeArray&lt;&#x2F;span&gt;&lt;span&gt;, {dir: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;BaseDirectory&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Home&lt;&#x2F;span&gt;&lt;span&gt;});	
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; after saving, reload writable myStore with saved data on disk
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;loadStore&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; empty textarea contents after save	
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newNote &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newTitle &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;			});
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;async function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;load&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;allNotes &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;await &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;readBinaryFile&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;.&#x2F;notes-db&#x2F;db.bson&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;, { dir: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;BaseDirectory&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Home&lt;&#x2F;span&gt;&lt;span&gt;});	
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div id &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;new-note&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;h1&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Create a note &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;h1&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;button &lt;&#x2F;span&gt;&lt;span&gt;on:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;click&lt;&#x2F;span&gt;&lt;span&gt;={&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;save&lt;&#x2F;span&gt;&lt;span&gt;}&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Save&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;button&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;textarea &lt;&#x2F;span&gt;&lt;span&gt;bind:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span&gt;={&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newTitle&lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;new-note-title&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;placeholder&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Note title&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&amp;lt;&#x2F;textarea&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;textarea &lt;&#x2F;span&gt;&lt;span&gt;bind:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span&gt;={&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;newNote&lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;new-note-box&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;placeholder&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Note body&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&amp;lt;&#x2F;textarea&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Lastly, I&#x27;ll create another page that will be used to let the user edit a note. [slug] will be the note&#x27;s UUID.&lt;&#x2F;p&gt;
+&lt;p&gt;Create &lt;code&gt;src&#x2F;routes&#x2F;edit&#x2F;[slug]&#x2F;+page.svelte&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;ts&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-ts &quot;&gt;&lt;code class=&quot;language-ts&quot; data-lang=&quot;ts&quot;&gt;&lt;span&gt;&amp;lt;script&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;myStore&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;editStore &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;$lib&#x2F;store.js&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;page &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;$app&#x2F;stores&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;onMount&lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;svelte&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;oneNote&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;oneNoteBody&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;oneNoteTitle&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;slug&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;save&lt;&#x2F;span&gt;&lt;span&gt;(){
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;currentStore &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$myStore&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; get the index of the current note that we&amp;#39;re editing
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;index &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;currentStore&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;findIndex&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;item &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;item&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;bson_uuid &lt;&#x2F;span&gt;&lt;span&gt;=== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;slug&lt;&#x2F;span&gt;&lt;span&gt;); 
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; grab the values for editing
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;updatedObject &lt;&#x2F;span&gt;&lt;span&gt;= {...&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;currentStore&lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;index&lt;&#x2F;span&gt;&lt;span&gt;]};
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; edit the values with what&amp;#39;s in the textareas
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;updatedObject&lt;&#x2F;span&gt;&lt;span&gt;.title = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;oneNoteTitle&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;updatedObject&lt;&#x2F;span&gt;&lt;span&gt;.body = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;oneNoteBody&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; update the store
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;myStore&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;update&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;store &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;updatedStore &lt;&#x2F;span&gt;&lt;span&gt;= [...&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;store&lt;&#x2F;span&gt;&lt;span&gt;];
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;updatedStore&lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;index&lt;&#x2F;span&gt;&lt;span&gt;] = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;updatedObject&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;updatedStore&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;		});
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; save to disk
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;editStore&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$myStore&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;	
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; deletes this note 
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;function &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;del&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; filter out this note in myStore
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;myStore&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;update&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;objects &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;objects&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;filter&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;obj &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;obj&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;bson_uuid &lt;&#x2F;span&gt;&lt;span&gt;!== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;slug&lt;&#x2F;span&gt;&lt;span&gt;));
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; give the updated store to the backend
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;editStore&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$myStore&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; redirect to &#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;		window.location.href=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;	}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; check the slug to match a UUID in myStore
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;onMount&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;async &lt;&#x2F;span&gt;&lt;span&gt;() &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;slug &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$page&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;params&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;slug&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;toString&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;		&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$myStore&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;forEach&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;element &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;			&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;element&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;bson_uuid &lt;&#x2F;span&gt;&lt;span&gt;=== &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;slug&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; grab the values and render them to the DOM
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;oneNote &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;element&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;oneNoteTitle &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;element&lt;&#x2F;span&gt;&lt;span&gt;.title;
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;oneNoteBody &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;element&lt;&#x2F;span&gt;&lt;span&gt;.body;
+&lt;&#x2F;span&gt;&lt;span&gt;				&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;return&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;			}
+&lt;&#x2F;span&gt;&lt;span&gt;		});
+&lt;&#x2F;span&gt;&lt;span&gt;	});
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;script&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div id &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;new-note&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;h1&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Edit note &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;h1&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;a href&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;home-button&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;BACK&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;a&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;button &lt;&#x2F;span&gt;&lt;span&gt;on:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;click&lt;&#x2F;span&gt;&lt;span&gt;={&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;save&lt;&#x2F;span&gt;&lt;span&gt;}&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Save&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;button&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;button &lt;&#x2F;span&gt;&lt;span&gt;on:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;click&lt;&#x2F;span&gt;&lt;span&gt;={&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;del&lt;&#x2F;span&gt;&lt;span&gt;}&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;Delete&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;button&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;textarea &lt;&#x2F;span&gt;&lt;span&gt;bind:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span&gt;={&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;oneNoteTitle&lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;edit-note-title&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&amp;lt;&#x2F;textarea&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;textarea &lt;&#x2F;span&gt;&lt;span&gt;bind:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span&gt;={&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;oneNoteBody&lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;id&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;edit-note-box&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&amp;lt;&#x2F;textarea&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;done&quot;&gt;Done&lt;&#x2F;h2&gt;
+&lt;p&gt;Running the following command will build the app into a binary located at 
+&lt;code&gt;src-tauri&#x2F;target&#x2F;release&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;pnpm&lt;&#x2F;span&gt;&lt;span&gt; tauri build
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;My binary says it&#x27;s at 10M, but I get it down to 3.0M by using &lt;a href=&quot;https:&#x2F;&#x2F;upx.github.io&#x2F;&quot;&gt;UPX&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; upx notes
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;For cross platform compilation check out the official Tauri &lt;a href=&quot;https:&#x2F;&#x2F;tauri.app&#x2F;v1&#x2F;guides&#x2F;building&#x2F;cross-platform&#x2F;&quot;&gt;docs&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Here is the complete code on &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;tauri-note-taking-app&quot;&gt;Github&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+    </entry>
     <entry xml:lang="en">
         <title>Security Hardening Linux OS</title>
         <published>2023-03-14T00:00:00+00:00</published>

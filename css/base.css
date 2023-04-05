@@ -300,6 +300,11 @@ tbody tr:nth-child(even) {
 
 /*# sourceMappingURL=dark.css.map */
 
+code {
+	border: 1px solid #F73859;
+	margin-top: 14px;
+}
+
 p {
 	color: red;
 }
@@ -313,6 +318,7 @@ p {
 }
 
 .language-bash {
+	margin-top: 8px;
 	font-size: 19px;
 }
 
@@ -321,7 +327,7 @@ p {
 }
 
 .language-toml {
-	font-size: 15px;
+	font-size: 18px;
 }
 
 .language-md {
@@ -338,6 +344,18 @@ p {
 
 .language-template {
 	font-size: 18px;
+}
+.language-ts {
+	font-size: 18px;
+}
+.language-js {
+	font-size: 18px;
+}
+.language-json {
+	font-size: 18px;
+}
+.language-CSS{
+	font-size: 16px;
 }
 
 blockquote {

@@ -1,0 +1,469 @@
+<!doctype html><html lang=en><head><title> Using Rust, Tauri, and SvelteKit to Build a Note Taking App </title><meta charset=UTF-8><link href=/css/base.css rel=stylesheet><meta content="width=device-width,initial-scale=1" name=viewport><link href=/favicon.svg rel=icon><body><nav><ul><li class=logo><a href=https://spacedimp.com/><img src=/spacedimp-logo-optimized.svg></a><li><a href=https://spacedimp.com/>Home</a><li><a href=https://spacedimp.com/blog/>Blog</a></ul></nav><h1>Using Rust, Tauri, and SvelteKit to Build a Note Taking App</h1><p>2023-04-05<h2 id=in-this-blog-post-i-ll-be-guiding-you-through-the-process-of-building-a-note-taking-app-using-tauri-move-over-electron>In this blog post, I'll be guiding you through the process of building a note taking app using Tauri. Move over Electron :)</h2><p><img alt="Alt text" title="demo of an app built using Rust, Tauri, and SvelteKit" src=/img/gif/noteapp.gif><p>Tauri allows us to build fast, cross-platform, and small sized apps using HTML, CSS, and JavaScript.<p>It accomplishes this by using <a href=https://tauri.app/v1/references/webview-versions/>WebViews</a>. A WebView lets you embed web content (HTML,CSS, JavaScript) into an application without needing a full-fledged web browser.<p>Rust is used for the backend logic and <a href=https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks/Svelte_getting_started>SvelteKit</a> for the frontend.<p>Each OS uses a different WebView rendering engine:<ul><li>Windows uses WebView2<li>Linux uses WebKit</ul><h2 id=setting-up-the-project>Setting up the project</h2><p>Make sure Rust and the Tauri dependencies are installed as described <a href=https://tauri.app/v1/guides/getting-started/prerequisites>here</a>.<p>SvelteKit requires Node.js. I install it using Fedora's package manager.<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>sudo</span><span> dnf install nodejs
+</span></code></pre><p>Instead of npm, I'll install pnpm as the Node.js package manager<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>sudo</span><span> npm install</span><span style=color:#e06c75> -g</span><span> pnpm
+</span></code></pre><p>Now we can initialize a new svelte project.<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>$</span><span> mkdir notes && </span><span style=color:#56b6c2>cd</span><span> notes
+</span><span style=color:#e06c75>$</span><span> pnpm create svelte 
+</span><span>
+</span><span style=color:#e06c75>//</span><span> hit enter to create the project in the current directory
+</span><span>
+</span><span style=color:#e06c75>//</span><span> use down arrow key to select Skeleton project
+</span><span>
+</span><span style=color:#e06c75>//</span><span> use down arrow key to select Yes, using Typescript syntax
+</span><span>
+</span><span style=color:#e06c75>//</span><span> use space bar to select 
+</span><span style=color:#e06c75>// </span><span>* Add ESLint for code linting
+</span><span style=color:#e06c75>// </span><span>* Add Prettier for code formatting
+</span><span>
+</span><span style=color:#e06c75>//</span><span> @next gets latest version
+</span><span style=color:#e06c75>$</span><span> pnpm add</span><span style=color:#e06c75> -D</span><span> @sveltejs/adapter-static@next
+</span></code></pre><p>edit svelte.config.js<pre class=language-js data-lang=js style=background:#282c34;color:#abb2bf><code class=language-js data-lang=js><span style=font-style:italic;color:#5c6370>// change adapter-auto to adapter-static 
+</span><span style=color:#c678dd>import </span><span style=color:#e06c75>adapter </span><span style=color:#c678dd>from </span><span style=color:#98c379>'@sveltejs/adapter-static'</span><span>;
+</span><span>
+</span><span>...
+</span><span>
+</span><span style=font-style:italic;color:#5c6370>// add prerender entries 
+</span><span>kit: {
+</span><span>		adapter: </span><span style=color:#61afef>adapter</span><span>(),
+</span><span>		prerender: {
+</span><span>			entries: [</span><span style=color:#98c379>'*'</span><span>, </span><span style=color:#98c379>'/edit/*'</span><span>]
+</span><span>		}
+</span><span>}
+</span><span>
+</span></code></pre><p>Disable SSR by creating src/routes/+layout.ts<pre class=language-ts data-lang=ts style=background:#282c34;color:#abb2bf><code class=language-ts data-lang=ts><span style=color:#c678dd>export const </span><span style=color:#e06c75>prerender </span><span>= </span><span style=color:#d19a66>true</span><span>;
+</span><span style=color:#c678dd>export const </span><span style=color:#e06c75>ssr </span><span>= </span><span style=color:#d19a66>false</span><span>;
+</span></code></pre><p>Check your node.js version and make sure pnpm uses the correct one<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>$</span><span> node</span><span style=color:#e06c75> -v 
+</span><span style=color:#e06c75>v18.15.0 
+</span><span>
+</span><span style=color:#e06c75>//</span><span> edit .npmrc 
+</span><span style=color:#e06c75>$</span><span> vi .npmrc 
+</span><span>
+</span><span style=color:#e06c75>//</span><span> add your version number as so
+</span><span style=color:#e06c75>use-node-version</span><span>=</span><span style=color:#98c379>18.15.0
+</span></code></pre><p>Setup Tauri<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>$</span><span> pnpm add</span><span style=color:#e06c75> -D</span><span> @tauri-apps/cli
+</span><span style=color:#e06c75>$</span><span> pnpm tauri init
+</span><span>
+</span><span style=color:#e06c75>//</span><span> What is your app name? notes
+</span><span>
+</span><span style=color:#e06c75>//</span><span> What should the window title be? notes
+</span><span>
+</span><span style=color:#e06c75>//</span><span> Where are your web assets ..? ../build
+</span><span>
+</span><span style=color:#e06c75>//</span><span> What is the URL of your dev server? http://localhost:5173
+</span><span>
+</span><span style=color:#e06c75>//</span><span> What is your frontend dev command? pnpm run dev
+</span><span>
+</span><span style=color:#e06c75>//</span><span> What is your frontend build command? pnpm run build
+</span></code></pre><p>Run the app<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>//</span><span> will be slow the first time running but after much faster
+</span><span style=color:#e06c75>$</span><span> pnpm tauri dev
+</span></code></pre><h2 id=setting-up-components>Setting up components</h2><p>I recommend for beginners to go through the official Svelte tutorial <a href=https://svelte.dev/tutorial/basics>here</a> to grasp its fundamentals.<p>This is an excerpt of what a component is:<blockquote><p>In Svelte, an application is composed from one or more components. A component is a reusable self-contained block of code that encapsulates HTML, CSS and JavaScript that belong together, written into a .svelte file. The 'hello world' example in the code editor is a simple component.</blockquote><p>I'll be creating two components inside of <code>src/lib</code>. One called <code>Notes.svelte</code> will display all notes created. The other called <code>CreateNote.svelte</code> will be a text box where we can add new notes.<p>Create <code>src/lib/Notes.svelte</code><pre class=language-ts data-lang=ts style=background:#282c34;color:#abb2bf><code class=language-ts data-lang=ts><span><</span><span style=color:#e06c75>script lang</span><span>=</span><span style=color:#98c379>"ts"</span><span>>
+</span><span>	</span><span style=color:#c678dd>let </span><span style=color:#e06c75>title </span><span>= </span><span style=color:#98c379>"First Note"</span><span>;
+</span><span>&LT/</span><span style=color:#e06c75>script</span><span>>
+</span><span>
+</span><span><</span><span style=color:#e06c75>div id</span><span>=</span><span style=color:#98c379>"notes"</span><span>>
+</span><span>	&LTp> {</span><span style=color:#e06c75>title</span><span>} &LT/</span><span style=color:#e06c75>p</span><span>>
+</span><span>&LT/</span><span style=color:#e06c75>div</span><span>>
+</span></code></pre><p>Create <code>src/lib/CreateNote.svelte</code><pre class=language-ts data-lang=ts style=background:#282c34;color:#abb2bf><code class=language-ts data-lang=ts><span><</span><span style=color:#e06c75>script lang</span><span>=</span><span style=color:#98c379>"ts"</span><span>>
+</span><span>	</span><span style=color:#c678dd>let </span><span style=color:#e06c75>newNote</span><span>;
+</span><span>	</span><span style=color:#c678dd>let </span><span style=color:#e06c75>newTitle</span><span>;
+</span><span>&LT/</span><span style=color:#e06c75>script</span><span>>
+</span><span>
+</span><span><</span><span style=color:#e06c75>div id</span><span>=</span><span style=color:#98c379>"new-note"</span><span>>
+</span><span>	&LTh1> </span><span style=color:#e06c75>Create a Note </span><span>&LT/</span><span style=color:#e06c75>h1</span><span>>
+</span><span>	<</span><span style=color:#e06c75>textarea </span><span>bind:</span><span style=color:#e06c75>value</span><span>={</span><span style=color:#e06c75>newTitle</span><span>} </span><span style=color:#e06c75>id</span><span>=</span><span style=color:#98c379>"new-note-title" </span><span style=color:#e06c75>placeholder</span><span>=</span><span style=color:#98c379>"Note title"</span><span>>&LT/textarea>
+</span><span>	<</span><span style=color:#e06c75>textarea </span><span>bind:</span><span style=color:#e06c75>value</span><span>={</span><span style=color:#e06c75>newNote</span><span>} </span><span style=color:#e06c75>id</span><span>=</span><span style=color:#98c379>"new-note-box" </span><span style=color:#e06c75>placeholder</span><span>=</span><span style=color:#98c379>"Note body"</span><span>>&LT/textarea>
+</span><span>&LT/</span><span style=color:#e06c75>div</span><span>>
+</span></code></pre><p>A page is a route to a certain path. <code>src/routes/+page.svelte</code> will be the homepage, for instance.<p>Import the components into the page by editing <code>src/routes/+page.svelte</code><pre class=language-ts data-lang=ts style=background:#282c34;color:#abb2bf><code class=language-ts data-lang=ts><span><</span><span style=color:#e06c75>script lang</span><span>=</span><span style=color:#98c379>"ts"</span><span>>
+</span><span>	</span><span style=color:#c678dd>import </span><span style=color:#e06c75>Notes </span><span style=color:#c678dd>from </span><span style=color:#98c379>'$lib/Notes.svelte'
+</span><span>	</span><span style=color:#c678dd>import </span><span style=color:#e06c75>CreateNote </span><span style=color:#c678dd>from </span><span style=color:#98c379>'$lib/CreateNote.svelte'
+</span><span>&LT/</span><span style=color:#e06c75>script</span><span>>
+</span><span>
+</span><span><</span><span style=color:#e06c75>div id</span><span>=</span><span style=color:#98c379>"container"</span><span>>
+</span><span>	<</span><span style=color:#e06c75>CreateNote</span><span>/>
+</span><span>	<</span><span style=color:#e06c75>Notes</span><span>/>
+</span><span>&LT/</span><span style=color:#e06c75>div</span><span>>
+</span></code></pre><p>You could place CSS style tags into each Page or Component, but I prefer a global CSS file.<p>Create <code>static/global.css</code><pre class=language-CSS data-lang=CSS style=background:#282c34;color:#abb2bf><code class=language-CSS data-lang=CSS><span style=font-style:italic;color:#5c6370>/* CSS reset */
+</span><span style=color:#e06c75>*</span><span style=color:#c678dd>, </span><span style=color:#e06c75>*</span><span style=color:#d19a66>::</span><span style=color:#c678dd>before, </span><span style=color:#e06c75>*</span><span style=color:#d19a66>::</span><span style=color:#c678dd>after </span><span>{
+</span><span>  box-sizing: border-box;
+</span><span>}
+</span><span>
+</span><span style=color:#e06c75>* </span><span>{
+</span><span>  margin: </span><span style=color:#d19a66>0</span><span>;
+</span><span>}
+</span><span>
+</span><span style=color:#e06c75>html</span><span style=color:#c678dd>, </span><span style=color:#e06c75>body </span><span>{
+</span><span>  height: </span><span style=color:#d19a66>100%</span><span>;
+</span><span>}
+</span><span>
+</span><span style=color:#e06c75>body </span><span>{
+</span><span>  line-height: </span><span style=color:#d19a66>1.5</span><span>;
+</span><span>  -webkit-font-smoothing: antialiased;
+</span><span>}
+</span><span>
+</span><span style=color:#e06c75>img</span><span style=color:#c678dd>, </span><span style=color:#e06c75>picture</span><span style=color:#c678dd>, </span><span style=color:#e06c75>video</span><span style=color:#c678dd>, </span><span style=color:#e06c75>canvas</span><span style=color:#c678dd>, </span><span style=color:#e06c75>svg </span><span>{
+</span><span>  display: block;
+</span><span>  max-width: </span><span style=color:#d19a66>100%</span><span>;
+</span><span>}
+</span><span>
+</span><span style=color:#e06c75>input</span><span style=color:#c678dd>, </span><span style=color:#e06c75>button</span><span style=color:#c678dd>, </span><span style=color:#e06c75>textarea</span><span style=color:#c678dd>, </span><span style=color:#e06c75>select </span><span>{
+</span><span>  font: inherit;
+</span><span>}
+</span><span>
+</span><span style=color:#e06c75>p</span><span style=color:#c678dd>, </span><span style=color:#e06c75>h1</span><span style=color:#c678dd>, </span><span style=color:#e06c75>h2</span><span style=color:#c678dd>, </span><span style=color:#e06c75>h3</span><span style=color:#c678dd>, </span><span style=color:#e06c75>h4</span><span style=color:#c678dd>, </span><span style=color:#e06c75>h5</span><span style=color:#c678dd>, </span><span style=color:#e06c75>h6 </span><span>{
+</span><span>  overflow-wrap: break-word;
+</span><span>}
+</span><span>
+</span><span style=color:#d19a66>#root</span><span style=color:#c678dd>, </span><span style=color:#d19a66>#__next </span><span>{
+</span><span>  isolation: isolate;
+</span><span>}
+</span><span>
+</span><span style=font-style:italic;color:#5c6370>/* Component and Page CSS */
+</span><span>
+</span><span style=color:#d19a66>#container </span><span>{
+</span><span>	box-sizing: border-box;
+</span><span>	width: </span><span style=color:#d19a66>100%</span><span>;
+</span><span>	height: </span><span style=color:#d19a66>100%</span><span>;
+</span><span>	display: flex;
+</span><span>	white-space: nowrap;
+</span><span>}
+</span><span>
+</span><span style=color:#d19a66>#notes </span><span>{
+</span><span>	background: </span><span style=color:#56b6c2>#eee</span><span>;
+</span><span>}
+</span></code></pre><p>Add it to <code>src/app.html</code> inside of the head tag<pre class=language-html data-lang=html style=background:#282c34;color:#abb2bf><code class=language-html data-lang=html><span><</span><span style=color:#e06c75>link </span><span style=color:#d19a66>rel</span><span>=</span><span style=color:#98c379>"stylesheet" </span><span style=color:#d19a66>type</span><span>=</span><span style=color:#98c379>"text/css" </span><span style=color:#d19a66>href</span><span>=</span><span style=color:#98c379>"%sveltekit.assets%/global.css"</span><span>>
+</span></code></pre><p>I'll be saving the notes in the frontend. For this we require Tauri's frontend API.<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>$</span><span> pnpm add</span><span style=color:#e06c75> -D</span><span> @tauri-apps/api
+</span></code></pre><p>We must tell Tauri which paths are available to our app. In this case I'll be writing to a file called db.bson in the user's home/notes-db directory.<p>Edit <code>src-tauri/tauri.conf.json</code><pre class=language-json data-lang=json style=background:#282c34;color:#abb2bf><code class=language-json data-lang=json><span style=color:#98c379>"tauri"</span><span>: {
+</span><span>   </span><span style=color:#98c379>"allowlist"</span><span>: {
+</span><span>      </span><span style=color:#98c379>"all"</span><span>: </span><span style=color:#d19a66>false</span><span>,
+</span><span>	  </span><span style=color:#98c379>"fs"</span><span>: {
+</span><span>	  	</span><span style=color:#98c379>"scope"</span><span>: [</span><span style=color:#98c379>"$HOME/notes-db/*"</span><span>, </span><span style=color:#98c379>"$HOME/notes-db"</span><span>],
+</span><span>		</span><span style=color:#98c379>"all"</span><span>: </span><span style=color:#d19a66>true
+</span><span>	  },
+</span><span>	  </span><span style=color:#98c379>"path"</span><span>: {
+</span><span>	  	</span><span style=color:#98c379>"all"</span><span>: </span><span style=color:#d19a66>true
+</span><span>	  }
+</span><span>    },
+</span></code></pre><p>Also scroll down in the conf.json file and find "identifier" . It should be unique to your app. I'll set it to com.random.random.<pre class=language-json data-lang=json style=background:#282c34;color:#abb2bf><code class=language-json data-lang=json><span style=color:#98c379>"bundle"</span><span>: {
+</span><span>	</span><span style=color:#98c379>"identifier"</span><span>: </span><span style=color:#98c379>"com.random.random"</span><span>,
+</span><span>}
+</span></code></pre><h2 id=handling-data-in-the-backend>Handling data in the backend</h2><p>I've chosen to store the data as bson (Binary JSON). Read more about bson <a href=https://www.mongodb.com/json-and-bson>here</a>. Basically it's how MongoDB stores JSON data on disk as binary.<p>Tauri lets the frontend pass data back and forth to the backend (Rust) using Tauri commands.<p>For the sake of brevity I'll just show the complete Rust backend code.<p>Edit <code>src-tauri/src/main.rs</code> with:<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span>#![</span><span style=color:#e06c75>cfg_attr</span><span>(
+</span><span>  </span><span style=color:#e06c75>all</span><span>(</span><span style=color:#e06c75>not</span><span>(debug_assertions), target_os = </span><span style=color:#98c379>"windows"</span><span>),
+</span><span>  windows_subsystem = </span><span style=color:#98c379>"windows"
+</span><span>)]
+</span><span>
+</span><span style=color:#c678dd>use </span><span>bson::{Document};
+</span><span>
+</span><span style=color:#c678dd>use </span><span>serde::{Serialize, Deserialize};
+</span><span style=color:#c678dd>use </span><span>std::io::{Cursor};
+</span><span>
+</span><span style=color:#c678dd>use</span><span> serde_json;
+</span><span>
+</span><span>#[</span><span style=color:#e06c75>derive</span><span>(Serialize, Deserialize, Debug)]
+</span><span style=color:#c678dd>struct </span><span>Note {
+</span><span>    </span><span style=color:#e06c75>bson_uuid</span><span>: String,
+</span><span>    </span><span style=color:#e06c75>date_time</span><span>: bson::DateTime,
+</span><span>    </span><span style=color:#e06c75>title</span><span>: String,
+</span><span>    </span><span style=color:#e06c75>body</span><span>: String,
+</span><span>}
+</span><span>
+</span><span style=font-style:italic;color:#5c6370>// builds a new Note object for the froteend
+</span><span style=font-style:italic;color:#5c6370>// we then convert it to a bson document 
+</span><span style=font-style:italic;color:#5c6370>// lastly we convert it into a vec of bytes to store on disk (frontend handles appending then saving this to disk)
+</span><span>#[</span><span style=color:#e06c75>tauri</span><span>::</span><span style=color:#e06c75>command</span><span>]
+</span><span style=color:#c678dd>fn </span><span style=color:#61afef>saveNote</span><span>(</span><span style=color:#e06c75>title</span><span>: &</span><span style=color:#c678dd>str</span><span>, </span><span style=color:#e06c75>body</span><span>: &</span><span style=color:#c678dd>str</span><span>) -> Vec<</span><span style=color:#c678dd>u8</span><span>> {
+</span><span>    </span><span style=color:#c678dd>let</span><span> note = Note { bson_uuid: bson::Uuid::new().</span><span style=color:#56b6c2>to_string</span><span>(), date_time: bson::DateTime::now(), title: title.</span><span style=color:#56b6c2>to_string</span><span>(), body: body.</span><span style=color:#56b6c2>to_string</span><span>() };
+</span><span>    </span><span style=color:#c678dd>let</span><span> note_doc = bson::to_document(&ampnote).</span><span style=color:#56b6c2>unwrap</span><span>();
+</span><span>
+</span><span>    </span><span style=color:#c678dd>return </span><span>bson::to_vec(&ampnote_doc).</span><span style=color:#56b6c2>unwrap</span><span>();
+</span><span>}
+</span><span>
+</span><span style=font-style:italic;color:#5c6370>// after the frontend edits or deletes a note 
+</span><span style=font-style:italic;color:#5c6370>// it must be saved back to db.bson
+</span><span>#[</span><span style=color:#e06c75>tauri</span><span>::</span><span style=color:#e06c75>command</span><span>]
+</span><span style=color:#c678dd>fn </span><span style=color:#61afef>editNote</span><span>(</span><span style=color:#e06c75>data</span><span>: &</span><span style=color:#c678dd>str</span><span>) -> Vec<</span><span style=color:#c678dd>u8</span><span>> {
+</span><span>    </span><span style=color:#c678dd>let</span><span> vecNotes: Vec&LTNote> = serde_json::from_str(data).</span><span style=color:#56b6c2>unwrap</span><span>(); 
+</span><span>    </span><span style=color:#c678dd>let</span><span> vecDocs: Vec&LTDocument> = vecNotes.</span><span style=color:#56b6c2>iter</span><span>().</span><span style=color:#56b6c2>map</span><span>(|</span><span style=color:#e06c75>e</span><span>| bson::to_document(&e).</span><span style=color:#56b6c2>unwrap</span><span>() ).</span><span style=color:#56b6c2>collect</span><span>();
+</span><span>    </span><span style=color:#c678dd>let</span><span> docsArray: Vec<</span><span style=color:#c678dd>u8</span><span>> = vecDocs.</span><span style=color:#56b6c2>clone</span><span>().</span><span style=color:#56b6c2>into_iter</span><span>().</span><span style=color:#56b6c2>flat_map</span><span>(|</span><span style=color:#e06c75>e</span><span>| bson::to_vec(&e.</span><span style=color:#56b6c2>clone</span><span>()).</span><span style=color:#56b6c2>unwrap</span><span>()).</span><span style=color:#56b6c2>collect</span><span>();
+</span><span>
+</span><span>    </span><span style=color:#c678dd>return</span><span> docsArray; 
+</span><span>}
+</span><span>
+</span><span style=font-style:italic;color:#5c6370>// loading the raw data from db.bson requires us to convert it to JSON
+</span><span style=font-style:italic;color:#5c6370>// for the frontend to interact with
+</span><span>#[</span><span style=color:#e06c75>tauri</span><span>::</span><span style=color:#e06c75>command</span><span>]
+</span><span style=color:#c678dd>fn </span><span style=color:#61afef>loadNotes</span><span>(</span><span style=color:#e06c75>data</span><span>: &</span><span style=color:#c678dd>str</span><span>) -> String{
+</span><span>
+</span><span>   </span><span style=font-style:italic;color:#5c6370>// check if database is empty. 
+</span><span>   </span><span style=font-style:italic;color:#5c6370>// Return if it is otherwise the program will crash 
+</span><span>   </span><span style=color:#c678dd>if</span><span> data.</span><span style=color:#56b6c2>chars</span><span>().</span><span style=color:#56b6c2>count</span><span>() == </span><span style=color:#d19a66>0 </span><span>{
+</span><span>        </span><span style=color:#c678dd>return </span><span>String::from(</span><span style=color:#98c379>"no data"</span><span>);
+</span><span>   }
+</span><span>
+</span><span>   </span><span style=font-style:italic;color:#5c6370>// frontend passes the database as a string array of bytes 
+</span><span>   </span><span style=font-style:italic;color:#5c6370>// parse it into bytes 
+</span><span>   </span><span style=color:#c678dd>let</span><span> mybytes: Vec<</span><span style=color:#c678dd>u8</span><span>> = data
+</span><span>       .</span><span style=color:#56b6c2>trim_matches</span><span>(|</span><span style=color:#e06c75>c</span><span>| c == </span><span style=color:#98c379>'[' </span><span>|| c== </span><span style=color:#98c379>']'</span><span>)
+</span><span>       .</span><span style=color:#56b6c2>split</span><span>(</span><span style=color:#98c379>','</span><span>)
+</span><span>       .</span><span style=color:#56b6c2>map</span><span>(|</span><span style=color:#e06c75>s</span><span>| s.</span><span style=color:#56b6c2>parse</span><span>().</span><span style=color:#56b6c2>unwrap</span><span>())
+</span><span>       .</span><span style=color:#56b6c2>collect</span><span>();
+</span><span>  
+</span><span>   </span><span style=font-style:italic;color:#5c6370>// now we iterate through the bytes and convert it 
+</span><span>   </span><span style=font-style:italic;color:#5c6370>// to a Vec of bson Document 
+</span><span>   </span><span style=color:#c678dd>let mut</span><span> curs = Cursor::new(mybytes);
+</span><span>   curs.</span><span style=color:#56b6c2>set_position</span><span>(</span><span style=color:#d19a66>0</span><span>);
+</span><span>
+</span><span>   </span><span style=color:#c678dd>let</span><span> array_len = curs.</span><span style=color:#56b6c2>get_ref</span><span>().</span><span style=color:#56b6c2>len</span><span>() as </span><span style=color:#c678dd>u64</span><span>;
+</span><span>
+</span><span>   </span><span style=color:#c678dd>let mut</span><span> docs = Vec::new();
+</span><span>
+</span><span>   </span><span style=color:#c678dd>for </span><span>_ in </span><span style=color:#d19a66>0</span><span>..array_len {
+</span><span>        </span><span style=color:#c678dd>match </span><span>Document::from_reader(&</span><span style=color:#c678dd>mut</span><span> curs) {
+</span><span>            Ok(doc) => {println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{} </span><span style=color:#56b6c2>\n\n</span><span style=color:#98c379>"</span><span>, doc); docs.</span><span style=color:#56b6c2>push</span><span>(doc);},
+</span><span>            Err(e) => {
+</span><span>                println!(</span><span style=color:#98c379>"Error </span><span style=color:#d19a66>{:?}</span><span style=color:#98c379>"</span><span>, e);
+</span><span>                </span><span style=color:#c678dd>break</span><span>;
+</span><span>            }
+</span><span>        }
+</span><span>   }
+</span><span>
+</span><span>   </span><span style=font-style:italic;color:#5c6370>// return to the frontend an array of bson documents as JSON
+</span><span>   </span><span style=color:#c678dd>return </span><span>serde_json::to_string(&docs).</span><span style=color:#56b6c2>unwrap</span><span>();
+</span><span>}
+</span><span>
+</span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
+</span><span>  tauri::Builder::default()
+</span><span>    .</span><span style=color:#56b6c2>invoke_handler</span><span>(tauri::generate_handler![saveNote, editNote, loadNotes])
+</span><span>    .</span><span style=color:#56b6c2>run</span><span>(tauri::generate_context!())
+</span><span>    .</span><span style=color:#56b6c2>expect</span><span>(</span><span style=color:#98c379>"error while running tauri application"</span><span>);
+</span><span>}
+</span></code></pre><p>I create a Tauri app with three functions available to the frontend: saveNote, editNote, loadNotes<p>saveNote will be called from the frontend and be passed two values: title, body. I then createa new Note struct with those values then convert it to a bson::Document. Lastly I convert the document to a bson::Array (Vec of bytes) and return it to the frontend to handle storing it to disk.<p>editNote receives from the frontend an updated/modified version of the data stored on disk. The frontend requires this function to rebuild the bson database. We then return the binary bson back to the frontend to store to disk.<p>loadNotes takes what's stored on disk "[123],[100],etc.." and converts it to JSON for the frontend.<p>Also, edit <code>src-tauri/Cargo.toml</code> to include bson as a dependency<pre class=language-toml data-lang=toml style=background:#282c34;color:#abb2bf><code class=language-toml data-lang=toml><span>[dependencies]
+</span><span style=color:#e06c75>bson </span><span>= {</span><span style=color:#e06c75>version </span><span>= </span><span style=color:#98c379>"2.6.0"</span><span>}
+</span></code></pre><h2 id=handling-data-in-the-frontend>Handling data in the frontend</h2><p>Svelte's <a href=https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks/Svelte_stores>writable</a> store allows each component or page to individually modify/read a global state. Whenever it changes, all components get the newly changed value.<p>Create and edit <code>src/lib/store.js</code><pre class=language-js data-lang=js style=background:#282c34;color:#abb2bf><code class=language-js data-lang=js><span style=color:#c678dd>import </span><span>{ </span><span style=color:#e06c75>writable </span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'svelte/store'</span><span>;
+</span><span>
+</span><span style=color:#c678dd>import </span><span>{ </span><span style=color:#e06c75>homeDir</span><span>, </span><span style=color:#e06c75>join </span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'@tauri-apps/api/path'</span><span>;
+</span><span style=color:#c678dd>import </span><span>{ </span><span style=color:#e06c75>exists</span><span>, </span><span style=color:#e06c75>BaseDirectory</span><span>, </span><span style=color:#e06c75>createDir</span><span>, </span><span style=color:#e06c75>writeBinaryFile</span><span>, </span><span style=color:#e06c75>readBinaryFile </span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'@tauri-apps/api/fs'</span><span>;
+</span><span>
+</span><span style=color:#c678dd>import </span><span>{</span><span style=color:#e06c75>invoke</span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'@tauri-apps/api/tauri'</span><span>;
+</span><span>
+</span><span style=font-style:italic;color:#5c6370>// This value gets initialized when loadStore() is called
+</span><span style=font-style:italic;color:#5c6370>// contains all bson stored on disk but as JSON
+</span><span style=color:#c678dd>export const </span><span style=color:#e06c75>myStore </span><span>= </span><span style=color:#61afef>writable</span><span>({});
+</span><span>
+</span><span style=font-style:italic;color:#5c6370>// initialize myStore with the contents in the database
+</span><span style=font-style:italic;color:#5c6370>// let Rust convert the binary to an array of JSON
+</span><span style=color:#c678dd>export async function </span><span style=color:#61afef>loadStore</span><span>() {
+</span><span>		</span><span style=color:#c678dd>let </span><span style=color:#e06c75>binData </span><span>= </span><span style=color:#c678dd>await </span><span style=color:#61afef>readBinaryFile</span><span>(</span><span style=color:#98c379>'./notes-db/db.bson'</span><span>, {dir: </span><span style=color:#e06c75>BaseDirectory</span><span>.</span><span style=color:#e06c75>Home</span><span>});
+</span><span>		</span><span style=color:#61afef>invoke</span><span>(</span><span style=color:#98c379>'loadNotes'</span><span>, {data: </span><span style=color:#e06c75>binData</span><span>.</span><span style=color:#56b6c2>toString</span><span>()}).</span><span style=color:#56b6c2>then</span><span>((</span><span style=color:#e06c75>dat</span><span>) </span><span style=color:#c678dd>=> </span><span>{
+</span><span>			</span><span style=color:#e06c75>myStore</span><span>.</span><span style=color:#56b6c2>set</span><span>(JSON.</span><span style=color:#56b6c2>parse</span><span>(</span><span style=color:#e06c75>dat</span><span>));
+</span><span>		});
+</span><span>}
+</span><span>
+</span><span style=font-style:italic;color:#5c6370>// send the updated JSON to the backend as a string
+</span><span style=font-style:italic;color:#5c6370>// the backend converts it to an array of bson documents as bytes and we store it to db.bson 
+</span><span style=color:#c678dd>export async function </span><span style=color:#61afef>editStore</span><span>(</span><span style=color:#e06c75>newVal</span><span>) {
+</span><span>	</span><span style=color:#c678dd>let </span><span style=color:#e06c75>jsonToString </span><span>= JSON.</span><span style=color:#56b6c2>stringify</span><span>(</span><span style=color:#e06c75>newVal</span><span>);
+</span><span>	</span><span style=font-style:italic;color:#5c6370>// send the updated store to the backend
+</span><span>	</span><span style=color:#61afef>invoke</span><span>(</span><span style=color:#98c379>'editNote'</span><span>, {data: </span><span style=color:#e06c75>jsonToString</span><span>}).</span><span style=color:#56b6c2>then</span><span>((</span><span style=color:#e06c75>dat</span><span>) </span><span style=color:#c678dd>=> </span><span>{
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// store the updated bson to disk
+</span><span>		</span><span style=color:#c678dd>let </span><span style=color:#e06c75>data </span><span>= new Uint8Array(</span><span style=color:#e06c75>dat</span><span>);
+</span><span>		</span><span style=color:#61afef>writeBinaryFile</span><span>(</span><span style=color:#98c379>'./notes-db/db.bson'</span><span>, </span><span style=color:#e06c75>data</span><span>, {dir: </span><span style=color:#e06c75>BaseDirectory</span><span>.</span><span style=color:#e06c75>Home</span><span>});
+</span><span>		</span><span style=color:#61afef>loadStore</span><span>();
+</span><span>	});
+</span><span>}
+</span></code></pre><p>Edit <code>src/routes/+pages.svelte</code> to call loadStore from above. Also to pass the store to the components.<pre class=language-ts data-lang=ts style=background:#282c34;color:#abb2bf><code class=language-ts data-lang=ts><span>&LTscript>
+</span><span>	</span><span style=color:#c678dd>import </span><span>{ </span><span style=color:#e06c75>myStore</span><span>, </span><span style=color:#e06c75>loadStore </span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'$lib/store.js'</span><span>;
+</span><span>
+</span><span>  	</span><span style=color:#c678dd>import </span><span>{ </span><span style=color:#e06c75>homeDir</span><span>, </span><span style=color:#e06c75>join </span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'@tauri-apps/api/path'</span><span>;
+</span><span>  	</span><span style=color:#c678dd>import </span><span>{ </span><span style=color:#e06c75>exists</span><span>, </span><span style=color:#e06c75>BaseDirectory</span><span>, </span><span style=color:#e06c75>createDir</span><span>, </span><span style=color:#e06c75>writeBinaryFile</span><span>, </span><span style=color:#e06c75>readBinaryFile </span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'@tauri-apps/api/fs'</span><span>;
+</span><span>
+</span><span>  	</span><span style=color:#c678dd>import </span><span>{</span><span style=color:#e06c75>invoke</span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'@tauri-apps/api/tauri'</span><span>;
+</span><span>  	</span><span style=color:#c678dd>import </span><span>{ </span><span style=color:#e06c75>onMount </span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'svelte'</span><span>;
+</span><span>
+</span><span>	</span><span style=color:#c678dd>import </span><span style=color:#e06c75>Notes </span><span style=color:#c678dd>from </span><span style=color:#98c379>'$lib/Notes.svelte'
+</span><span>	</span><span style=color:#c678dd>import </span><span style=color:#e06c75>CreateNote </span><span style=color:#c678dd>from </span><span style=color:#98c379>'$lib/CreateNote.svelte'
+</span><span>
+</span><span>	</span><span style=color:#c678dd>var </span><span style=color:#e06c75>db</span><span>;
+</span><span>
+</span><span>	</span><span style=font-style:italic;color:#5c6370>// gets called whenever the page/component gets mounted
+</span><span>	</span><span style=color:#61afef>onMount</span><span>(</span><span style=color:#c678dd>async </span><span>() </span><span style=color:#c678dd>=> </span><span>{
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// get the user's home directory
+</span><span> 		</span><span style=color:#c678dd>let </span><span style=color:#e06c75>home </span><span>= </span><span style=color:#c678dd>await </span><span style=color:#61afef>homeDir</span><span>();	
+</span><span> 		</span><span style=font-style:italic;color:#5c6370>// append the directory we'll create
+</span><span>		</span><span style=color:#e06c75>db </span><span>= </span><span style=color:#c678dd>await </span><span style=color:#61afef>join</span><span>(</span><span style=color:#e06c75>home</span><span>, </span><span style=color:#98c379>'notes-db'</span><span>);
+</span><span>
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// check if notes-db directory exists. If not then create it
+</span><span>		</span><span style=color:#c678dd>let </span><span style=color:#e06c75>checkDB </span><span>= </span><span style=color:#c678dd>await </span><span style=color:#61afef>exists</span><span>(</span><span style=color:#98c379>'notes-db'</span><span>, {dir: </span><span style=color:#e06c75>BaseDirectory</span><span>.</span><span style=color:#e06c75>Home</span><span>});
+</span><span>		</span><span style=color:#c678dd>if </span><span>(!</span><span style=color:#e06c75>checkDB</span><span>) {
+</span><span>			</span><span style=font-style:italic;color:#5c6370>// if the directory doesn't exist then create it
+</span><span>			</span><span style=color:#c678dd>await </span><span style=color:#61afef>createDir</span><span>(</span><span style=color:#98c379>'notes-db'</span><span>, {dir: </span><span style=color:#e06c75>BaseDirectory</span><span>.</span><span style=color:#e06c75>Home</span><span>, recursive: </span><span style=color:#d19a66>true </span><span>});
+</span><span>		}
+</span><span>
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// check if db.bson exists. If not then create it. 
+</span><span>		</span><span style=color:#c678dd>let </span><span style=color:#e06c75>checkFile </span><span>= </span><span style=color:#c678dd>await </span><span style=color:#61afef>exists</span><span>(</span><span style=color:#98c379>'./notes-db/db.bson'</span><span>, {dir: </span><span style=color:#e06c75>BaseDirectory</span><span>.</span><span style=color:#e06c75>Home</span><span>});
+</span><span>		</span><span style=color:#c678dd>if </span><span>(!</span><span style=color:#e06c75>checkFile</span><span>) {
+</span><span>			</span><span style=color:#c678dd>await </span><span style=color:#61afef>writeBinaryFile</span><span>(</span><span style=color:#98c379>'./notes-db/db.bson'</span><span>, new Uint8Array([]), {dir: </span><span style=color:#e06c75>BaseDirectory</span><span>.</span><span style=color:#e06c75>Home</span><span>});		
+</span><span>		}
+</span><span>
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// load myStore with what's on disk
+</span><span>		</span><span style=color:#61afef>loadStore</span><span>();
+</span><span>  });
+</span><span>&LT/</span><span style=color:#e06c75>script</span><span>>
+</span><span>
+</span><span><</span><span style=color:#e06c75>div id</span><span>=</span><span style=color:#98c379>"container"</span><span>>
+</span><span>	<</span><span style=color:#e06c75>CreateNote</span><span>/>
+</span><span>	</span><span style=font-style:italic;color:#5c6370>/** Pass myStore to the component **/
+</span><span>	<</span><span style=color:#e06c75>Notes allNotes</span><span>={</span><span style=color:#e06c75>$myStore</span><span>} />
+</span><span>&LT/</span><span style=color:#e06c75>div</span><span>>
+</span></code></pre><p>Edit <code>src/lib/Notes.svelte</code><pre class=language-ts data-lang=ts style=background:#282c34;color:#abb2bf><code class=language-ts data-lang=ts><span><</span><span style=color:#e06c75>script lang</span><span>=</span><span style=color:#98c379>"ts"</span><span>>
+</span><span>	</span><span style=font-style:italic;color:#5c6370>// This value gets bound to myStore 
+</span><span>	</span><span style=font-style:italic;color:#5c6370>// &LTNotes allNotes={$myStore}>
+</span><span>	</span><span style=color:#c678dd>export let </span><span style=color:#e06c75>allNotes</span><span>;
+</span><span>	
+</span><span>	</span><span style=font-style:italic;color:#5c6370>// bson stores Date as milliseconds
+</span><span>	</span><span style=font-style:italic;color:#5c6370>// Convert the date from milliseconds to human readbale
+</span><span>	</span><span style=color:#c678dd>function </span><span style=color:#61afef>numToDate</span><span>(</span><span style=color:#e06c75>num</span><span>) {
+</span><span>		</span><span style=color:#c678dd>let </span><span style=color:#e06c75>toInt </span><span>= </span><span style=color:#56b6c2>parseInt</span><span>(</span><span style=color:#e06c75>num</span><span>, </span><span style=color:#d19a66>10</span><span>);
+</span><span>		</span><span style=color:#c678dd>let </span><span style=color:#e06c75>date </span><span>= new Date(</span><span style=color:#e06c75>toInt</span><span>);
+</span><span>		</span><span style=color:#c678dd>let </span><span style=color:#e06c75>options </span><span>= {
+</span><span>			year: </span><span style=color:#98c379>'numeric'</span><span>,
+</span><span>			month: </span><span style=color:#98c379>'long'</span><span>,
+</span><span>			day: </span><span style=color:#98c379>'numeric'</span><span>,
+</span><span>			hour: </span><span style=color:#98c379>'numeric'</span><span>,
+</span><span>			minute: </span><span style=color:#98c379>'numeric'</span><span>,
+</span><span>		};
+</span><span>		</span><span style=color:#c678dd>return </span><span style=color:#e06c75>date</span><span>.</span><span style=color:#56b6c2>toLocaleString</span><span>(</span><span style=color:#d19a66>undefined</span><span>, </span><span style=color:#e06c75>options</span><span>);
+</span><span>	}
+</span><span>&LT/</span><span style=color:#e06c75>script</span><span>>
+</span><span>
+</span><span style=font-style:italic;color:#5c6370>// Loop through each note and render it
+</span><span><</span><span style=color:#e06c75>div id</span><span>=</span><span style=color:#98c379>"notes"</span><span>>
+</span><span>	{#</span><span style=color:#c678dd>if </span><span style=color:#e06c75>allNotes</span><span>.length > </span><span style=color:#d19a66>0</span><span>}
+</span><span>	{#</span><span style=color:#e06c75>each allNotes </span><span style=color:#c678dd>as </span><span>note }
+</span><span>		<</span><span style=color:#e06c75>div id</span><span>=</span><span style=color:#98c379>"note"</span><span>>
+</span><span>			<</span><span style=color:#e06c75>a href</span><span>=</span><span style=color:#98c379>"/edit/{note.bson_uuid}"</span><span>></span><span style=color:#e06c75>Edit</span><span>&LT/</span><span style=color:#e06c75>a</span><span>>
+</span><span>			&LTp> {note.</span><span style=color:#e06c75>title</span><span>} &LT/</span><span style=color:#e06c75>p</span><span>>
+</span><span>			&LTp> { </span><span style=color:#61afef>numToDate</span><span>(note.date_time.$date.$numberLong) } &LT/</span><span style=color:#e06c75>p</span><span>>
+</span><span>		&LT/</span><span style=color:#e06c75>div</span><span>>
+</span><span>	{/</span><span style=color:#e06c75>each</span><span>}
+</span><span>	</span><span style=font-style:italic;color:#5c6370>/** either still loading or no data exists **/
+</span><span>	{:</span><span style=color:#c678dd>else</span><span>}
+</span><span>		&LTp></span><span style=color:#e06c75>Try saving a note</span><span>&LT/</span><span style=color:#e06c75>p</span><span>>
+</span><span>	{/</span><span style=color:#c678dd>if</span><span>}
+</span><span>&LT/</span><span style=color:#e06c75>div</span><span>>
+</span></code></pre><p>Edit <code>src/lib/CreateNote.svelte</code><pre class=language-ts data-lang=ts style=background:#282c34;color:#abb2bf><code class=language-ts data-lang=ts><span>&LTscript>
+</span><span>	</span><span style=color:#c678dd>import </span><span>{ </span><span style=color:#e06c75>invoke </span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'@tauri-apps/api/tauri'
+</span><span>	</span><span style=color:#c678dd>import </span><span>{ </span><span style=color:#e06c75>loadStore </span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'$lib/store.js'
+</span><span>	</span><span style=color:#c678dd>import </span><span>{</span><span style=color:#e06c75>BaseDirectory</span><span>, </span><span style=color:#e06c75>writeBinaryFile</span><span>, </span><span style=color:#e06c75>readBinaryFile</span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'@tauri-apps/api/fs'
+</span><span>
+</span><span>	</span><span style=font-style:italic;color:#5c6370>// bound to value of title textarea
+</span><span>	</span><span style=color:#c678dd>let </span><span style=color:#e06c75>newNote</span><span>;
+</span><span>	</span><span style=font-style:italic;color:#5c6370>// bound to value of body textarea
+</span><span>	</span><span style=color:#c678dd>let </span><span style=color:#e06c75>newTitle</span><span>;
+</span><span>
+</span><span>	</span><span style=font-style:italic;color:#5c6370>// This isn't bound to $myStore as above
+</span><span>	</span><span style=font-style:italic;color:#5c6370>// This gets assigned the raw binary stored on disk
+</span><span>	</span><span style=color:#c678dd>let </span><span style=color:#e06c75>allNotes</span><span>;
+</span><span>
+</span><span>	</span><span style=color:#c678dd>async function </span><span style=color:#61afef>save</span><span>(){
+</span><span>			</span><span style=font-style:italic;color:#5c6370>// sets allNotes to contain the binary stored on disk
+</span><span>			</span><span style=color:#c678dd>await </span><span style=color:#61afef>load</span><span>();
+</span><span>
+</span><span>			</span><span style=font-style:italic;color:#5c6370>// Let the backend handle creating a new binary document
+</span><span>			</span><span style=color:#61afef>invoke</span><span>(</span><span style=color:#98c379>'saveNote'</span><span>, {title: </span><span style=color:#e06c75>newTitle</span><span>, body: </span><span style=color:#e06c75>newNote</span><span>} ).</span><span style=color:#56b6c2>then</span><span>((</span><span style=color:#e06c75>response</span><span>) </span><span style=color:#c678dd>=> </span><span>{
+</span><span>				</span><span style=font-style:italic;color:#5c6370>// Here I simply merge the returned data with allNotes
+</span><span>				</span><span style=color:#c678dd>let </span><span style=color:#e06c75>loaded </span><span>= new Uint8Array(</span><span style=color:#e06c75>allNotes</span><span>);
+</span><span>				</span><span style=color:#e06c75>response </span><span>= new Uint8Array(</span><span style=color:#e06c75>response</span><span>);
+</span><span>				</span><span style=color:#c678dd>let </span><span style=color:#e06c75>mergeArray </span><span>= new Uint8Array(</span><span style=color:#e06c75>loaded</span><span>.length + </span><span style=color:#e06c75>response</span><span>.length);
+</span><span>				</span><span style=color:#e06c75>mergeArray</span><span>.</span><span style=color:#56b6c2>set</span><span>(</span><span style=color:#e06c75>loaded</span><span>);
+</span><span>				</span><span style=color:#e06c75>mergeArray</span><span>.</span><span style=color:#56b6c2>set</span><span>(</span><span style=color:#e06c75>response</span><span>, </span><span style=color:#e06c75>loaded</span><span>.length);
+</span><span>				</span><span style=font-style:italic;color:#5c6370>// and save it to disk
+</span><span>				</span><span style=color:#61afef>writeBinaryFile</span><span>(</span><span style=color:#98c379>'./notes-db/db.bson'</span><span>, </span><span style=color:#e06c75>mergeArray</span><span>, {dir: </span><span style=color:#e06c75>BaseDirectory</span><span>.</span><span style=color:#e06c75>Home</span><span>});	
+</span><span>
+</span><span>				</span><span style=font-style:italic;color:#5c6370>// after saving, reload writable myStore with saved data on disk
+</span><span>				</span><span style=color:#61afef>loadStore</span><span>();
+</span><span>
+</span><span>				</span><span style=font-style:italic;color:#5c6370>// empty textarea contents after save	
+</span><span>				</span><span style=color:#e06c75>newNote </span><span>= </span><span style=color:#98c379>""</span><span>;
+</span><span>				</span><span style=color:#e06c75>newTitle </span><span>= </span><span style=color:#98c379>""</span><span>;
+</span><span>			});
+</span><span>	}
+</span><span>
+</span><span>	</span><span style=color:#c678dd>async function </span><span style=color:#61afef>load</span><span>() {
+</span><span>		</span><span style=color:#e06c75>allNotes </span><span>= </span><span style=color:#c678dd>await </span><span style=color:#61afef>readBinaryFile</span><span>(</span><span style=color:#98c379>'./notes-db/db.bson'</span><span>, { dir: </span><span style=color:#e06c75>BaseDirectory</span><span>.</span><span style=color:#e06c75>Home</span><span>});	
+</span><span>	}
+</span><span>&LT/</span><span style=color:#e06c75>script</span><span>>
+</span><span>
+</span><span><</span><span style=color:#e06c75>div id </span><span>= </span><span style=color:#98c379>"new-note"</span><span>>
+</span><span>	&LTh1> </span><span style=color:#e06c75>Create a note </span><span>&LT/</span><span style=color:#e06c75>h1</span><span>>
+</span><span>	<</span><span style=color:#e06c75>button </span><span>on:</span><span style=color:#e06c75>click</span><span>={</span><span style=color:#e06c75>save</span><span>}></span><span style=color:#e06c75>Save</span><span>&LT/</span><span style=color:#e06c75>button</span><span>>
+</span><span>	<</span><span style=color:#e06c75>textarea </span><span>bind:</span><span style=color:#e06c75>value</span><span>={</span><span style=color:#e06c75>newTitle</span><span>} </span><span style=color:#e06c75>id</span><span>=</span><span style=color:#98c379>"new-note-title" </span><span style=color:#e06c75>placeholder</span><span>=</span><span style=color:#98c379>"Note title"</span><span>>&LT/textarea>
+</span><span>	<</span><span style=color:#e06c75>textarea </span><span>bind:</span><span style=color:#e06c75>value</span><span>={</span><span style=color:#e06c75>newNote</span><span>} </span><span style=color:#e06c75>id</span><span>=</span><span style=color:#98c379>"new-note-box" </span><span style=color:#e06c75>placeholder</span><span>=</span><span style=color:#98c379>"Note body"</span><span>>&LT/textarea>
+</span><span>&LT/</span><span style=color:#e06c75>div</span><span>>
+</span></code></pre><p>Lastly, I'll create another page that will be used to let the user edit a note. [slug] will be the note's UUID.<p>Create <code>src/routes/edit/[slug]/+page.svelte</code><pre class=language-ts data-lang=ts style=background:#282c34;color:#abb2bf><code class=language-ts data-lang=ts><span>&LTscript>
+</span><span>	</span><span style=color:#c678dd>import </span><span>{ </span><span style=color:#e06c75>myStore</span><span>, </span><span style=color:#e06c75>editStore </span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'$lib/store.js'</span><span>;
+</span><span>	</span><span style=color:#c678dd>import </span><span>{ </span><span style=color:#e06c75>page </span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'$app/stores'</span><span>;
+</span><span>	</span><span style=color:#c678dd>import </span><span>{ </span><span style=color:#e06c75>onMount</span><span>} </span><span style=color:#c678dd>from </span><span style=color:#98c379>'svelte'</span><span>;
+</span><span>
+</span><span>	</span><span style=color:#c678dd>let </span><span style=color:#e06c75>oneNote</span><span>;
+</span><span>	</span><span style=color:#c678dd>let </span><span style=color:#e06c75>oneNoteBody</span><span>;
+</span><span>	</span><span style=color:#c678dd>let </span><span style=color:#e06c75>oneNoteTitle</span><span>;
+</span><span>
+</span><span>	</span><span style=color:#c678dd>let </span><span style=color:#e06c75>slug</span><span>;
+</span><span>
+</span><span>	</span><span style=color:#c678dd>function </span><span style=color:#61afef>save</span><span>(){
+</span><span>		</span><span style=color:#c678dd>let </span><span style=color:#e06c75>currentStore </span><span>= </span><span style=color:#e06c75>$myStore</span><span>;
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// get the index of the current note that we're editing
+</span><span>		</span><span style=color:#c678dd>let </span><span style=color:#e06c75>index </span><span>= </span><span style=color:#e06c75>currentStore</span><span>.</span><span style=color:#61afef>findIndex</span><span>(</span><span style=color:#e06c75>item </span><span style=color:#c678dd>=> </span><span style=color:#e06c75>item</span><span>.</span><span style=color:#e06c75>bson_uuid </span><span>=== </span><span style=color:#e06c75>slug</span><span>); 
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// grab the values for editing
+</span><span>		</span><span style=color:#c678dd>let </span><span style=color:#e06c75>updatedObject </span><span>= {...</span><span style=color:#e06c75>currentStore</span><span>[</span><span style=color:#e06c75>index</span><span>]};
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// edit the values with what's in the textareas
+</span><span>		</span><span style=color:#e06c75>updatedObject</span><span>.title = </span><span style=color:#e06c75>oneNoteTitle</span><span>;
+</span><span>		</span><span style=color:#e06c75>updatedObject</span><span>.body = </span><span style=color:#e06c75>oneNoteBody</span><span>;
+</span><span>
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// update the store
+</span><span>		</span><span style=color:#e06c75>myStore</span><span>.</span><span style=color:#61afef>update</span><span>(</span><span style=color:#e06c75>store </span><span style=color:#c678dd>=> </span><span>{
+</span><span>			</span><span style=color:#c678dd>let </span><span style=color:#e06c75>updatedStore </span><span>= [...</span><span style=color:#e06c75>store</span><span>];
+</span><span>			</span><span style=color:#e06c75>updatedStore</span><span>[</span><span style=color:#e06c75>index</span><span>] = </span><span style=color:#e06c75>updatedObject</span><span>;
+</span><span>
+</span><span>			</span><span style=color:#c678dd>return </span><span style=color:#e06c75>updatedStore</span><span>;
+</span><span>		});
+</span><span>
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// save to disk
+</span><span>		</span><span style=color:#61afef>editStore</span><span>(</span><span style=color:#e06c75>$myStore</span><span>);
+</span><span>	}
+</span><span>	
+</span><span>	</span><span style=font-style:italic;color:#5c6370>// deletes this note 
+</span><span>	</span><span style=color:#c678dd>function </span><span style=color:#61afef>del</span><span>() {
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// filter out this note in myStore
+</span><span>		</span><span style=color:#e06c75>myStore</span><span>.</span><span style=color:#61afef>update</span><span>(</span><span style=color:#e06c75>objects </span><span style=color:#c678dd>=> </span><span style=color:#e06c75>objects</span><span>.</span><span style=color:#61afef>filter</span><span>(</span><span style=color:#e06c75>obj </span><span style=color:#c678dd>=> </span><span style=color:#e06c75>obj</span><span>.</span><span style=color:#e06c75>bson_uuid </span><span>!== </span><span style=color:#e06c75>slug</span><span>));
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// give the updated store to the backend
+</span><span>		</span><span style=color:#61afef>editStore</span><span>(</span><span style=color:#e06c75>$myStore</span><span>);
+</span><span>		</span><span style=font-style:italic;color:#5c6370>// redirect to /
+</span><span>		window.location.href=</span><span style=color:#98c379>"/"</span><span>;
+</span><span>	}
+</span><span>
+</span><span>	</span><span style=font-style:italic;color:#5c6370>// check the slug to match a UUID in myStore
+</span><span>	</span><span style=color:#61afef>onMount</span><span>(</span><span style=color:#c678dd>async </span><span>() </span><span style=color:#c678dd>=> </span><span>{
+</span><span>		</span><span style=color:#e06c75>slug </span><span>= </span><span style=color:#e06c75>$page</span><span>.</span><span style=color:#e06c75>params</span><span>.</span><span style=color:#e06c75>slug</span><span>.</span><span style=color:#56b6c2>toString</span><span>();
+</span><span>		</span><span style=color:#e06c75>$myStore</span><span>.</span><span style=color:#56b6c2>forEach</span><span>(</span><span style=color:#e06c75>element </span><span style=color:#c678dd>=> </span><span>{
+</span><span>			</span><span style=color:#c678dd>if </span><span>(</span><span style=color:#e06c75>element</span><span>.</span><span style=color:#e06c75>bson_uuid </span><span>=== </span><span style=color:#e06c75>slug</span><span>) {
+</span><span>				</span><span style=font-style:italic;color:#5c6370>// grab the values and render them to the DOM
+</span><span>				</span><span style=color:#e06c75>oneNote </span><span>= </span><span style=color:#e06c75>element</span><span>;
+</span><span>				</span><span style=color:#e06c75>oneNoteTitle </span><span>= </span><span style=color:#e06c75>element</span><span>.title;
+</span><span>				</span><span style=color:#e06c75>oneNoteBody </span><span>= </span><span style=color:#e06c75>element</span><span>.body;
+</span><span>				</span><span style=color:#c678dd>return</span><span>;
+</span><span>			}
+</span><span>		});
+</span><span>	});
+</span><span>
+</span><span>&LT/</span><span style=color:#e06c75>script</span><span>>
+</span><span>
+</span><span><</span><span style=color:#e06c75>div id </span><span>= </span><span style=color:#98c379>"new-note"</span><span>>
+</span><span>	&LTh1> </span><span style=color:#e06c75>Edit note </span><span>&LT/</span><span style=color:#e06c75>h1</span><span>>
+</span><span>	<</span><span style=color:#e06c75>a href</span><span>=</span><span style=color:#98c379>"/" </span><span style=color:#e06c75>id</span><span>=</span><span style=color:#98c379>"home-button"</span><span>></span><span style=color:#e06c75>BACK</span><span>&LT/</span><span style=color:#e06c75>a</span><span>>
+</span><span>	<</span><span style=color:#e06c75>button </span><span>on:</span><span style=color:#e06c75>click</span><span>={</span><span style=color:#e06c75>save</span><span>}></span><span style=color:#e06c75>Save</span><span>&LT/</span><span style=color:#e06c75>button</span><span>>
+</span><span>	<</span><span style=color:#e06c75>button </span><span>on:</span><span style=color:#e06c75>click</span><span>={</span><span style=color:#e06c75>del</span><span>}></span><span style=color:#e06c75>Delete</span><span>&LT/</span><span style=color:#e06c75>button</span><span>>
+</span><span>	<</span><span style=color:#e06c75>textarea </span><span>bind:</span><span style=color:#e06c75>value</span><span>={</span><span style=color:#e06c75>oneNoteTitle</span><span>} </span><span style=color:#e06c75>id</span><span>=</span><span style=color:#98c379>"edit-note-title"</span><span>>&LT/textarea>
+</span><span>	<</span><span style=color:#e06c75>textarea </span><span>bind:</span><span style=color:#e06c75>value</span><span>={</span><span style=color:#e06c75>oneNoteBody</span><span>} </span><span style=color:#e06c75>id</span><span>=</span><span style=color:#98c379>"edit-note-box"</span><span>>&LT/textarea>
+</span><span>&LT/</span><span style=color:#e06c75>div</span><span>>
+</span></code></pre><h2 id=done>Done</h2><p>Running the following command will build the app into a binary located at <code>src-tauri/target/release/</code><pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>pnpm</span><span> tauri build
+</span></code></pre><p>My binary says it's at 10M, but I get it down to 3.0M by using <a href=https://upx.github.io/>UPX</a><pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>$</span><span> upx notes
+</span></code></pre><p>For cross platform compilation check out the official Tauri <a href=https://tauri.app/v1/guides/building/cross-platform/>docs</a>.<p>Here is the complete code on <a href=https://github.com/spacedimp/tauri-note-taking-app>Github</a><footer class=footer><p>Spacedimp<div class=rss-footer><p>Follow via</p><a href=/atom.xml>RSS</a></div><div class=footer-donate><p>Donations are always appreciated!</div><p>BTC: bc1qspads00vpdvsfaq7jwegrx8la8j9mz2qxuahfu<p>ETH: 0x42e598E67cB9b3F4bEB05c76B3838ba3477fB656<p>XMR: 89L5emwBMbzdrNuMN5NwPVSSztdrWLaWAYnZy95mV3RHPgyLCge9RqvMnu4X6eu8aTMocsq7Tw2ViBHSamQaEWjk5toNx1m<p><a href=/gpg>GPG</a> fingerprint: 040B FE93 9DF9 D855 404D 80BE C674 E53F EB54 B7F0</footer>
