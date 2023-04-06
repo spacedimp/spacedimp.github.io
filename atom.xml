@@ -313,7 +313,7 @@ web content (HTML,CSS, JavaScript) into an application without needing a full-fl
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;I create a Tauri app with three functions available to the frontend: saveNote, editNote, loadNotes&lt;&#x2F;p&gt;
-&lt;p&gt;saveNote will be called from the frontend and be passed two values: title, body. I then createa new Note struct with those values then convert it to a bson::Document. Lastly I convert the document to a bson::Array (Vec of bytes) and return it to the frontend to handle storing it to disk.&lt;&#x2F;p&gt;
+&lt;p&gt;saveNote will be called from the frontend and be passed two values: title, body. I then create a new Note struct with those values then convert it to a bson::Document. Lastly I convert the document to a bson::Array (Vec of bytes) and return it to the frontend to handle storing it to disk.&lt;&#x2F;p&gt;
 &lt;p&gt;editNote receives from the frontend an updated&#x2F;modified version of the data stored on disk. The frontend requires this function to rebuild the bson database. We then return the binary bson back to the frontend to store to disk.&lt;&#x2F;p&gt;
 &lt;p&gt;loadNotes takes what&#x27;s stored on disk &amp;quot;[123],[100],etc..&amp;quot; and converts it to JSON for the frontend.&lt;&#x2F;p&gt;
 &lt;p&gt;Also, edit &lt;code&gt;src-tauri&#x2F;Cargo.toml&lt;&#x2F;code&gt; to include bson as a dependency&lt;&#x2F;p&gt;
@@ -571,6 +571,9 @@ web content (HTML,CSS, JavaScript) into an application without needing a full-fl
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;For cross platform compilation check out the official Tauri &lt;a href=&quot;https:&#x2F;&#x2F;tauri.app&#x2F;v1&#x2F;guides&#x2F;building&#x2F;cross-platform&#x2F;&quot;&gt;docs&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 &lt;p&gt;Here is the complete code on &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;tauri-note-taking-app&quot;&gt;Github&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;final-notes&quot;&gt;Final notes&lt;&#x2F;h3&gt;
+&lt;p&gt;My initial goal was to have drag and drop functionality of images or videos. This would have made this tutorial way longer which is not my goal.&lt;&#x2F;p&gt;
+&lt;p&gt;I chose to store the data as bson (binary JSON) as I was planning to store the images&#x2F;videos as blobs. I&#x27;m not sure that this would even work as MongoDB&#x27;s &lt;a href=&quot;https:&#x2F;&#x2F;www.mongodb.com&#x2F;docs&#x2F;manual&#x2F;reference&#x2F;limits&#x2F;&quot;&gt;docs&lt;&#x2F;a&gt; mention that a bson document can only store 16MB. I guess something like IndexedDB would serve my goals better.&lt;&#x2F;p&gt;
 </content>
     </entry>
     <entry xml:lang="en">
