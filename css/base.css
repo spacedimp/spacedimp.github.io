@@ -48,7 +48,7 @@ p, h1, h2, h3, h4, h5, h6 {
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   line-height: 1.4;
-  max-width: 800px;
+  max-width: 850px;
   margin: 20px auto;
   padding: 0 10px;
   color: #dbdbdb;
@@ -432,17 +432,20 @@ nav ul li a:hover {
 	height: 106px;
 }
 
+.footer {
+	display: inline-block; 
+}
+
 .rss-footer {
-	display: inline-block;
+	display: flex;
+	flex-direction: column;
 	text-align: left;
 	width: 100%;
 	height: 42px;
 }
-.rss-footer p {
+.rss-footer > p {
+	flex: initial;
+	white-space: normal;
 	display: inline-block;
 	font-size: 1.1em;
-}
-.rss-footer a {
-	display: inline-block;
-	margin-left: -8px;
 }
