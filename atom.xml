@@ -132,7 +132,35 @@ search up a quick tutorial. Hey you might end up liking vim. &lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mix&lt;&#x2F;span&gt;&lt;span&gt; run&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --no-halt
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Open up your browser and head over to &lt;code&gt;localhost:7070&#x2F;hello&#x2F;world&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
-&lt;h3 id=&quot;done&quot;&gt;Done&lt;&#x2F;h3&gt;
+&lt;br&gt; 
+&lt;h3 id=&quot;build-an-image-from-it&quot;&gt;Build an image from it&lt;&#x2F;h3&gt;
+&lt;p&gt;Now we should compile the web app into a binary and also create an 
+image from the container to make it portable.&lt;&#x2F;p&gt;
+&lt;p&gt;First let&#x27;s compile the code. &lt;&#x2F;p&gt;
+&lt;p&gt;In the container&#x27;s terminal run:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;MIX_ENV&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;prod 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;RELEASE_NAME&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;myapp
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mix&lt;&#x2F;span&gt;&lt;span&gt; release.init
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;compile: &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mix&lt;&#x2F;span&gt;&lt;span&gt; release
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You should now have a binary located at:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;_build&#x2F;dev&#x2F;rel&#x2F;myapp&#x2F;bin&#x2F;myapp&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;You can run it as so:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;_build&#x2F;dev&#x2F;rel&#x2F;myapp&#x2F;bin&#x2F;myapp start&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;We can now exit the container so that we can build an image with this 
+binary installed.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;exit &amp;amp;&amp;amp; exit&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;In your host terminal run:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; commit alp alp:v2
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now we can start up the new container with the binary running by default:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; run&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -dit --network&lt;&#x2F;span&gt;&lt;span&gt;=bridge&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -p&lt;&#x2F;span&gt;&lt;span&gt; 7070:7070&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --name&lt;&#x2F;span&gt;&lt;span&gt; alp2 alp:v2 &#x2F;home&#x2F;alpine&#x2F;myapp&#x2F;_build&#x2F;dev&#x2F;rel&#x2F;myapp&#x2F;bin&#x2F;myapp start
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;wrap-up&quot;&gt;Wrap up&lt;&#x2F;h3&gt;
+&lt;p&gt;The main benefits of using Podman over Docker are security related. I won&#x27;t rehash it all here so if you 
+want to learn more check out linode&#x27;s &lt;a href=&quot;https:&#x2F;&#x2F;www.linode.com&#x2F;docs&#x2F;guides&#x2F;podman-vs-docker&#x2F;&quot;&gt;explanation&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 &lt;p&gt;I suggest learning more about plug and its router from &lt;a href=&quot;https:&#x2F;&#x2F;elixirschool.com&#x2F;blog&#x2F;building-apps-with-plug-router&#x2F;&quot;&gt;elixirschool&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 &lt;br&gt;
 </content>
