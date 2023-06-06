@@ -4,8 +4,139 @@
     <link href="https://spacedimp.com/atom.xml" rel="self" type="application/atom+xml"/>
     <link href="https://spacedimp.com"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2023-04-05T00:00:00+00:00</updated>
+    <updated>2023-06-06T00:00:00+00:00</updated>
     <id>https://spacedimp.com/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Dockerless, Elixir Web Application using Podman and Plug</title>
+        <published>2023-06-06T00:00:00+00:00</published>
+        <updated>2023-06-06T00:00:00+00:00</updated>
+        <author>
+          <name>Unknown</name>
+        </author>
+        <link rel="alternate" href="https://spacedimp.com/blog/dockerless-setting-up-an-elixir-webapp-using-podman-and-plug/" type="text/html"/>
+        <id>https://spacedimp.com/blog/dockerless-setting-up-an-elixir-webapp-using-podman-and-plug/</id>
+        <content type="html">&lt;h2 id=&quot;demonstration-of-how-to-containerize-an-elixir-web-app-rootless-for-security-inside-of-podman&quot;&gt;Demonstration of how to containerize an Elixir web app. Rootless, for security, inside of Podman.&lt;&#x2F;h2&gt;
+&lt;p&gt;Also we&#x27;ll be using the &lt;a href=&quot;https:&#x2F;&#x2F;hexdocs.pm&#x2F;plug&#x2F;readme.html&quot;&gt;Plug&lt;&#x2F;a&gt; module to keep things simple. 
+This module is at the heart of popular Elixir web frameworks such as &lt;a href=&quot;https:&#x2F;&#x2F;hexdocs.pm&#x2F;phoenix&#x2F;plug.html&quot;&gt;Phoenix&lt;&#x2F;a&gt;. &lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Plug lives at the heart of Phoenix&#x27;s HTTP layer, and Phoenix puts Plug front and center. &lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;br&gt;
+&lt;h3 id=&quot;setup&quot;&gt;Setup:&lt;&#x2F;h3&gt;
+&lt;p&gt;First, we need Podman so head on over to the &lt;a href=&quot;https:&#x2F;&#x2F;podman.io&#x2F;docs&#x2F;installation&quot;&gt;official&lt;&#x2F;a&gt; instllation instructions and then come back.&lt;&#x2F;p&gt;
+&lt;p&gt;Next we need an image that we can install Elixir on.. I&#x27;ll use Alpine Linux.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; search alpine&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --filter&lt;&#x2F;span&gt;&lt;span&gt; is-official
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Go ahead and pull it: &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; image pull docker.io&#x2F;library&#x2F;alpine
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Check that it installed:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; image list alpine
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now run it (more networking options &lt;a href=&quot;https:&#x2F;&#x2F;docs.oracle.com&#x2F;en&#x2F;operating-systems&#x2F;oracle-linux&#x2F;podman&#x2F;podman-ConfiguringNetworkingforPodman.html#configuring-podman-networking&quot;&gt;here&lt;&#x2F;a&gt;): &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# -p host-port:container-port 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; run&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -dit --name&lt;&#x2F;span&gt;&lt;span&gt; alp&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --network&lt;&#x2F;span&gt;&lt;span&gt;=bridge&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -p&lt;&#x2F;span&gt;&lt;span&gt; 7070:7070 alpine &#x2F;bin&#x2F;ash
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;br&gt;
+&lt;h3 id=&quot;connect-to-container-and-install-elixir&quot;&gt;Connect to container and install Elixir:&lt;&#x2F;h3&gt;
+&lt;p&gt;Make sure the container is running first: &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; ps 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If you don&#x27;t see any output then you must start the container: &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; start alp
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Attach to container:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; attach alp
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;br&gt;
+&lt;p&gt;You should now be logged in as root (don&#x27;t worry this root can&#x27;t do harm outside of the container)&lt;&#x2F;p&gt;
+&lt;p&gt;Add a user that has sudo (inside the container):&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;adduser&lt;&#x2F;span&gt;&lt;span&gt; alpine
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# enter a password for this user
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# you could also change root&amp;#39;s password with this command: passwd
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Install the sudo program:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;apk&lt;&#x2F;span&gt;&lt;span&gt; add sudo
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Use visudo to allow the group wheel to use sudo:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;visudo
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# uncomment the line
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# %wheel ALL=(ALL:ALL) ALL
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You&#x27;ll need to know a few vim commands to use visudo. If you really don&#x27;t know then 
+search up a quick tutorial. Hey you might end up liking vim. &lt;&#x2F;p&gt;
+&lt;p&gt;Now add the new user to the wheel group: &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;adduser&lt;&#x2F;span&gt;&lt;span&gt; alp wheel &amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;su&lt;&#x2F;span&gt;&lt;span&gt; alp
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You should be the alp user now and not root.&lt;&#x2F;p&gt;
+&lt;p&gt;Install Elixir:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; apk add elixir &amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;cd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;~
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;br&gt;
+&lt;h3 id=&quot;create-an-elixir-web-app&quot;&gt;Create an Elixir web app:&lt;&#x2F;h3&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mix&lt;&#x2F;span&gt;&lt;span&gt; new myapp&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --sup
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We&#x27;ll now install the Plug dependency:&lt;&#x2F;p&gt;
+&lt;p&gt;Edit &lt;code&gt;mix.ex&lt;&#x2F;code&gt; &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;vi&lt;&#x2F;span&gt;&lt;span&gt; mix.ex
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# and make sure deps has plug as shown below
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;md&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-md &quot;&gt;&lt;code class=&quot;language-md&quot; data-lang=&quot;md&quot;&gt;&lt;span&gt;defp deps do
+&lt;&#x2F;span&gt;&lt;span&gt;  [
+&lt;&#x2F;span&gt;&lt;span&gt;    {:plug, &amp;quot;~&amp;gt; 1.14&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span&gt;    {:plug_cowboy, &amp;quot;~&amp;gt; 2.0&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span&gt;  ]
+&lt;&#x2F;span&gt;&lt;span&gt;end
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now install plug:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mix&lt;&#x2F;span&gt;&lt;span&gt; deps.get 
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# You&amp;#39;ll be asked to install hex. Type Y
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Great! &lt;&#x2F;p&gt;
+&lt;p&gt;Now let&#x27;s make the app fault tolerant by having the application supervise it: &lt;&#x2F;p&gt;
+&lt;p&gt;Edit &lt;code&gt;lib&#x2F;myapp&#x2F;application.ex&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;def&lt;&#x2F;span&gt;&lt;span&gt; start(_type, _args) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;do
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;children&lt;&#x2F;span&gt;&lt;span&gt; = [
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;{Plug.Cowboy,&lt;&#x2F;span&gt;&lt;span&gt; scheme: :http, plug: Myapp, options: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;[&lt;&#x2F;span&gt;&lt;span&gt;port: 7070&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;]&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Lastly we&#x27;ll add a router to the web app, Edit &lt;code&gt;lib&#x2F;myapp.ex&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;elixir&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-elixir &quot;&gt;&lt;code class=&quot;language-elixir&quot; data-lang=&quot;elixir&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;defmodule &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e5c07b;&quot;&gt;Myapp &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;do
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e5c07b;&quot;&gt;Plug&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e5c07b;&quot;&gt;Router
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;	# matches a route
+&lt;&#x2F;span&gt;&lt;span&gt;	plug &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;:match
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;	# then forwards it to a dispatch 
+&lt;&#x2F;span&gt;&lt;span&gt;	plug &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;:dispatch
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	get &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;do 
+&lt;&#x2F;span&gt;&lt;span&gt;		send_resp(conn, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;200&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;homepage&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;end
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;	get &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;hello&#x2F;:name&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;do
+&lt;&#x2F;span&gt;&lt;span&gt;		send_resp(conn, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;200&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Hi #{&lt;&#x2F;span&gt;&lt;span&gt;name}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;end
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;	# 404
+&lt;&#x2F;span&gt;&lt;span&gt;	get _ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;do 
+&lt;&#x2F;span&gt;&lt;span&gt;		send_resp(conn, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;404&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;404 not found&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;end
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;end
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Start it up:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mix&lt;&#x2F;span&gt;&lt;span&gt; run&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --no-halt
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Open up your browser and head over to &lt;code&gt;localhost:7070&#x2F;hello&#x2F;world&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;done&quot;&gt;Done&lt;&#x2F;h3&gt;
+&lt;p&gt;I suggest learning more about plug and its router from &lt;a href=&quot;https:&#x2F;&#x2F;elixirschool.com&#x2F;blog&#x2F;building-apps-with-plug-router&#x2F;&quot;&gt;elixirschool&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;br&gt;
+</content>
+    </entry>
     <entry xml:lang="en">
         <title>Using Rust, Tauri, and SvelteKit to Build a Note Taking App</title>
         <published>2023-04-05T00:00:00+00:00</published>
