@@ -368,11 +368,14 @@ blockquote {
 .blog_links {
 	padding: 40px;
 	font-size: 1.4em;
+	background: #171B27;
 }
 
 .blog_links ul li{
 	margin-top: 9px;
 	list-style-type: none;
+	border-bottom: 1px solid white;
+	padding: 10px;
 }
 
 .blog_links ul li a{
