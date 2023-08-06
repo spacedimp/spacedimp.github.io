@@ -177,7 +177,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;    println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{a}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt; and &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{b}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt; are clones&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;); &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; prints 10 and 10
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Another thing to note is that while a variable is borrowed mutably it cannot also be borrowed immutably. Only when the variable is no longer referenced by the borrower can it be again borrowed. &lt;&#x2F;p&gt;
+&lt;p&gt;While a variable is borrowed mutably it cannot also be borrowed immutably. Only when the variable is no longer referenced by the borrower can it be again borrowed. &lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;struct &lt;&#x2F;span&gt;&lt;span&gt;Person {
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: String
 &lt;&#x2F;span&gt;&lt;span&gt;}
@@ -202,6 +202,20 @@
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; Carl is still the owner as we only borrowed it above 
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; Now that the mutable borrow is dropped we can use it again
 &lt;&#x2F;span&gt;&lt;span&gt;    println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, Carl.name); &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; prints Carl2
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Variables stored as an &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;option&#x2F;&quot;&gt;Option&lt;&#x2F;a&gt; type will be dropped in a match statement unless the unpacked variable is prefixed with &lt;code&gt;ref&lt;&#x2F;code&gt;. &lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;(){
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; name = Some(String::from(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Carl&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;));
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;match&lt;&#x2F;span&gt;&lt;span&gt; name {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; notice the ref keyword
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; Using Some(n) .. will not compile 
+&lt;&#x2F;span&gt;&lt;span&gt;        Some(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;ref&lt;&#x2F;span&gt;&lt;span&gt; n) =&amp;gt; println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Hello &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, n),
+&lt;&#x2F;span&gt;&lt;span&gt;        _ =&amp;gt; println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;no value&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; if ref is not added, this would cause the program to not compile 
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; since name would have been dropped in the match statement
+&lt;&#x2F;span&gt;&lt;span&gt;    println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Hello again &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, name.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;());
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h3 id=&quot;lifetimes&quot;&gt;Lifetimes&lt;&#x2F;h3&gt;
