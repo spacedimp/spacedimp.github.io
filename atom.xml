@@ -312,6 +312,7 @@
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;In my opinion, much of the struggle that people have wrestling with the borrow checker stems from gaps in knowledge related to ownership and lifetimes.&lt;&#x2F;p&gt;
 &lt;p&gt;The quizzes in the brown.edu git book definitely help filling those gaps.&lt;&#x2F;p&gt;
+&lt;p&gt;If Rust still seems confusing then I recommend &lt;a href=&quot;https:&#x2F;&#x2F;fasterthanli.me&#x2F;articles&#x2F;a-half-hour-to-learn-rust&quot;&gt;A half-hour to learn Rust&lt;&#x2F;a&gt;. &lt;&#x2F;p&gt;
 </content>
     </entry>
     <entry xml:lang="en">
