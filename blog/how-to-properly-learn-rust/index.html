@@ -1,97 +1,97 @@
-<!doctype html><html lang=en><head><title> How to Properly Learn Rust Programming </title><meta charset=UTF-8><link href=/css/base.css rel=stylesheet><meta content="width=device-width,initial-scale=1" name=viewport><link href=/favicon.svg rel=icon><body><nav><ul><li class=logo><a href=https://spacedimp.com/><img src=/spacedimp-logo-optimized.svg></a><li><a href=https://spacedimp.com/>Home</a><li><a href=https://spacedimp.com/blog/>Blog</a></ul></nav><h1>How to Properly Learn Rust Programming</h1><p>2023-08-06<p>The goal, in this blog post, will be to help beginner Rust programmers overcome the notion that Rust is a difficult language.<p>First and foremost, I will advocate for the Rust book from Brown University over the regular one. Here: <a href=https://rust-book.cs.brown.edu/>https://rust-book.cs.brown.edu/</a> (it requires you to scroll all the way down and accept to participate).<p>It provides a more thorough explanation of Rust and includes simple quizzes to test your new gained knowledge. The original book does not contain quizzes and so many people believe they understand Rust but are completely mistaken.<p>Alongside with the book, you'll want to test the examples using either a local programming environment or the online environment <a href=https://play.rust-lang.org/>https://play.rust-lang.org/</a><h3 id=how-to-set-up-a-local-workspace-skip-if-you-prefer-the-online-rust-playground>How to set up a local workspace (skip if you prefer the online Rust Playground)</h3><p>I'm assuming Rust is already installed on your system.<p>Create a new directory<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>mkdir</span><span> project && </span><span style=color:#56b6c2>cd</span><span> project
-</span></code></pre><p>Manually create a Cargo.toml for the workspace<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>vim</span><span> Cargo.toml
-</span></code></pre><pre class=language-toml data-lang=toml style=background:#282c34;color:#abb2bf><code class=language-toml data-lang=toml><span>[workspace]
+<!doctype html><html lang=en><head><title> How to Properly Learn Rust Programming </title><meta charset=UTF-8><link href=/css/base.css rel=stylesheet><meta content="width=device-width,initial-scale=1" name=viewport><link href=/favicon.svg rel=icon><body><nav><ul><li class=logo><a href=https://spacedimp.com/><img src=/spacedimp-logo-optimized.svg></a><li><a href=https://spacedimp.com/>Home</a><li><a href=https://spacedimp.com/blog/>Blog</a></ul></nav><h1>How to Properly Learn Rust Programming</h1><p>2023-08-06<p>The goal, in this blog post, will be to help beginner Rust programmers overcome the notion that Rust is a difficult language.<p>First and foremost, I will advocate for the Rust book from Brown University over the regular one. Here: <a href=https://rust-book.cs.brown.edu/ rel=noopener target=_blank>https://rust-book.cs.brown.edu/</a> (it requires you to scroll all the way down and accept to participate).<p>It provides a more thorough explanation of Rust and includes simple quizzes to test your new gained knowledge. The original book does not contain quizzes and so many people believe they understand Rust but are completely mistaken.<p>Alongside with the book, you'll want to test the examples using either a local programming environment or the online environment <a href=https://play.rust-lang.org/ rel=noopener target=_blank>https://play.rust-lang.org/</a><h3 id=how-to-set-up-a-local-workspace-skip-if-you-prefer-the-online-rust-playground>How to set up a local workspace (skip if you prefer the online Rust Playground)</h3><p>I'm assuming Rust is already installed on your system.<p>Create a new directory<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>mkdir</span><span> project && </span><span style=color:#56b6c2>cd</span><span> project
+</span></code></pre><p>Manually create a Cargo.toml for the workspace<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>vim</span><span> Cargo.toml
+</span></code></pre><pre class=language-toml data-lang=toml style=color:#abb2bf;background-color:#282c34><code class=language-toml data-lang=toml><span>[workspace]
 </span><span>
 </span><span style=color:#e06c75>members </span><span>= [
 </span><span>	</span><span style=color:#98c379>"app"</span><span>,
 </span><span>	</span><span style=color:#98c379>"applib"</span><span>,
 </span><span>]
-</span></code></pre><p>Initialize the binary directory and the library directory<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>cargo</span><span> init</span><span style=color:#e06c75> --bin</span><span> app && </span><span style=color:#e06c75>cargo</span><span> init</span><span style=color:#e06c75> --lib</span><span> applib
-</span></code></pre><p>Make applib available inside of app by editing <code>app/Cargo.toml</code><pre class=language-toml data-lang=toml style=background:#282c34;color:#abb2bf><code class=language-toml data-lang=toml><span>[package]
+</span></code></pre><p>Initialize the binary directory and the library directory<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>cargo</span><span> init</span><span style=color:#e06c75> --bin</span><span> app && </span><span style=color:#e06c75>cargo</span><span> init</span><span style=color:#e06c75> --lib</span><span> applib
+</span></code></pre><p>Make applib available inside of app by editing <code>app/Cargo.toml</code><pre class=language-toml data-lang=toml style=color:#abb2bf;background-color:#282c34><code class=language-toml data-lang=toml><span>[package]
 </span><span style=color:#e06c75>name </span><span>= </span><span style=color:#98c379>"app"
 </span><span style=color:#e06c75>version </span><span>= </span><span style=color:#98c379>"0.1.0"
 </span><span style=color:#e06c75>edition </span><span>= </span><span style=color:#98c379>"2021"
 </span><span>
 </span><span>[dependencies]
-</span><span style=font-style:italic;color:#5c6370>#add this
+</span><span style=color:#5c6370;font-style:italic>#add this
 </span><span style=color:#e06c75>applib </span><span>= {</span><span style=color:#e06c75>path </span><span>= </span><span style=color:#98c379>"../applib"</span><span>}
-</span></code></pre><p>Now applib's functions can be imported into the app binary. Edit <code>app/src/main.rs</code><pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span style=color:#c678dd>use</span><span> applib;
+</span></code></pre><p>Now applib's functions can be imported into the app binary. Edit <code>app/src/main.rs</code><pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>use</span><span> applib;
 </span><span>
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
-</span><span>   </span><span style=font-style:italic;color:#5c6370>// applib::add() is located in applib/src/lib.rs
+</span><span>   </span><span style=color:#5c6370;font-style:italic>// applib::add() is located in applib/src/lib.rs
 </span><span>   println!(</span><span style=color:#98c379>"100 + 100 = </span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, applib::add(</span><span style=color:#d19a66>100</span><span>, </span><span style=color:#d19a66>100</span><span>)); 
 </span><span>}
-</span></code></pre><p>and run it:<pre class=language-bash data-lang=bash style=background:#282c34;color:#abb2bf><code class=language-bash data-lang=bash><span style=color:#e06c75>cargo</span><span> run</span><span style=color:#e06c75> --bin</span><span> app
+</span></code></pre><p>and run it:<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>cargo</span><span> run</span><span style=color:#e06c75> --bin</span><span> app
 </span><span>
-</span><span style=font-style:italic;color:#5c6370># 200 
-</span></code></pre><br><h2 id=memory-safety>Memory safety</h2><p>I believe Rust's memory safe idiosyncrasies are what intimidate most people from this language. However, this is what makes it a safe language that doesn't require a garbage collector. It's essential to master this part of the language to write memory safe code.<p>The good news is that even if you write unsafe code it won't compile.<h3 id=ownership>Ownership</h3><p>Since there exists no garbage collector, owned variables are destructed once they go out of scope. Essentially, once a function or <a href=https://doc.rust-lang.org/reference/expressions/block-expr.html>block expression</a> returns. Unless the variable is returned or the variable was passed by borrowing (also known as pass by reference).<p>The following variable will be immutable for the entire duration of the program.<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
+</span><span style=color:#5c6370;font-style:italic># 200 
+</span></code></pre><br><h2 id=memory-safety>Memory safety</h2><p>I believe Rust's memory safe idiosyncrasies are what intimidate most people from this language. However, this is what makes it a safe language that doesn't require a garbage collector. It's essential to master this part of the language to write memory safe code.<p>The good news is that even if you write unsafe code it won't compile.<h3 id=ownership>Ownership</h3><p>Since there exists no garbage collector, owned variables are destructed once they go out of scope. Essentially, once a function or <a href=https://doc.rust-lang.org/reference/expressions/block-expr.html rel=noopener target=_blank>block expression</a> returns. Unless the variable is returned or the variable was passed by borrowing (also known as pass by reference).<p>The following variable will be immutable for the entire duration of the program.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
 </span><span>    </span><span style=color:#c678dd>let</span><span> num = </span><span style=color:#d19a66>14</span><span>;
-</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, num); </span><span style=font-style:italic;color:#5c6370>// prints 14
+</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, num); </span><span style=color:#5c6370;font-style:italic>// prints 14
 </span><span>}
-</span></code></pre><blockquote><p>note: notice how num's type is implicitly assigned; a const variable would require explicitly assigning the type as so:<p>const NUM: i32 = 10;</blockquote><p>In order to make it mutable we must add the keyword mut:<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
+</span></code></pre><blockquote><p>note: notice how num's type is implicitly assigned; a const variable would require explicitly assigning the type as so:<p>const NUM: i32 = 10;</blockquote><p>In order to make it mutable we must add the keyword mut:<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
 </span><span>    </span><span style=color:#c678dd>let mut</span><span> num = </span><span style=color:#d19a66>14</span><span>;
 </span><span>    num = </span><span style=color:#d19a66>100</span><span>;
-</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, num); </span><span style=font-style:italic;color:#5c6370>// prints 100
+</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, num); </span><span style=color:#5c6370;font-style:italic>// prints 100
 </span><span>}
-</span></code></pre><p>Suppose we pass this variable into a function<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span style=color:#c678dd>fn </span><span style=color:#61afef>plusOne</span><span>(</span><span style=color:#e06c75>num</span><span>: </span><span style=color:#c678dd>i32</span><span>) {
-</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, num + </span><span style=color:#d19a66>1</span><span>); </span><span style=font-style:italic;color:#5c6370>// prints 101
+</span></code></pre><p>Suppose we pass this variable into a function<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>fn </span><span style=color:#61afef>plusOne</span><span>(</span><span style=color:#e06c75>num</span><span>: </span><span style=color:#c678dd>i32</span><span>) {
+</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, num + </span><span style=color:#d19a66>1</span><span>); </span><span style=color:#5c6370;font-style:italic>// prints 101
 </span><span>} 
 </span><span>
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
 </span><span>   </span><span style=color:#c678dd>let</span><span> num = </span><span style=color:#d19a66>14</span><span>; 
 </span><span>   plusOne(num);
-</span><span>   println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, num); </span><span style=font-style:italic;color:#5c6370>// prints 100
+</span><span>   println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, num); </span><span style=color:#5c6370;font-style:italic>// prints 100
 </span><span>}
-</span></code></pre><p>Notice how the code was able to call println! on num after calling the function plusOne.<p>Normally Rust would not compile this program because any variable passed into a function (without an ampersand &) would destroy the variable.<p>However, Rust primitives such as u64 implement the <a href=https://doc.rust-lang.org/std/marker/trait.Copy.html#implementors>Copy</a> trait. The function plusOne implicitly received a Copy of the variable num and thus we did not transfer ownership.<p>Let's see how Rust transfers ownership of a struct that doesn't implement Copy<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span style=color:#c678dd>struct </span><span>Person{
+</span></code></pre><p>Notice how the code was able to call println! on num after calling the function plusOne.<p>Normally Rust would not compile this program because any variable passed into a function (without an ampersand &) would destroy the variable.<p>However, Rust primitives such as u64 implement the <a href=https://doc.rust-lang.org/std/marker/trait.Copy.html#implementors rel=noopener target=_blank>Copy</a> trait. The function plusOne implicitly received a Copy of the variable num and thus we did not transfer ownership.<p>Let's see how Rust transfers ownership of a struct that doesn't implement Copy<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>struct </span><span>Person{
 </span><span>    </span><span style=color:#e06c75>name</span><span>: String
 </span><span>}
 </span><span>
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>getName</span><span>(</span><span style=color:#e06c75>pers</span><span>: Person) {
-</span><span>    println!(</span><span style=color:#98c379>"name is </span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, pers.name); </span><span style=font-style:italic;color:#5c6370>// drops the variable
+</span><span>    println!(</span><span style=color:#98c379>"name is </span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, pers.name); </span><span style=color:#5c6370;font-style:italic>// drops the variable
 </span><span>}
 </span><span>
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
 </span><span>    </span><span style=color:#c678dd>let</span><span> Carl = Person{name: String::from(</span><span style=color:#98c379>"Carl"</span><span>)};
-</span><span>    getName(Carl); </span><span style=font-style:italic;color:#5c6370>// prints name is Carl
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// but we can no longer user Carl as it was dropped 
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// println!("{}", Carl.name); would not work here as it did with num above
+</span><span>    getName(Carl); </span><span style=color:#5c6370;font-style:italic>// prints name is Carl
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// but we can no longer user Carl as it was dropped 
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// println!("{}", Carl.name); would not work here as it did with num above
 </span><span>}
-</span></code></pre><p>In order to use Carl, after calling getName, we'd be required to pass it as a reference using &<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span>... 
+</span></code></pre><p>In order to use Carl, after calling getName, we'd be required to pass it as a reference using &<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>... 
 </span><span>
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>getName</span><span>(</span><span style=color:#e06c75>pers</span><span>: &Person) {
-</span><span>    println!(</span><span style=color:#98c379>"name is </span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, pers.name); </span><span style=font-style:italic;color:#5c6370>// does not drop the variable
+</span><span>    println!(</span><span style=color:#98c379>"name is </span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, pers.name); </span><span style=color:#5c6370;font-style:italic>// does not drop the variable
 </span><span>}
 </span><span>
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
 </span><span>    </span><span style=color:#c678dd>let</span><span> Carl = Person{name: String::from(</span><span style=color:#98c379>"Carl"</span><span>)};
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// placing an & before the variable passes it as borrowed
-</span><span>    getName(&Carl); </span><span style=font-style:italic;color:#5c6370>// prints name is Carl
-</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl.name); </span><span style=font-style:italic;color:#5c6370>// prints Carl 
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// placing an & before the variable passes it as borrowed
+</span><span>    getName(&Carl); </span><span style=color:#5c6370;font-style:italic>// prints name is Carl
+</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl.name); </span><span style=color:#5c6370;font-style:italic>// prints Carl 
 </span><span>}
-</span></code></pre><p>We could also transfer ownership of Carl to another variable just as we could into a function.<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span>...
+</span></code></pre><p>We could also transfer ownership of Carl to another variable just as we could into a function.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>...
 </span><span>
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
 </span><span>    </span><span style=color:#c678dd>let</span><span> Carl = Person{name: String::from(</span><span style=color:#98c379>"Carl"</span><span>)};            
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// move ownership
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// move ownership
 </span><span>    </span><span style=color:#c678dd>let</span><span> Carl2 = Carl;
 </span><span>
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// Carl is no longer available 
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// Carl2 is available
-</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl2.name); </span><span style=font-style:italic;color:#5c6370>// prints Carl
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// Carl is no longer available 
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// Carl2 is available
+</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl2.name); </span><span style=color:#5c6370;font-style:italic>// prints Carl
 </span><span>}
-</span></code></pre><p>A variable can also be converted to mutable when moving it<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span>...
+</span></code></pre><p>A variable can also be converted to mutable when moving it<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>...
 </span><span>
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
 </span><span>    </span><span style=color:#c678dd>let</span><span> Carl = Person{name: String::from(</span><span style=color:#98c379>"Carl"</span><span>)};            
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// move to mutable ownership
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// move to mutable ownership
 </span><span>    </span><span style=color:#c678dd>let mut</span><span> Carl2 = Carl;
 </span><span>    Carl2.name = </span><span style=color:#98c379>"Carl2"</span><span>.</span><span style=color:#56b6c2>to_string</span><span>();
 </span><span>
-</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl2.name); </span><span style=font-style:italic;color:#5c6370>// prints Carl2
+</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl2.name); </span><span style=color:#5c6370;font-style:italic>// prints Carl2
 </span><span>}
-</span></code></pre><p>Alternatively, a function can take a mutable borrow and change the value without deleting the variable.<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span>...
+</span></code></pre><p>Alternatively, a function can take a mutable borrow and change the value without deleting the variable.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>...
 </span><span>
-</span><span style=font-style:italic;color:#5c6370>// changes the borrowed variable without dropping it 
+</span><span style=color:#5c6370;font-style:italic>// changes the borrowed variable without dropping it 
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>changeName</span><span>(</span><span style=color:#e06c75>pers</span><span>: &</span><span style=color:#c678dd>mut</span><span> Person) {
 </span><span>    pers.name = </span><span style=color:#98c379>"Carl2"</span><span>.</span><span style=color:#56b6c2>to_string</span><span>();
 </span><span>}
@@ -101,77 +101,77 @@
 </span><span>    </span><span style=color:#c678dd>let mut</span><span> Carl2 = Carl;
 </span><span>
 </span><span>    changeName(&</span><span style=color:#c678dd>mut</span><span> Carl2);
-</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl2.name); </span><span style=font-style:italic;color:#5c6370>// prints Carl2
+</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl2.name); </span><span style=color:#5c6370;font-style:italic>// prints Carl2
 </span><span>}
-</span></code></pre><p>However, if the variable is a primitive then ownership is not transferred.<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
+</span></code></pre><p>However, if the variable is a primitive then ownership is not transferred.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
 </span><span>    </span><span style=color:#c678dd>let</span><span> a = </span><span style=color:#d19a66>10</span><span>;
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// a is cloned and thus is not dropped
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// a is cloned and thus is not dropped
 </span><span>    </span><span style=color:#c678dd>let</span><span> b = a; 
 </span><span>
-</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{a}</span><span style=color:#98c379> and </span><span style=color:#d19a66>{b}</span><span style=color:#98c379> are clones"</span><span>); </span><span style=font-style:italic;color:#5c6370>// prints 10 and 10
+</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{a}</span><span style=color:#98c379> and </span><span style=color:#d19a66>{b}</span><span style=color:#98c379> are clones"</span><span>); </span><span style=color:#5c6370;font-style:italic>// prints 10 and 10
 </span><span>}
-</span></code></pre><p>While a variable is borrowed mutably it cannot also be borrowed immutably. Only when the variable is no longer referenced by the borrower can it be again borrowed.<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span style=color:#c678dd>struct </span><span>Person {
+</span></code></pre><p>While a variable is borrowed mutably it cannot also be borrowed immutably. Only when the variable is no longer referenced by the borrower can it be again borrowed.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>struct </span><span>Person {
 </span><span>    </span><span style=color:#e06c75>name</span><span>: String
 </span><span>}
 </span><span>
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
 </span><span>    </span><span style=color:#c678dd>let mut</span><span> Carl = Person{name: </span><span style=color:#98c379>"Carl"</span><span>.</span><span style=color:#56b6c2>to_string</span><span>()}; 
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// borrow Carl mutably
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// borrow Carl mutably
 </span><span>    </span><span style=color:#c678dd>let</span><span> borrowCarlMutably = &</span><span style=color:#c678dd>mut</span><span> Carl;
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// Carl's name is indirectly changed to Carl2
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// Carl's name is indirectly changed to Carl2
 </span><span>    borrowCarlMutably.name = </span><span style=color:#98c379>"Carl2"</span><span>.</span><span style=color:#56b6c2>to_string</span><span>();
 </span><span>    
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// Carl cannot be assigned to an immutable variable as so:
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// let c = &Carl;
-</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, borrowCarlMutably.name); </span><span style=font-style:italic;color:#5c6370>// prints Carl2
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// Carl cannot be assigned to an immutable variable as so:
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// let c = &Carl;
+</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, borrowCarlMutably.name); </span><span style=color:#5c6370;font-style:italic>// prints Carl2
 </span><span>
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// Carl can now again be borrowed immutably because 
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// borrowCarlMutably is no longer referenced
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// Carl can now again be borrowed immutably because 
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// borrowCarlMutably is no longer referenced
 </span><span>
 </span><span>    </span><span style=color:#c678dd>let</span><span> borrowCarlImmutably = &Carl;
-</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, borrowCarlImmutably.name); </span><span style=font-style:italic;color:#5c6370>// prints Carl2
+</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, borrowCarlImmutably.name); </span><span style=color:#5c6370;font-style:italic>// prints Carl2
 </span><span>
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// Carl is still the owner as we only borrowed it above 
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// Now that the mutable borrow is dropped we can use it again
-</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl.name); </span><span style=font-style:italic;color:#5c6370>// prints Carl2
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// Carl is still the owner as we only borrowed it above 
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// Now that the mutable borrow is dropped we can use it again
+</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl.name); </span><span style=color:#5c6370;font-style:italic>// prints Carl2
 </span><span>}
-</span></code></pre><p>Variables stored as an <a href=https://doc.rust-lang.org/std/option/>Option</a> type will be dropped in a match statement unless the unpacked variable is prefixed with <code>ref</code>.<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>(){
+</span></code></pre><p>Variables stored as an <a href=https://doc.rust-lang.org/std/option/ rel=noopener target=_blank>Option</a> type will be dropped in a match statement unless the unpacked variable is prefixed with <code>ref</code>.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>(){
 </span><span>    </span><span style=color:#c678dd>let</span><span> name = Some(String::from(</span><span style=color:#98c379>"Carl"</span><span>));
 </span><span>    </span><span style=color:#c678dd>match</span><span> name {
-</span><span>        </span><span style=font-style:italic;color:#5c6370>// notice the ref keyword
-</span><span>        </span><span style=font-style:italic;color:#5c6370>// Using Some(n) .. will not compile 
+</span><span>        </span><span style=color:#5c6370;font-style:italic>// notice the ref keyword
+</span><span>        </span><span style=color:#5c6370;font-style:italic>// Using Some(n) .. will not compile 
 </span><span>        Some(</span><span style=color:#c678dd>ref</span><span> n) => println!(</span><span style=color:#98c379>"Hello </span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, n),
 </span><span>        _ => println!(</span><span style=color:#98c379>"no value"</span><span>),
 </span><span>    }
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// if ref is not added, this would cause the program to not compile 
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// since name would have been dropped in the match statement
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// if ref is not added, this would cause the program to not compile 
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// since name would have been dropped in the match statement
 </span><span>    println!(</span><span style=color:#98c379>"Hello again </span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, name.</span><span style=color:#56b6c2>unwrap</span><span>());
 </span><span>}
-</span></code></pre><h3 id=lifetimes>Lifetimes</h3><p>Rust also requires that a borrowed variable's data have a lifetime. Simply because you wouldn't want your borrowed variable to be dropped before you're done using it.<p>In fact the mutable variable we declared in the code right above was implementing lifetimes.<p>This code will NOT compile because the lifetime of borrowCarlMutably ends when we use Carl.<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span>...
+</span></code></pre><h3 id=lifetimes>Lifetimes</h3><p>Rust also requires that a borrowed variable's data have a lifetime. Simply because you wouldn't want your borrowed variable to be dropped before you're done using it.<p>In fact the mutable variable we declared in the code right above was implementing lifetimes.<p>This code will NOT compile because the lifetime of borrowCarlMutably ends when we use Carl.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>...
 </span><span>
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
 </span><span>    </span><span style=color:#c678dd>let mut</span><span> Carl = Person{name: </span><span style=color:#98c379>"Carl"</span><span>.</span><span style=color:#56b6c2>to_string</span><span>()}; 
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// borrow Carl mutably
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// borrow Carl mutably
 </span><span>    </span><span style=color:#c678dd>let</span><span> borrowCarlMutably = &</span><span style=color:#c678dd>mut</span><span> Carl;
 </span><span>
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// using Carl means borrowCarlMutably can no longer be used
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// because its lifetime has gone out of scope 
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// using Carl means borrowCarlMutably can no longer be used
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// because its lifetime has gone out of scope 
 </span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl.name); 
 </span><span>    
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// WRONG! 
-</span><span>    </span><span style=font-style:italic;color:#5c6370>// this should be moved above println before using Carl 
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// WRONG! 
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// this should be moved above println before using Carl 
 </span><span>    borrowCarlMutably.name = </span><span style=color:#98c379>"john"</span><span>.</span><span style=color:#56b6c2>to_string</span><span>();
 </span><span>}
-</span></code></pre><p>So far we haven't seen the syntax of lifetimes, even though I have passed borrowed variables into functions above.<p>The reason is that Rust elides (omits) them for for simple functions that don't cause the compiler to decide which to return.<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span style=color:#c678dd>struct </span><span>Person {
+</span></code></pre><p>So far we haven't seen the syntax of lifetimes, even though I have passed borrowed variables into functions above.<p>The reason is that Rust elides (omits) them for for simple functions that don't cause the compiler to decide which to return.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>struct </span><span>Person {
 </span><span>    </span><span style=color:#e06c75>name</span><span>: String
 </span><span>}
 </span><span>
-</span><span style=font-style:italic;color:#5c6370>// Elided 
+</span><span style=color:#5c6370;font-style:italic>// Elided 
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>changeName</span><span>(</span><span style=color:#e06c75>pers</span><span>: &</span><span style=color:#c678dd>mut</span><span> Person) {
 </span><span>    pers.name = </span><span style=color:#98c379>"joe"</span><span>.</span><span style=color:#56b6c2>to_string</span><span>();
 </span><span>}
 </span><span>
-</span><span style=font-style:italic;color:#5c6370>// Expanded
+</span><span style=color:#5c6370;font-style:italic>// Expanded
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>changeName</span><span><</span><span style=color:#c678dd>'a</span><span>>(</span><span style=color:#e06c75>pers</span><span>: &</span><span style=color:#c678dd>'a mut</span><span> Person) {
 </span><span>    pers.name = </span><span style=color:#98c379>"joe"</span><span>.</span><span style=color:#56b6c2>to_string</span><span>();
 </span><span>}
@@ -181,7 +181,7 @@
 </span><span>    changeName(&</span><span style=color:#c678dd>mut</span><span> Carl);
 </span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl.name);
 </span><span>}
-</span></code></pre><p>However more complicated functions that have borrowed variables with different lifetimes will require explicitly telling the compiler.<p>Note that an apostraphe is required for a lifetime's syntax however the name can be anything. It's common convention to use different letters for different lifetimes (e.g., <code>'a</code>, <code>'b</code>)<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span style=color:#c678dd>struct </span><span>Person {
+</span></code></pre><p>However more complicated functions that have borrowed variables with different lifetimes will require explicitly telling the compiler.<p>Note that an apostraphe is required for a lifetime's syntax however the name can be anything. It's common convention to use different letters for different lifetimes (e.g., <code>'a</code>, <code>'b</code>)<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>struct </span><span>Person {
 </span><span>    </span><span style=color:#e06c75>name</span><span>: String
 </span><span>}
 </span><span>
@@ -193,19 +193,19 @@
 </span><span>    </span><span style=color:#c678dd>let mut</span><span> Carl = Person{name: </span><span style=color:#98c379>"Carl"</span><span>.</span><span style=color:#56b6c2>to_string</span><span>()}; 
 </span><span>    
 </span><span>    {
-</span><span>        </span><span style=font-style:italic;color:#5c6370>// variables in this scope have different lifetimes 
-</span><span>        </span><span style=font-style:italic;color:#5c6370>// than those outside of {}
+</span><span>        </span><span style=color:#5c6370;font-style:italic>// variables in this scope have different lifetimes 
+</span><span>        </span><span style=color:#5c6370;font-style:italic>// than those outside of {}
 </span><span>        </span><span style=color:#c678dd>let</span><span> newName = </span><span style=color:#98c379>"Mario"</span><span>;
 </span><span>        changeName(&</span><span style=color:#c678dd>mut</span><span> Carl, newName);
 </span><span>    }
-</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl.name); </span><span style=font-style:italic;color:#5c6370>// prints Mario
+</span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl.name); </span><span style=color:#5c6370;font-style:italic>// prints Mario
 </span><span>}
-</span></code></pre><p>Essentially, Rust is making sure that any borrowed value returned from the function will live at least as long as the lifetime of one of the inputs. The compiler can then make a decision as to whether your code is valid.<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span style=color:#c678dd>struct </span><span>Person {
+</span></code></pre><p>Essentially, Rust is making sure that any borrowed value returned from the function will live at least as long as the lifetime of one of the inputs. The compiler can then make a decision as to whether your code is valid.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>struct </span><span>Person {
 </span><span>    </span><span style=color:#e06c75>name</span><span>: String
 </span><span>}
 </span><span>
-</span><span style=font-style:italic;color:#5c6370>// now we return a borrowed variable with a lifetime 
-</span><span style=font-style:italic;color:#5c6370>// of newName
+</span><span style=color:#5c6370;font-style:italic>// now we return a borrowed variable with a lifetime 
+</span><span style=color:#5c6370;font-style:italic>// of newName
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>changeName</span><span><</span><span style=color:#c678dd>'a</span><span>, </span><span style=color:#c678dd>'b</span><span>>(</span><span style=color:#e06c75>pers</span><span>: &</span><span style=color:#c678dd>'a mut</span><span> Person, </span><span style=color:#e06c75>newName</span><span>: &</span><span style=color:#c678dd>'b str</span><span>) -> &</span><span style=color:#c678dd>'b str </span><span>{
 </span><span>    pers.name = newName.</span><span style=color:#56b6c2>to_string</span><span>();
 </span><span>    &newName
@@ -219,9 +219,9 @@
 </span><span>    }
 </span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, Carl.name);
 </span><span>}
-</span></code></pre><p>There exists a reserved lifetime called <code>'static</code> that signifies to the compiler that the variable will live for the entire lifetime of the program. The variable will be embedded into the binary.<pre class=language-rust data-lang=rust style=background:#282c34;color:#abb2bf><code class=language-rust data-lang=rust><span style=color:#c678dd>static </span><span style=color:#d19a66>GLOBAL</span><span>: &</span><span style=color:#c678dd>'static str </span><span>= </span><span style=color:#98c379>"global static variable"</span><span>;
+</span></code></pre><p>There exists a reserved lifetime called <code>'static</code> that signifies to the compiler that the variable will live for the entire lifetime of the program. The variable will be embedded into the binary.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>static </span><span style=color:#d19a66>GLOBAL</span><span>: &</span><span style=color:#c678dd>'static str </span><span>= </span><span style=color:#98c379>"global static variable"</span><span>;
 </span><span>
 </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
 </span><span>    println!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, </span><span style=color:#d19a66>GLOBAL</span><span>);
 </span><span>}
-</span></code></pre><p>In my opinion, much of the struggle that people have wrestling with the borrow checker stems from gaps in knowledge related to ownership and lifetimes.<p>The quizzes in the brown.edu git book definitely help filling those gaps.<p>If Rust still seems confusing then I recommend <a href=https://fasterthanli.me/articles/a-half-hour-to-learn-rust>A half-hour to learn Rust</a>.</p><script src=https://storage.ko-fi.com/cdn/scripts/overlay-widget.js></script><script>kofiWidgetOverlay.draw('spacedimp',{'type':'floating-chat','floating-chat.donateButton.text':'Support Me','floating-chat.donateButton.background-color':'#00b9fe','floating-chat.donateButton.text-color':'#fff'})</script><script async data-id=101404969 src=//static.getclicky.com/js></script><footer class=footer><p>Spacedimp<div class=footer-donate><p>Support spacedimp's growth by donating!</div><div class=rss-footer><p>Follow via <a href=/atom.xml>RSS</a><p>BTC: bc1qspads00vpdvsfaq7jwegrx8la8j9mz2qxuahfu<p>ETH: 0x42e598E67cB9b3F4bEB05c76B3838ba3477fB656<p>XMR: 89L5emwBMbzdrNuMN5NwPVSSztdrWLaWAYnZy95mV3RHPgyLCge9RqvMnu4X6eu8aTMocsq7Tw2ViBHSamQaEWjk5toNx1m<p><a href=/gpg>GPG</a> fingerprint: 040B FE93 9DF9 D855 404D 80BE C674 E53F EB54 B7F0</div></footer>
+</span></code></pre><p>In my opinion, much of the struggle that people have wrestling with the borrow checker stems from gaps in knowledge related to ownership and lifetimes.<p>The quizzes in the brown.edu git book definitely help filling those gaps.<p>If Rust still seems confusing then I recommend <a href=https://fasterthanli.me/articles/a-half-hour-to-learn-rust rel=noopener target=_blank>A half-hour to learn Rust</a>.</p><script src=https://storage.ko-fi.com/cdn/scripts/overlay-widget.js></script><script>kofiWidgetOverlay.draw(`spacedimp`,{'type':`floating-chat`,'floating-chat.donateButton.text':`Support Me`,'floating-chat.donateButton.background-color':`#00b9fe`,'floating-chat.donateButton.text-color':`#fff`})</script><script async data-id=101404969 src=//static.getclicky.com/js></script><footer class=footer><p>Spacedimp<div class=footer-donate><p>Support spacedimp's growth by donating!</div><div class=rss-footer><p>Follow via <a href=/atom.xml>RSS</a><p>BTC: bc1qspads00vpdvsfaq7jwegrx8la8j9mz2qxuahfu<p>ETH: 0x42e598E67cB9b3F4bEB05c76B3838ba3477fB656<p>XMR: 89L5emwBMbzdrNuMN5NwPVSSztdrWLaWAYnZy95mV3RHPgyLCge9RqvMnu4X6eu8aTMocsq7Tw2ViBHSamQaEWjk5toNx1m<p><a href=/gpg>GPG</a> fingerprint: 040B FE93 9DF9 D855 404D 80BE C674 E53F EB54 B7F0</div></footer>

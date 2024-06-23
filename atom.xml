@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
     <title></title>
-    <link href="https://spacedimp.com/atom.xml" rel="self" type="application/atom+xml"/>
-    <link href="https://spacedimp.com"/>
+    <link rel="self" type="application/atom+xml" href="https://spacedimp.com/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://spacedimp.com"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
     <updated>2023-08-06T00:00:00+00:00</updated>
     <id>https://spacedimp.com/atom.xml</id>
@@ -10,17 +10,24 @@
         <title>How to Properly Learn Rust Programming</title>
         <published>2023-08-06T00:00:00+00:00</published>
         <updated>2023-08-06T00:00:00+00:00</updated>
+        
         <author>
-          <name>Unknown</name>
+          <name>
+            
+              Unknown
+            
+          </name>
         </author>
-        <link rel="alternate" href="https://spacedimp.com/blog/how-to-properly-learn-rust/" type="text/html"/>
+        
+        <link rel="alternate" type="text/html" href="https://spacedimp.com/blog/how-to-properly-learn-rust/"/>
         <id>https://spacedimp.com/blog/how-to-properly-learn-rust/</id>
-        <content type="html">&lt;p&gt;The goal, in this blog post, will be to help beginner Rust programmers overcome the notion that Rust is a difficult language.&lt;&#x2F;p&gt;
-&lt;p&gt;First and foremost, I will advocate for the Rust book from Brown University over the regular one. Here: &lt;a href=&quot;https:&#x2F;&#x2F;rust-book.cs.brown.edu&#x2F;&quot;&gt;https:&#x2F;&#x2F;rust-book.cs.brown.edu&#x2F;&lt;&#x2F;a&gt; (it requires you to scroll all the way down and accept to participate).&lt;&#x2F;p&gt;
-&lt;p&gt;It provides a more thorough explanation of Rust and includes simple quizzes to test your new gained knowledge. The original book does not contain quizzes and so many people believe they understand Rust but are completely mistaken. &lt;&#x2F;p&gt;
-&lt;p&gt;Alongside with the book, you&#x27;ll want to test the examples using either a local programming environment or the online environment &lt;a href=&quot;https:&#x2F;&#x2F;play.rust-lang.org&#x2F;&quot;&gt;https:&#x2F;&#x2F;play.rust-lang.org&#x2F;&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+        
+        <content type="html" xml:base="https://spacedimp.com/blog/how-to-properly-learn-rust/">&lt;p&gt;The goal, in this blog post, will be to help beginner Rust programmers overcome the notion that Rust is a difficult language.&lt;&#x2F;p&gt;
+&lt;p&gt;First and foremost, I will advocate for the Rust book from Brown University over the regular one. Here: &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;rust-book.cs.brown.edu&#x2F;&quot;&gt;https:&#x2F;&#x2F;rust-book.cs.brown.edu&#x2F;&lt;&#x2F;a&gt; (it requires you to scroll all the way down and accept to participate).&lt;&#x2F;p&gt;
+&lt;p&gt;It provides a more thorough explanation of Rust and includes simple quizzes to test your new gained knowledge. The original book does not contain quizzes and so many people believe they understand Rust but are completely mistaken.&lt;&#x2F;p&gt;
+&lt;p&gt;Alongside with the book, you&#x27;ll want to test the examples using either a local programming environment or the online environment &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;play.rust-lang.org&#x2F;&quot;&gt;https:&#x2F;&#x2F;play.rust-lang.org&#x2F;&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;how-to-set-up-a-local-workspace-skip-if-you-prefer-the-online-rust-playground&quot;&gt;How to set up a local workspace (skip if you prefer the online Rust Playground)&lt;&#x2F;h3&gt;
-&lt;p&gt;I&#x27;m assuming Rust is already installed on your system. &lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;m assuming Rust is already installed on your system.&lt;&#x2F;p&gt;
 &lt;p&gt;Create a new directory&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mkdir&lt;&#x2F;span&gt;&lt;span&gt; project &amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span&gt; project
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
@@ -47,7 +54,7 @@
 &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;#add this
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;applib &lt;&#x2F;span&gt;&lt;span&gt;= {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;path &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;..&#x2F;applib&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Now applib&#x27;s functions can be imported into the app binary. Edit &lt;code&gt;app&#x2F;src&#x2F;main.rs&lt;&#x2F;code&gt; &lt;&#x2F;p&gt;
+&lt;p&gt;Now applib&#x27;s functions can be imported into the app binary. Edit &lt;code&gt;app&#x2F;src&#x2F;main.rs&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use&lt;&#x2F;span&gt;&lt;span&gt; applib;
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;() {
@@ -62,18 +69,18 @@
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;br&gt;
 &lt;h2 id=&quot;memory-safety&quot;&gt;Memory safety&lt;&#x2F;h2&gt;
-&lt;p&gt;I believe Rust&#x27;s memory safe idiosyncrasies are what intimidate most people from this language. However, this is what makes it a safe language that doesn&#x27;t require a garbage collector. It&#x27;s essential to master this part of the language to write memory safe code. &lt;&#x2F;p&gt;
+&lt;p&gt;I believe Rust&#x27;s memory safe idiosyncrasies are what intimidate most people from this language. However, this is what makes it a safe language that doesn&#x27;t require a garbage collector. It&#x27;s essential to master this part of the language to write memory safe code.&lt;&#x2F;p&gt;
 &lt;p&gt;The good news is that even if you write unsafe code it won&#x27;t compile.&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;ownership&quot;&gt;Ownership&lt;&#x2F;h3&gt;
-&lt;p&gt;Since there exists no garbage collector, owned variables are destructed once they go out of scope. Essentially, once a function or &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;reference&#x2F;expressions&#x2F;block-expr.html&quot;&gt;block expression&lt;&#x2F;a&gt; returns. Unless the variable is returned or the variable was passed by borrowing (also known as pass by reference).&lt;&#x2F;p&gt;
-&lt;p&gt;The following variable will be immutable for the entire duration of the program. &lt;&#x2F;p&gt;
+&lt;p&gt;Since there exists no garbage collector, owned variables are destructed once they go out of scope. Essentially, once a function or &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;reference&#x2F;expressions&#x2F;block-expr.html&quot;&gt;block expression&lt;&#x2F;a&gt; returns. Unless the variable is returned or the variable was passed by borrowing (also known as pass by reference).&lt;&#x2F;p&gt;
+&lt;p&gt;The following variable will be immutable for the entire duration of the program.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;() {
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; num = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;14&lt;&#x2F;span&gt;&lt;span&gt;;
 &lt;&#x2F;span&gt;&lt;span&gt;    println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, num); &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; prints 14
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;blockquote&gt;
-&lt;p&gt;note: notice how num&#x27;s type is implicitly assigned; a const variable would require explicitly assigning the type as so: &lt;&#x2F;p&gt;
+&lt;p&gt;note: notice how num&#x27;s type is implicitly assigned; a const variable would require explicitly assigning the type as so:&lt;&#x2F;p&gt;
 &lt;p&gt;const NUM: i32 = 10;&lt;&#x2F;p&gt;
 &lt;&#x2F;blockquote&gt;
 &lt;p&gt;In order to make it mutable we must add the keyword mut:&lt;&#x2F;p&gt;
@@ -94,9 +101,9 @@
 &lt;&#x2F;span&gt;&lt;span&gt;   println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, num); &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; prints 100
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Notice how the code was able to call println! on num after calling the function plusOne. &lt;&#x2F;p&gt;
-&lt;p&gt;Normally Rust would not compile this program because any variable passed into a function (without an ampersand &amp;amp;) would destroy the variable. &lt;&#x2F;p&gt;
-&lt;p&gt;However, Rust primitives such as u64 implement the &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;marker&#x2F;trait.Copy.html#implementors&quot;&gt;Copy&lt;&#x2F;a&gt; trait. The function plusOne implicitly received a Copy of the variable num and thus we did not transfer ownership. &lt;&#x2F;p&gt;
+&lt;p&gt;Notice how the code was able to call println! on num after calling the function plusOne.&lt;&#x2F;p&gt;
+&lt;p&gt;Normally Rust would not compile this program because any variable passed into a function (without an ampersand &amp;amp;) would destroy the variable.&lt;&#x2F;p&gt;
+&lt;p&gt;However, Rust primitives such as u64 implement the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;marker&#x2F;trait.Copy.html#implementors&quot;&gt;Copy&lt;&#x2F;a&gt; trait. The function plusOne implicitly received a Copy of the variable num and thus we did not transfer ownership.&lt;&#x2F;p&gt;
 &lt;p&gt;Let&#x27;s see how Rust transfers ownership of a struct that doesn&#x27;t implement Copy&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;struct &lt;&#x2F;span&gt;&lt;span&gt;Person{
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: String
@@ -127,7 +134,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;    println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, Carl.name); &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; prints Carl 
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;We could also transfer ownership of Carl to another variable just as we could into a function. &lt;&#x2F;p&gt;
+&lt;p&gt;We could also transfer ownership of Carl to another variable just as we could into a function.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;...
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;() {
@@ -140,7 +147,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;    println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, Carl2.name); &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; prints Carl
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;A variable can also be converted to mutable when moving it &lt;&#x2F;p&gt;
+&lt;p&gt;A variable can also be converted to mutable when moving it&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;...
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;() {
@@ -177,7 +184,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;    println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{a}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt; and &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{b}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt; are clones&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;); &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; prints 10 and 10
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;While a variable is borrowed mutably it cannot also be borrowed immutably. Only when the variable is no longer referenced by the borrower can it be again borrowed. &lt;&#x2F;p&gt;
+&lt;p&gt;While a variable is borrowed mutably it cannot also be borrowed immutably. Only when the variable is no longer referenced by the borrower can it be again borrowed.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;struct &lt;&#x2F;span&gt;&lt;span&gt;Person {
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: String
 &lt;&#x2F;span&gt;&lt;span&gt;}
@@ -204,7 +211,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;    println!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, Carl.name); &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; prints Carl2
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Variables stored as an &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;option&#x2F;&quot;&gt;Option&lt;&#x2F;a&gt; type will be dropped in a match statement unless the unpacked variable is prefixed with &lt;code&gt;ref&lt;&#x2F;code&gt;. &lt;&#x2F;p&gt;
+&lt;p&gt;Variables stored as an &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;option&#x2F;&quot;&gt;Option&lt;&#x2F;a&gt; type will be dropped in a match statement unless the unpacked variable is prefixed with &lt;code&gt;ref&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;(){
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; name = Some(String::from(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Carl&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;));
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;match&lt;&#x2F;span&gt;&lt;span&gt; name {
@@ -219,8 +226,8 @@
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h3 id=&quot;lifetimes&quot;&gt;Lifetimes&lt;&#x2F;h3&gt;
-&lt;p&gt;Rust also requires that a borrowed variable&#x27;s data have a lifetime. Simply because you wouldn&#x27;t want your borrowed variable to be dropped before you&#x27;re done using it. &lt;&#x2F;p&gt;
-&lt;p&gt;In fact the mutable variable we declared in the code right above was implementing lifetimes. &lt;&#x2F;p&gt;
+&lt;p&gt;Rust also requires that a borrowed variable&#x27;s data have a lifetime. Simply because you wouldn&#x27;t want your borrowed variable to be dropped before you&#x27;re done using it.&lt;&#x2F;p&gt;
+&lt;p&gt;In fact the mutable variable we declared in the code right above was implementing lifetimes.&lt;&#x2F;p&gt;
 &lt;p&gt;This code will NOT compile because the lifetime of borrowCarlMutably ends when we use Carl.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;...
 &lt;&#x2F;span&gt;&lt;span&gt;
@@ -239,7 +246,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;So far we haven&#x27;t seen the syntax of lifetimes, even though I have passed borrowed variables into functions above.&lt;&#x2F;p&gt;
-&lt;p&gt;The reason is that Rust elides (omits) them for for simple functions that don&#x27;t cause the compiler to decide which to return. &lt;&#x2F;p&gt;
+&lt;p&gt;The reason is that Rust elides (omits) them for for simple functions that don&#x27;t cause the compiler to decide which to return.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;struct &lt;&#x2F;span&gt;&lt;span&gt;Person {
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;: String
 &lt;&#x2F;span&gt;&lt;span&gt;}
@@ -312,46 +319,54 @@
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;In my opinion, much of the struggle that people have wrestling with the borrow checker stems from gaps in knowledge related to ownership and lifetimes.&lt;&#x2F;p&gt;
 &lt;p&gt;The quizzes in the brown.edu git book definitely help filling those gaps.&lt;&#x2F;p&gt;
-&lt;p&gt;If Rust still seems confusing then I recommend &lt;a href=&quot;https:&#x2F;&#x2F;fasterthanli.me&#x2F;articles&#x2F;a-half-hour-to-learn-rust&quot;&gt;A half-hour to learn Rust&lt;&#x2F;a&gt;. &lt;&#x2F;p&gt;
+&lt;p&gt;If Rust still seems confusing then I recommend &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;fasterthanli.me&#x2F;articles&#x2F;a-half-hour-to-learn-rust&quot;&gt;A half-hour to learn Rust&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 </content>
+        
     </entry>
     <entry xml:lang="en">
         <title>Dockerless, Elixir Web Application using Podman and Plug</title>
         <published>2023-06-06T00:00:00+00:00</published>
         <updated>2023-06-06T00:00:00+00:00</updated>
+        
         <author>
-          <name>Unknown</name>
+          <name>
+            
+              Unknown
+            
+          </name>
         </author>
-        <link rel="alternate" href="https://spacedimp.com/blog/dockerless-setting-up-an-elixir-webapp-using-podman-and-plug/" type="text/html"/>
+        
+        <link rel="alternate" type="text/html" href="https://spacedimp.com/blog/dockerless-setting-up-an-elixir-webapp-using-podman-and-plug/"/>
         <id>https://spacedimp.com/blog/dockerless-setting-up-an-elixir-webapp-using-podman-and-plug/</id>
-        <content type="html">&lt;h2 id=&quot;demonstration-of-how-to-containerize-an-elixir-web-app-rootless-for-security-inside-of-podman&quot;&gt;Demonstration of how to containerize an Elixir web app. Rootless, for security, inside of Podman.&lt;&#x2F;h2&gt;
-&lt;p&gt;Also we&#x27;ll be using the &lt;a href=&quot;https:&#x2F;&#x2F;hexdocs.pm&#x2F;plug&#x2F;readme.html&quot;&gt;Plug&lt;&#x2F;a&gt; module to keep things simple. 
-This module is at the heart of popular Elixir web frameworks such as &lt;a href=&quot;https:&#x2F;&#x2F;hexdocs.pm&#x2F;phoenix&#x2F;plug.html&quot;&gt;Phoenix&lt;&#x2F;a&gt;. &lt;&#x2F;p&gt;
+        
+        <content type="html" xml:base="https://spacedimp.com/blog/dockerless-setting-up-an-elixir-webapp-using-podman-and-plug/">&lt;h2 id=&quot;demonstration-of-how-to-containerize-an-elixir-web-app-rootless-for-security-inside-of-podman&quot;&gt;Demonstration of how to containerize an Elixir web app. Rootless, for security, inside of Podman.&lt;&#x2F;h2&gt;
+&lt;p&gt;Also we&#x27;ll be using the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;hexdocs.pm&#x2F;plug&#x2F;readme.html&quot;&gt;Plug&lt;&#x2F;a&gt; module to keep things simple.
+This module is at the heart of popular Elixir web frameworks such as &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;hexdocs.pm&#x2F;phoenix&#x2F;plug.html&quot;&gt;Phoenix&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;Plug lives at the heart of Phoenix&#x27;s HTTP layer, and Phoenix puts Plug front and center. &lt;&#x2F;p&gt;
+&lt;p&gt;Plug lives at the heart of Phoenix&#x27;s HTTP layer, and Phoenix puts Plug front and center.&lt;&#x2F;p&gt;
 &lt;&#x2F;blockquote&gt;
 &lt;br&gt;
 &lt;h3 id=&quot;setup&quot;&gt;Setup:&lt;&#x2F;h3&gt;
-&lt;p&gt;First, we need Podman so head on over to the &lt;a href=&quot;https:&#x2F;&#x2F;podman.io&#x2F;docs&#x2F;installation&quot;&gt;official&lt;&#x2F;a&gt; instllation instructions and then come back.&lt;&#x2F;p&gt;
+&lt;p&gt;First, we need Podman so head on over to the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;podman.io&#x2F;docs&#x2F;installation&quot;&gt;official&lt;&#x2F;a&gt; instllation instructions and then come back.&lt;&#x2F;p&gt;
 &lt;p&gt;Next we need an image that we can install Elixir on.. I&#x27;ll use Alpine Linux.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; search alpine&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --filter&lt;&#x2F;span&gt;&lt;span&gt; is-official
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Go ahead and pull it: &lt;&#x2F;p&gt;
+&lt;p&gt;Go ahead and pull it:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; image pull docker.io&#x2F;library&#x2F;alpine
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Check that it installed:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; image list alpine
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Now run it (more networking options &lt;a href=&quot;https:&#x2F;&#x2F;docs.oracle.com&#x2F;en&#x2F;operating-systems&#x2F;oracle-linux&#x2F;podman&#x2F;podman-ConfiguringNetworkingforPodman.html#configuring-podman-networking&quot;&gt;here&lt;&#x2F;a&gt;): &lt;&#x2F;p&gt;
+&lt;p&gt;Now run it (more networking options &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.oracle.com&#x2F;en&#x2F;operating-systems&#x2F;oracle-linux&#x2F;podman&#x2F;podman-ConfiguringNetworkingforPodman.html#configuring-podman-networking&quot;&gt;here&lt;&#x2F;a&gt;):&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# -p host-port:container-port 
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; run&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -dit --name&lt;&#x2F;span&gt;&lt;span&gt; alp&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --network&lt;&#x2F;span&gt;&lt;span&gt;=bridge&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -p&lt;&#x2F;span&gt;&lt;span&gt; 7070:7070 alpine &#x2F;bin&#x2F;ash
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;br&gt;
 &lt;h3 id=&quot;connect-to-container-and-install-elixir&quot;&gt;Connect to container and install Elixir:&lt;&#x2F;h3&gt;
-&lt;p&gt;Make sure the container is running first: &lt;&#x2F;p&gt;
+&lt;p&gt;Make sure the container is running first:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; ps 
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;If you don&#x27;t see any output then you must start the container: &lt;&#x2F;p&gt;
+&lt;p&gt;If you don&#x27;t see any output then you must start the container:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; start alp
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Attach to container:&lt;&#x2F;p&gt;
@@ -375,9 +390,9 @@ This module is at the heart of popular Elixir web frameworks such as &lt;a href=
 &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# uncomment the line
 &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# %wheel ALL=(ALL:ALL) ALL
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;You&#x27;ll need to know a few vim commands to use visudo. If you really don&#x27;t know then 
-search up a quick tutorial. Hey you might end up liking vim. &lt;&#x2F;p&gt;
-&lt;p&gt;Now add the new user to the wheel group: &lt;&#x2F;p&gt;
+&lt;p&gt;You&#x27;ll need to know a few vim commands to use visudo. If you really don&#x27;t know then
+search up a quick tutorial. Hey you might end up liking vim.&lt;&#x2F;p&gt;
+&lt;p&gt;Now add the new user to the wheel group:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;adduser&lt;&#x2F;span&gt;&lt;span&gt; alp wheel &amp;amp;&amp;amp; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;su&lt;&#x2F;span&gt;&lt;span&gt; alp
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;You should be the alp user now and not root.&lt;&#x2F;p&gt;
@@ -389,7 +404,7 @@ search up a quick tutorial. Hey you might end up liking vim. &lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mix&lt;&#x2F;span&gt;&lt;span&gt; new myapp&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --sup
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;We&#x27;ll now install the Plug dependency:&lt;&#x2F;p&gt;
-&lt;p&gt;Edit &lt;code&gt;mix.ex&lt;&#x2F;code&gt; &lt;&#x2F;p&gt;
+&lt;p&gt;Edit &lt;code&gt;mix.ex&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;vi&lt;&#x2F;span&gt;&lt;span&gt; mix.ex
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# and make sure deps has plug as shown below
@@ -406,8 +421,8 @@ search up a quick tutorial. Hey you might end up liking vim. &lt;&#x2F;p&gt;
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# You&amp;#39;ll be asked to install hex. Type Y
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Great! &lt;&#x2F;p&gt;
-&lt;p&gt;Now let&#x27;s make the app fault tolerant by having the application supervise it: &lt;&#x2F;p&gt;
+&lt;p&gt;Great!&lt;&#x2F;p&gt;
+&lt;p&gt;Now let&#x27;s make the app fault tolerant by having the application supervise it:&lt;&#x2F;p&gt;
 &lt;p&gt;Edit &lt;code&gt;lib&#x2F;myapp&#x2F;application.ex&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;def&lt;&#x2F;span&gt;&lt;span&gt; start(_type, _args) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;do
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;children&lt;&#x2F;span&gt;&lt;span&gt; = [
@@ -443,22 +458,22 @@ search up a quick tutorial. Hey you might end up liking vim. &lt;&#x2F;p&gt;
 &lt;p&gt;Open up your browser and head over to &lt;code&gt;localhost:7070&#x2F;hello&#x2F;world&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;br&gt; 
 &lt;h3 id=&quot;build-an-image-from-it&quot;&gt;Build an image from it&lt;&#x2F;h3&gt;
-&lt;p&gt;Now we should compile the web app into a binary and also create an 
+&lt;p&gt;Now we should compile the web app into a binary and also create an
 image from the container to make it portable.&lt;&#x2F;p&gt;
-&lt;p&gt;First let&#x27;s compile the code. &lt;&#x2F;p&gt;
+&lt;p&gt;First let&#x27;s compile the code.&lt;&#x2F;p&gt;
 &lt;p&gt;In the container&#x27;s terminal run:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;MIX_ENV&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;prod 
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;RELEASE_NAME&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;myapp
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mix&lt;&#x2F;span&gt;&lt;span&gt; release.init
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;compile: &lt;&#x2F;p&gt;
+&lt;p&gt;compile:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;mix&lt;&#x2F;span&gt;&lt;span&gt; release
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;You should now have a binary located at:&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;code&gt;_build&#x2F;dev&#x2F;rel&#x2F;myapp&#x2F;bin&#x2F;myapp&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;You can run it as so:&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;code&gt;_build&#x2F;dev&#x2F;rel&#x2F;myapp&#x2F;bin&#x2F;myapp start&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
-&lt;p&gt;We can now exit the container so that we can build an image with this 
+&lt;p&gt;We can now exit the container so that we can build an image with this
 binary installed.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;code&gt;exit &amp;amp;&amp;amp; exit&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;In your host terminal run:&lt;&#x2F;p&gt;
@@ -468,38 +483,46 @@ binary installed.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;podman&lt;&#x2F;span&gt;&lt;span&gt; run&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -dit --network&lt;&#x2F;span&gt;&lt;span&gt;=bridge&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -p&lt;&#x2F;span&gt;&lt;span&gt; 7070:7070&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --name&lt;&#x2F;span&gt;&lt;span&gt; alp2 alp:v2 &#x2F;home&#x2F;alpine&#x2F;myapp&#x2F;_build&#x2F;dev&#x2F;rel&#x2F;myapp&#x2F;bin&#x2F;myapp start
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h3 id=&quot;wrap-up&quot;&gt;Wrap up&lt;&#x2F;h3&gt;
-&lt;p&gt;The main benefits of using Podman over Docker are security related. I won&#x27;t rehash it all here so if you 
-want to learn more check out linode&#x27;s &lt;a href=&quot;https:&#x2F;&#x2F;www.linode.com&#x2F;docs&#x2F;guides&#x2F;podman-vs-docker&#x2F;&quot;&gt;explanation&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
-&lt;p&gt;I suggest learning more about plug and its router from &lt;a href=&quot;https:&#x2F;&#x2F;elixirschool.com&#x2F;blog&#x2F;building-apps-with-plug-router&#x2F;&quot;&gt;elixirschool&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;The main benefits of using Podman over Docker are security related. I won&#x27;t rehash it all here so if you
+want to learn more check out linode&#x27;s &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.linode.com&#x2F;docs&#x2F;guides&#x2F;podman-vs-docker&#x2F;&quot;&gt;explanation&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;I suggest learning more about plug and its router from &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;elixirschool.com&#x2F;blog&#x2F;building-apps-with-plug-router&#x2F;&quot;&gt;elixirschool&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 &lt;br&gt;
 </content>
+        
     </entry>
     <entry xml:lang="en">
         <title>Using Rust, Tauri, and SvelteKit to Build a Note Taking App</title>
         <published>2023-04-05T00:00:00+00:00</published>
         <updated>2023-04-05T00:00:00+00:00</updated>
+        
         <author>
-          <name>Unknown</name>
+          <name>
+            
+              Unknown
+            
+          </name>
         </author>
-        <link rel="alternate" href="https://spacedimp.com/blog/using-rust-tauri-and-sveltekit-to-build-a-note-taking-app/" type="text/html"/>
+        
+        <link rel="alternate" type="text/html" href="https://spacedimp.com/blog/using-rust-tauri-and-sveltekit-to-build-a-note-taking-app/"/>
         <id>https://spacedimp.com/blog/using-rust-tauri-and-sveltekit-to-build-a-note-taking-app/</id>
-        <content type="html">&lt;h2 id=&quot;in-this-blog-post-i-ll-be-guiding-you-through-the-process-of-building-a-note-taking-app-using-tauri-move-over-electron&quot;&gt;In this blog post, I&#x27;ll be guiding you through the process of building a note taking app using Tauri. Move over Electron :)&lt;&#x2F;h2&gt;
+        
+        <content type="html" xml:base="https://spacedimp.com/blog/using-rust-tauri-and-sveltekit-to-build-a-note-taking-app/">&lt;h2 id=&quot;in-this-blog-post-i-ll-be-guiding-you-through-the-process-of-building-a-note-taking-app-using-tauri-move-over-electron&quot;&gt;In this blog post, I&#x27;ll be guiding you through the process of building a note taking app using Tauri. Move over Electron :)&lt;&#x2F;h2&gt;
 &lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;gif&#x2F;noteapp.gif&quot; alt=&quot;Alt text&quot; title=&quot;demo of an app built using Rust, Tauri, and SvelteKit&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
-&lt;p&gt;Tauri allows us to build fast, cross-platform, and small sized apps using HTML, CSS, and JavaScript. &lt;&#x2F;p&gt;
-&lt;p&gt;It accomplishes this by using &lt;a href=&quot;https:&#x2F;&#x2F;tauri.app&#x2F;v1&#x2F;references&#x2F;webview-versions&#x2F;&quot;&gt;WebViews&lt;&#x2F;a&gt;. A WebView lets you embed 
-web content (HTML,CSS, JavaScript) into an application without needing a full-fledged web browser. &lt;&#x2F;p&gt;
-&lt;p&gt;Rust is used for the backend logic and &lt;a href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Learn&#x2F;Tools_and_testing&#x2F;Client-side_JavaScript_frameworks&#x2F;Svelte_getting_started&quot;&gt;SvelteKit&lt;&#x2F;a&gt; for the frontend.&lt;&#x2F;p&gt;
-&lt;p&gt;Each OS uses a different WebView rendering engine: &lt;&#x2F;p&gt;
+&lt;p&gt;Tauri allows us to build fast, cross-platform, and small sized apps using HTML, CSS, and JavaScript.&lt;&#x2F;p&gt;
+&lt;p&gt;It accomplishes this by using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tauri.app&#x2F;v1&#x2F;references&#x2F;webview-versions&#x2F;&quot;&gt;WebViews&lt;&#x2F;a&gt;. A WebView lets you embed
+web content (HTML,CSS, JavaScript) into an application without needing a full-fledged web browser.&lt;&#x2F;p&gt;
+&lt;p&gt;Rust is used for the backend logic and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Learn&#x2F;Tools_and_testing&#x2F;Client-side_JavaScript_frameworks&#x2F;Svelte_getting_started&quot;&gt;SvelteKit&lt;&#x2F;a&gt; for the frontend.&lt;&#x2F;p&gt;
+&lt;p&gt;Each OS uses a different WebView rendering engine:&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;Windows uses WebView2&lt;&#x2F;li&gt;
 &lt;li&gt;Linux uses WebKit&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;h2 id=&quot;setting-up-the-project&quot;&gt;Setting up the project&lt;&#x2F;h2&gt;
-&lt;p&gt;Make sure Rust and the Tauri dependencies are installed as described &lt;a href=&quot;https:&#x2F;&#x2F;tauri.app&#x2F;v1&#x2F;guides&#x2F;getting-started&#x2F;prerequisites&quot;&gt;here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
-&lt;p&gt;SvelteKit requires Node.js. I install it using Fedora&#x27;s package manager. &lt;&#x2F;p&gt;
+&lt;p&gt;Make sure Rust and the Tauri dependencies are installed as described &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tauri.app&#x2F;v1&#x2F;guides&#x2F;getting-started&#x2F;prerequisites&quot;&gt;here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;SvelteKit requires Node.js. I install it using Fedora&#x27;s package manager.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; dnf install nodejs
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Instead of npm, I&#x27;ll install pnpm as the Node.js package manager &lt;&#x2F;p&gt;
+&lt;p&gt;Instead of npm, I&#x27;ll install pnpm as the Node.js package manager&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; npm install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -g&lt;&#x2F;span&gt;&lt;span&gt; pnpm
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Now we can initialize a new svelte project.&lt;&#x2F;p&gt;
@@ -534,11 +557,11 @@ web content (HTML,CSS, JavaScript) into an application without needing a full-fl
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Disable SSR by creating src&#x2F;routes&#x2F;+layout.ts &lt;&#x2F;p&gt;
+&lt;p&gt;Disable SSR by creating src&#x2F;routes&#x2F;+layout.ts&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;ts&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-ts &quot;&gt;&lt;code class=&quot;language-ts&quot; data-lang=&quot;ts&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;prerender &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;export const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;ssr &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Check your node.js version and make sure pnpm uses the correct one &lt;&#x2F;p&gt;
+&lt;p&gt;Check your node.js version and make sure pnpm uses the correct one&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; node&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -v 
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;v18.15.0 
 &lt;&#x2F;span&gt;&lt;span&gt;
@@ -548,7 +571,7 @@ web content (HTML,CSS, JavaScript) into an application without needing a full-fl
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; add your version number as so
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;use-node-version&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;18.15.0
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Setup Tauri &lt;&#x2F;p&gt;
+&lt;p&gt;Setup Tauri&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; pnpm add&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -D&lt;&#x2F;span&gt;&lt;span&gt; @tauri-apps&#x2F;cli
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; pnpm tauri init
 &lt;&#x2F;span&gt;&lt;span&gt;
@@ -564,12 +587,12 @@ web content (HTML,CSS, JavaScript) into an application without needing a full-fl
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; What is your frontend build command? pnpm run build
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Run the app &lt;&#x2F;p&gt;
+&lt;p&gt;Run the app&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;&#x2F;&#x2F;&lt;&#x2F;span&gt;&lt;span&gt; will be slow the first time running but after much faster
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; pnpm tauri dev
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h2 id=&quot;setting-up-components&quot;&gt;Setting up components&lt;&#x2F;h2&gt;
-&lt;p&gt;I recommend for beginners to go through the official Svelte tutorial &lt;a href=&quot;https:&#x2F;&#x2F;svelte.dev&#x2F;tutorial&#x2F;basics&quot;&gt;here&lt;&#x2F;a&gt; to grasp its fundamentals.&lt;&#x2F;p&gt;
+&lt;p&gt;I recommend for beginners to go through the official Svelte tutorial &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;svelte.dev&#x2F;tutorial&#x2F;basics&quot;&gt;here&lt;&#x2F;a&gt; to grasp its fundamentals.&lt;&#x2F;p&gt;
 &lt;p&gt;This is an excerpt of what a component is:&lt;&#x2F;p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;In Svelte, an application is composed from one or more components. A component is a reusable self-contained block of code that encapsulates HTML, CSS and JavaScript that belong together, written into a .svelte file. The &#x27;hello world&#x27; example in the code editor is a simple component.&lt;&#x2F;p&gt;
@@ -679,14 +702,14 @@ web content (HTML,CSS, JavaScript) into an application without needing a full-fl
 &lt;&#x2F;span&gt;&lt;span&gt;	  }
 &lt;&#x2F;span&gt;&lt;span&gt;    },
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Also scroll down in the conf.json file and find &amp;quot;identifier&amp;quot; . It should be unique to your app. I&#x27;ll set it to com.random.random.&lt;&#x2F;p&gt;
+&lt;p&gt;Also scroll down in the conf.json file and find &quot;identifier&quot; . It should be unique to your app. I&#x27;ll set it to com.random.random.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;json&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-json &quot;&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;bundle&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: {
 &lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;identifier&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;com.random.random&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h2 id=&quot;handling-data-in-the-backend&quot;&gt;Handling data in the backend&lt;&#x2F;h2&gt;
-&lt;p&gt;I&#x27;ve chosen to store the data as bson (Binary JSON). Read more about bson &lt;a href=&quot;https:&#x2F;&#x2F;www.mongodb.com&#x2F;json-and-bson&quot;&gt;here&lt;&#x2F;a&gt;. Basically it&#x27;s how MongoDB stores JSON data on disk as binary.&lt;&#x2F;p&gt;
-&lt;p&gt;Tauri lets the frontend pass data back and forth to the backend (Rust) using Tauri commands. &lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;ve chosen to store the data as bson (Binary JSON). Read more about bson &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.mongodb.com&#x2F;json-and-bson&quot;&gt;here&lt;&#x2F;a&gt;. Basically it&#x27;s how MongoDB stores JSON data on disk as binary.&lt;&#x2F;p&gt;
+&lt;p&gt;Tauri lets the frontend pass data back and forth to the backend (Rust) using Tauri commands.&lt;&#x2F;p&gt;
 &lt;p&gt;For the sake of brevity I&#x27;ll just show the complete Rust backend code.&lt;&#x2F;p&gt;
 &lt;p&gt;Edit &lt;code&gt;src-tauri&#x2F;src&#x2F;main.rs&lt;&#x2F;code&gt; with:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#![&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cfg_attr&lt;&#x2F;span&gt;&lt;span&gt;(
@@ -783,13 +806,13 @@ web content (HTML,CSS, JavaScript) into an application without needing a full-fl
 &lt;p&gt;I create a Tauri app with three functions available to the frontend: saveNote, editNote, loadNotes&lt;&#x2F;p&gt;
 &lt;p&gt;saveNote will be called from the frontend and be passed two values: title, body. I then create a new Note struct with those values then convert it to a bson::Document. Lastly I convert the document to a bson::Array (Vec of bytes) and return it to the frontend to handle storing it to disk.&lt;&#x2F;p&gt;
 &lt;p&gt;editNote receives from the frontend an updated&#x2F;modified version of the data stored on disk. The frontend requires this function to rebuild the bson database. We then return the binary bson back to the frontend to store to disk.&lt;&#x2F;p&gt;
-&lt;p&gt;loadNotes takes what&#x27;s stored on disk &amp;quot;[123],[100],etc..&amp;quot; and converts it to JSON for the frontend.&lt;&#x2F;p&gt;
+&lt;p&gt;loadNotes takes what&#x27;s stored on disk &quot;[123],[100],etc..&quot; and converts it to JSON for the frontend.&lt;&#x2F;p&gt;
 &lt;p&gt;Also, edit &lt;code&gt;src-tauri&#x2F;Cargo.toml&lt;&#x2F;code&gt; to include bson as a dependency&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;toml&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;&lt;span&gt;[dependencies]
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;bson &lt;&#x2F;span&gt;&lt;span&gt;= {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;version &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;2.6.0&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h2 id=&quot;handling-data-in-the-frontend&quot;&gt;Handling data in the frontend&lt;&#x2F;h2&gt;
-&lt;p&gt;Svelte&#x27;s &lt;a href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Learn&#x2F;Tools_and_testing&#x2F;Client-side_JavaScript_frameworks&#x2F;Svelte_stores&quot;&gt;writable&lt;&#x2F;a&gt; store allows each component or page to individually modify&#x2F;read a global state. Whenever it changes, all components get the newly changed value.&lt;&#x2F;p&gt;
+&lt;p&gt;Svelte&#x27;s &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Learn&#x2F;Tools_and_testing&#x2F;Client-side_JavaScript_frameworks&#x2F;Svelte_stores&quot;&gt;writable&lt;&#x2F;a&gt; store allows each component or page to individually modify&#x2F;read a global state. Whenever it changes, all components get the newly changed value.&lt;&#x2F;p&gt;
 &lt;p&gt;Create and edit &lt;code&gt;src&#x2F;lib&#x2F;store.js&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;js&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-js &quot;&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;writable &lt;&#x2F;span&gt;&lt;span&gt;} &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;from &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;svelte&#x2F;store&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
 &lt;&#x2F;span&gt;&lt;span&gt;
@@ -1030,38 +1053,46 @@ web content (HTML,CSS, JavaScript) into an application without needing a full-fl
 &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h2 id=&quot;done&quot;&gt;Done&lt;&#x2F;h2&gt;
-&lt;p&gt;Running the following command will build the app into a binary located at 
+&lt;p&gt;Running the following command will build the app into a binary located at
 &lt;code&gt;src-tauri&#x2F;target&#x2F;release&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;pnpm&lt;&#x2F;span&gt;&lt;span&gt; tauri build
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;My binary says it&#x27;s at 10M, but I get it down to 3.0M by using &lt;a href=&quot;https:&#x2F;&#x2F;upx.github.io&#x2F;&quot;&gt;UPX&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;My binary says it&#x27;s at 10M, but I get it down to 3.0M by using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;upx.github.io&#x2F;&quot;&gt;UPX&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; upx notes
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;For cross platform compilation check out the official Tauri &lt;a href=&quot;https:&#x2F;&#x2F;tauri.app&#x2F;v1&#x2F;guides&#x2F;building&#x2F;cross-platform&#x2F;&quot;&gt;docs&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
-&lt;p&gt;Here is the complete code on &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;tauri-note-taking-app&quot;&gt;Github&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;For cross platform compilation check out the official Tauri &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;tauri.app&#x2F;v1&#x2F;guides&#x2F;building&#x2F;cross-platform&#x2F;&quot;&gt;docs&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Here is the complete code on &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;tauri-note-taking-app&quot;&gt;Github&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;final-notes&quot;&gt;Final notes&lt;&#x2F;h3&gt;
 &lt;p&gt;My initial goal was to have drag and drop functionality of images or videos. This would have made this tutorial way longer which is not my goal.&lt;&#x2F;p&gt;
-&lt;p&gt;I chose to store the data as bson (binary JSON) as I was planning to store the images&#x2F;videos as blobs. I&#x27;m not sure that this would even work as MongoDB&#x27;s &lt;a href=&quot;https:&#x2F;&#x2F;www.mongodb.com&#x2F;docs&#x2F;manual&#x2F;reference&#x2F;limits&#x2F;&quot;&gt;docs&lt;&#x2F;a&gt; mention that a bson document can only store 16MB. I guess something like IndexedDB would serve my goals better.&lt;&#x2F;p&gt;
+&lt;p&gt;I chose to store the data as bson (binary JSON) as I was planning to store the images&#x2F;videos as blobs. I&#x27;m not sure that this would even work as MongoDB&#x27;s &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.mongodb.com&#x2F;docs&#x2F;manual&#x2F;reference&#x2F;limits&#x2F;&quot;&gt;docs&lt;&#x2F;a&gt; mention that a bson document can only store 16MB. I guess something like IndexedDB would serve my goals better.&lt;&#x2F;p&gt;
 </content>
+        
     </entry>
     <entry xml:lang="en">
         <title>Security Hardening Linux OS</title>
         <published>2023-03-14T00:00:00+00:00</published>
         <updated>2023-03-14T00:00:00+00:00</updated>
+        
         <author>
-          <name>Unknown</name>
+          <name>
+            
+              Unknown
+            
+          </name>
         </author>
-        <link rel="alternate" href="https://spacedimp.com/blog/security-hardening-linux-os/" type="text/html"/>
+        
+        <link rel="alternate" type="text/html" href="https://spacedimp.com/blog/security-hardening-linux-os/"/>
         <id>https://spacedimp.com/blog/security-hardening-linux-os/</id>
-        <content type="html">&lt;h2 id=&quot;these-are-some-extra-steps-that-you-can-implement-to-harden-a-linux-system&quot;&gt;These are some extra steps that you can implement to harden a Linux system.&lt;&#x2F;h2&gt;
+        
+        <content type="html" xml:base="https://spacedimp.com/blog/security-hardening-linux-os/">&lt;h2 id=&quot;these-are-some-extra-steps-that-you-can-implement-to-harden-a-linux-system&quot;&gt;These are some extra steps that you can implement to harden a Linux system.&lt;&#x2F;h2&gt;
 &lt;hr &#x2F;&gt;
 &lt;br&gt;
-&lt;h3 id=&quot;usbguard-prevents-unauthorized-usb-devices-from-connecting&quot;&gt;&lt;a href=&quot;https:&#x2F;&#x2F;usbguard.github.io&#x2F;&quot;&gt;USBGuard&lt;&#x2F;a&gt; prevents unauthorized USB devices from connecting.&lt;&#x2F;h3&gt;
-&lt;p&gt;The &lt;a href=&quot;https:&#x2F;&#x2F;usbguard.github.io&#x2F;documentation&#x2F;compilation.html&quot;&gt;installation&lt;&#x2F;a&gt; page goes through the process of setting it up.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;usbguard-prevents-unauthorized-usb-devices-from-connecting&quot;&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;usbguard.github.io&#x2F;&quot;&gt;USBGuard&lt;&#x2F;a&gt; prevents unauthorized USB devices from connecting.&lt;&#x2F;h3&gt;
+&lt;p&gt;The &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;usbguard.github.io&#x2F;documentation&#x2F;compilation.html&quot;&gt;installation&lt;&#x2F;a&gt; page goes through the process of setting it up.&lt;&#x2F;p&gt;
 &lt;p&gt;For Fedora users it&#x27;s as simple as:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; dnf install usbguard
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Make sure any USB you want to allow through is connected to a port. 
+&lt;p&gt;Make sure any USB you want to allow through is connected to a port.
 Then generate an initial ruleset:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# You might need to switch to root to run this 
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; usbguard generate-policy &amp;gt; &#x2F;etc&#x2F;usbguard&#x2F;rules.conf
@@ -1087,12 +1118,12 @@ Then generate an initial ruleset:&lt;&#x2F;p&gt;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h3 id=&quot;nts-over-ntp&quot;&gt;NTS over NTP&lt;&#x2F;h3&gt;
 &lt;p&gt;Network Time Protocol allows your device to synchronize its time with highly accurate atomic clock servers. However,
-it&#x27;s very old and abused for DDoS &lt;a href=&quot;https:&#x2F;&#x2F;www.cloudflare.com&#x2F;learning&#x2F;ddos&#x2F;ntp-amplification-ddos-attack&#x2F;&quot;&gt;amplification&lt;&#x2F;a&gt; attacks. &lt;&#x2F;p&gt;
-&lt;p&gt;NTS extends NTP by adding encrypted cookies that authenticate that the time data has not been tampered with. 
+it&#x27;s very old and abused for DDoS &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.cloudflare.com&#x2F;learning&#x2F;ddos&#x2F;ntp-amplification-ddos-attack&#x2F;&quot;&gt;amplification&lt;&#x2F;a&gt; attacks.&lt;&#x2F;p&gt;
+&lt;p&gt;NTS extends NTP by adding encrypted cookies that authenticate that the time data has not been tampered with.
 This cookie is recomputed every exchange of client&#x2F;server to prevent linkability.&lt;&#x2F;p&gt;
 &lt;p&gt;NTS also provides a unique identifier to detect spoofed packets.&lt;&#x2F;p&gt;
 &lt;p&gt;As well as an AHEAD algorithm used to encrypt the cookie.&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;datatracker.ietf.org&#x2F;doc&#x2F;html&#x2F;draft-ietf-ntp-using-nts-for-ntp-19?ref=dans-notes&quot;&gt;Here&#x27;s&lt;&#x2F;a&gt; the full draft.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;datatracker.ietf.org&#x2F;doc&#x2F;html&#x2F;draft-ietf-ntp-using-nts-for-ntp-19?ref=dans-notes&quot;&gt;Here&#x27;s&lt;&#x2F;a&gt; the full draft.&lt;&#x2F;p&gt;
 &lt;p&gt;Chrony can be easily configured for NTS as follows:&lt;&#x2F;p&gt;
 &lt;p&gt;Edit &lt;code&gt;&#x2F;etc&#x2F;chrony.conf&lt;&#x2F;code&gt; (make sure it&#x27;s installed first)&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# List of NTS servers:
@@ -1113,7 +1144,7 @@ This cookie is recomputed every exchange of client&#x2F;server to prevent linkab
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h3 id=&quot;icmp-tunneling&quot;&gt;ICMP tunneling&lt;&#x2F;h3&gt;
 &lt;p&gt;ICMP is another protocol that can be abused by an attacker to exfiltrate
-private data. It can also be abused as a DDoS attack. &lt;&#x2F;p&gt;
+private data. It can also be abused as a DDoS attack.&lt;&#x2F;p&gt;
 &lt;p&gt;In Fedora ICMP&#x27;s echo request&#x2F; echo reply can be disabled with the firwall:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;# first check if they&amp;#39;re already disabled 
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;firewall-cmd --query-icmp-block&lt;&#x2F;span&gt;&lt;span&gt;=echo-request
@@ -1125,7 +1156,7 @@ private data. It can also be abused as a DDoS attack. &lt;&#x2F;p&gt;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;I won&#x27;t cover firewalls in this small guide as they should each be configured
 to the user&#x27;s needs as well as the specific OS.&lt;&#x2F;p&gt;
-&lt;p&gt;Blocking ICMP pings is generally seen as bad practice. Better would be using 
+&lt;p&gt;Blocking ICMP pings is generally seen as bad practice. Better would be using
 whitelist filters in the firewall, instead of blocking them all.&lt;&#x2F;p&gt;
 &lt;h3 id=&quot;hardening-the-kernel&quot;&gt;Hardening the Kernel&lt;&#x2F;h3&gt;
 &lt;p&gt;The simplest way to pass arguments to the kernel is with sysctl.&lt;&#x2F;p&gt;
@@ -1159,20 +1190,28 @@ whitelist filters in the firewall, instead of blocking them all.&lt;&#x2F;p&gt;
 &lt;p&gt;Then make the changes without rebooting:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; sysctl&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -p&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;etc&#x2F;sysctl.conf
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;More hardening parameters can be found &lt;a href=&quot;https:&#x2F;&#x2F;madaidans-insecurities.github.io&#x2F;guides&#x2F;linux-hardening.html&quot;&gt;here&lt;&#x2F;a&gt;
-and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;Sysctl&quot;&gt;here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;More hardening parameters can be found &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;madaidans-insecurities.github.io&#x2F;guides&#x2F;linux-hardening.html&quot;&gt;here&lt;&#x2F;a&gt;
+and also &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;Sysctl&quot;&gt;here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 </content>
+        
     </entry>
     <entry xml:lang="en">
         <title>Using Rust, Axum, PostgreSQL, and Tokio to build a Blog</title>
         <published>2023-03-11T00:00:00+00:00</published>
         <updated>2023-03-11T00:00:00+00:00</updated>
+        
         <author>
-          <name>Unknown</name>
+          <name>
+            
+              Unknown
+            
+          </name>
         </author>
-        <link rel="alternate" href="https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/" type="text/html"/>
+        
+        <link rel="alternate" type="text/html" href="https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/"/>
         <id>https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/</id>
-        <content type="html">&lt;h3 id=&quot;in-this-tutorial-we-ll-be-creating-a-very-basic-blog-to-get-the-hang-of-axum&quot;&gt;In this tutorial we&#x27;ll be creating a very basic blog to get the hang of Axum.&lt;&#x2F;h3&gt;
+        
+        <content type="html" xml:base="https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/">&lt;h3 id=&quot;in-this-tutorial-we-ll-be-creating-a-very-basic-blog-to-get-the-hang-of-axum&quot;&gt;In this tutorial we&#x27;ll be creating a very basic blog to get the hang of Axum.&lt;&#x2F;h3&gt;
 &lt;h3 id=&quot;sure-you-could-just-use-a-static-site-generator-and-push-the-files-up-to-github-pages-but-where-s-the-fun-in-that&quot;&gt;Sure, you could just use a static site generator and push the files up to Github pages, but where&#x27;s the fun in that?&lt;&#x2F;h3&gt;
 &lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;gif&#x2F;blog_demo.gif&quot; alt=&quot;Alt text&quot; title=&quot;demo of Rust, Axum, Tokio, PostgreSQL blog&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
@@ -1216,16 +1255,16 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;br&gt;
 &lt;h2 id=&quot;a-brief-introduction-to-tokio-and-axum&quot;&gt;A brief introduction to Tokio and Axum&lt;&#x2F;h2&gt;
 &lt;p&gt;Let&#x27;s unpack Axum and Tokio a bit.&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;axum&#x2F;latest&#x2F;axum&#x2F;&quot;&gt;Axum&lt;&#x2F;a&gt; is a web framework built with Tokio, Hyper, and Tower. &lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;axum&#x2F;latest&#x2F;axum&#x2F;&quot;&gt;Axum&lt;&#x2F;a&gt; is a web framework built with Tokio, Hyper, and Tower.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::{http::StatusCode, routing::get, Router};
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;br&gt;
-&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tokio&#x2F;latest&#x2F;tokio&#x2F;&quot;&gt;Tokio&lt;&#x2F;a&gt; allows us to run asynchronous non-blocking code (but it can also run blocking code if needed). Its componets include: &lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tokio&#x2F;latest&#x2F;tokio&#x2F;&quot;&gt;Tokio&lt;&#x2F;a&gt; allows us to run asynchronous non-blocking code (but it can also run blocking code if needed). Its componets include:&lt;&#x2F;p&gt;
 &lt;ul&gt;
 &lt;li&gt;A scheduler that manages tasks pushed onto a run queue.&lt;&#x2F;li&gt;
-&lt;li&gt;An async I&#x2F;O driver that enables using &lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tokio&#x2F;latest&#x2F;tokio&#x2F;net&#x2F;index.html&quot;&gt;net&lt;&#x2F;a&gt;, &lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tokio&#x2F;latest&#x2F;tokio&#x2F;process&#x2F;index.html&quot;&gt;process&lt;&#x2F;a&gt;, &lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tokio&#x2F;latest&#x2F;tokio&#x2F;signal&#x2F;index.html&quot;&gt;signal&lt;&#x2F;a&gt;. &lt;&#x2F;li&gt;
+&lt;li&gt;An async I&#x2F;O driver that enables using &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tokio&#x2F;latest&#x2F;tokio&#x2F;net&#x2F;index.html&quot;&gt;net&lt;&#x2F;a&gt;, &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tokio&#x2F;latest&#x2F;tokio&#x2F;process&#x2F;index.html&quot;&gt;process&lt;&#x2F;a&gt;, &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tokio&#x2F;latest&#x2F;tokio&#x2F;signal&#x2F;index.html&quot;&gt;signal&lt;&#x2F;a&gt;.&lt;&#x2F;li&gt;
 &lt;li&gt;A time driver that enables using &lt;code&gt;tokio::time&lt;&#x2F;code&gt; on the runtime.&lt;&#x2F;li&gt;
-&lt;li&gt;Core threads that should have no blocking code and &lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tokio&#x2F;latest&#x2F;tokio&#x2F;task&#x2F;fn.spawn_blocking.html&quot;&gt;blocking&lt;&#x2F;a&gt; threads that can be spawned on demand to handle any blocking code.&lt;&#x2F;li&gt;
+&lt;li&gt;Core threads that should have no blocking code and &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tokio&#x2F;latest&#x2F;tokio&#x2F;task&#x2F;fn.spawn_blocking.html&quot;&gt;blocking&lt;&#x2F;a&gt; threads that can be spawned on demand to handle any blocking code.&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;br&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;tokio&lt;&#x2F;span&gt;&lt;span&gt;::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;spawn&lt;&#x2F;span&gt;&lt;span&gt;]
@@ -1234,7 +1273,7 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; unless in a closure and passed to tokio::task::spawn_blocking()
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;This is the equivalent of &lt;&#x2F;p&gt;
+&lt;p&gt;This is the equivalent of&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;() {
 &lt;&#x2F;span&gt;&lt;span&gt;	tokio::runtime::Builder::new_multi_thread()
 &lt;&#x2F;span&gt;&lt;span&gt;		.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;enable_all&lt;&#x2F;span&gt;&lt;span&gt;()
@@ -1250,14 +1289,14 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;route&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(index));
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Handlers can accept zero or more extractors as arguments.&lt;&#x2F;p&gt;
-&lt;p&gt;The ordering of the extractors is important as only one extractor can consume the request&#x27;s body. It should be placed as the last argument furthest to the right in your handler. &lt;&#x2F;p&gt;
+&lt;p&gt;The ordering of the extractors is important as only one extractor can consume the request&#x27;s body. It should be placed as the last argument furthest to the right in your handler.&lt;&#x2F;p&gt;
 &lt;p&gt;Anything that implements the IntoResponse trait can be returned by handlers. Axum takes care of implementing it for common types.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;index&lt;&#x2F;span&gt;&lt;span&gt;() -&amp;gt; String {
 &lt;&#x2F;span&gt;&lt;span&gt;    String::from(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;homepage&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;) 
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Just as an example, let&#x27;s use Axum&#x27;s TypedHeader extractor to send the user back their User-Agent (I&#x27;ll remove this extractor and feature after this demonstration).&lt;&#x2F;p&gt;
-&lt;p&gt;First I enable the headers feature in &lt;code&gt;Cargo.toml&lt;&#x2F;code&gt; &lt;&#x2F;p&gt;
+&lt;p&gt;First I enable the headers feature in &lt;code&gt;Cargo.toml&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;toml&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;axum &lt;&#x2F;span&gt;&lt;span&gt;= {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;version&lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.6.17&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;features &lt;&#x2F;span&gt;&lt;span&gt;= [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;headers&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Next I import the extractor and edit the index handler to extract the user agent and send it back to the user as a response.&lt;&#x2F;p&gt;
@@ -1274,11 +1313,11 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h2 id=&quot;configuring-the-database&quot;&gt;Configuring the database&lt;&#x2F;h2&gt;
-&lt;p&gt;Let&#x27;s get our database up and running. First make sure to &lt;a href=&quot;https:&#x2F;&#x2F;www.postgresql.org&#x2F;download&#x2F;&quot;&gt;download&lt;&#x2F;a&gt; and install PostgreSQL. &lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s get our database up and running. First make sure to &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.postgresql.org&#x2F;download&#x2F;&quot;&gt;download&lt;&#x2F;a&gt; and install PostgreSQL.&lt;&#x2F;p&gt;
 &lt;p&gt;Make sure the service is started (I&#x27;m running linux so here&#x27;s how I&#x27;d do it)&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl start postgresql
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Login using psql &lt;&#x2F;p&gt;
+&lt;p&gt;Login using psql&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo -u&lt;&#x2F;span&gt;&lt;span&gt; postgres psql postgres
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Setup a user and database (inside of psql run the following commands with your own username and password)&lt;&#x2F;p&gt;
@@ -1286,7 +1325,7 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;CREATE DATABASE &lt;&#x2F;span&gt;&lt;span&gt;mydb WITH &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;OWNER &lt;&#x2F;span&gt;&lt;span&gt;= myuser;
 &lt;&#x2F;span&gt;&lt;span&gt;\q
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Login with the new user and type in your password when prompted. In my case &amp;quot;mypass&amp;quot;.&lt;&#x2F;p&gt;
+&lt;p&gt;Login with the new user and type in your password when prompted. In my case &quot;mypass&quot;.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;psql -h&lt;&#x2F;span&gt;&lt;span&gt; localhost&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -d&lt;&#x2F;span&gt;&lt;span&gt; mydb&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -U&lt;&#x2F;span&gt;&lt;span&gt; myuser
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Create a table that will store our blog posts.&lt;&#x2F;p&gt;
@@ -1297,7 +1336,7 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;&#x2F;span&gt;&lt;span&gt;post_body &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;TEXT&lt;&#x2F;span&gt;&lt;span&gt;)	
 &lt;&#x2F;span&gt;&lt;span&gt;);
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Great! Personally, I enjoy creating blog posts in &lt;a href=&quot;https:&#x2F;&#x2F;docs.github.com&#x2F;en&#x2F;get-started&#x2F;writing-on-github&#x2F;getting-started-with-writing-and-formatting-on-github&#x2F;basic-writing-and-formatting-syntax&quot;&gt;markdown&lt;&#x2F;a&gt; format. For my editor I use &lt;a href=&quot;https:&#x2F;&#x2F;ghostwriter.kde.org&#x2F;&quot;&gt;Ghostwriter&lt;&#x2F;a&gt;. &lt;&#x2F;p&gt;
+&lt;p&gt;Great! Personally, I enjoy creating blog posts in &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.github.com&#x2F;en&#x2F;get-started&#x2F;writing-on-github&#x2F;getting-started-with-writing-and-formatting-on-github&#x2F;basic-writing-and-formatting-syntax&quot;&gt;markdown&lt;&#x2F;a&gt; format. For my editor I use &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;ghostwriter.kde.org&#x2F;&quot;&gt;Ghostwriter&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
 &lt;p&gt;I say this because I&#x27;ll be storing raw markdown into the field labeled post_body.&lt;&#x2F;p&gt;
 &lt;p&gt;We can now connect our app to PostgreSQL&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;code&gt;main.rs&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
@@ -1348,7 +1387,7 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h2 id=&quot;inserting-markdown-into-the-database&quot;&gt;Inserting markdown into the database&lt;&#x2F;h2&gt;
 &lt;p&gt;I suggest creating a new binary where we simply pass it a title and a markdown file as arguments.&lt;&#x2F;p&gt;
-&lt;p&gt;Edit Cargo.toml to include a second binary that will insert a markdown file into the database &lt;&#x2F;p&gt;
+&lt;p&gt;Edit Cargo.toml to include a second binary that will insert a markdown file into the database&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;toml&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;&lt;span&gt;[[bin]]
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;blog-rs&amp;quot;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;path &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;src&#x2F;main.rs&amp;quot;
@@ -1357,13 +1396,13 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;markd&amp;quot;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;path &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;src&#x2F;bin&#x2F;markd.rs&amp;quot;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Create a markdown file inside of src&#x2F;bin&#x2F;post.md with content of your choosing. Here&#x27;s mine: &lt;&#x2F;p&gt;
+&lt;p&gt;Create a markdown file inside of src&#x2F;bin&#x2F;post.md with content of your choosing. Here&#x27;s mine:&lt;&#x2F;p&gt;
 &lt;p&gt;src&#x2F;bin&#x2F;post.md&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;md&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-md &quot;&gt;&lt;code class=&quot;language-md&quot; data-lang=&quot;md&quot;&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;# This is a post 
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span&gt;with some content 
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Markd is very rudimentary. &lt;&#x2F;p&gt;
+&lt;p&gt;Markd is very rudimentary.&lt;&#x2F;p&gt;
 &lt;p&gt;It lacks any capabilities besides inserting a single file into our database.&lt;&#x2F;p&gt;
 &lt;p&gt;Create src&#x2F;bin&#x2F;markd.rs&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;std::env;
@@ -1408,12 +1447,12 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;&#x2F;span&gt;&lt;span&gt;    Ok(())
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;We can now use this separate binary to insert our posts into the database using the following command: &lt;&#x2F;p&gt;
+&lt;p&gt;We can now use this separate binary to insert our posts into the database using the following command:&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; run&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --bin&lt;&#x2F;span&gt;&lt;span&gt; markd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;My post&amp;#39;s title&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt; .&#x2F;post.md
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Of course you&#x27;d give a different title for each new post.&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;using-askama-to-render-markdown-into-templates&quot;&gt;Using Askama to render markdown into templates&lt;&#x2F;h2&gt;
-&lt;p&gt;So far so good. How about we add &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;djc&#x2F;askama&quot;&gt;Askama&lt;&#x2F;a&gt; template engine to render our markdown posts into html. &lt;&#x2F;p&gt;
+&lt;p&gt;So far so good. How about we add &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;djc&#x2F;askama&quot;&gt;Askama&lt;&#x2F;a&gt; template engine to render our markdown posts into html.&lt;&#x2F;p&gt;
 &lt;p&gt;edit &lt;code&gt;main.rs&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;askama::Template;
 &lt;&#x2F;span&gt;&lt;span&gt;
@@ -1429,7 +1468,7 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Askama looks for templates outside of the src folder. Create a folder called templates in the same spot that your Cargo.toml resides.&lt;&#x2F;p&gt;
-&lt;p&gt;We should also make a base template that our post template can extend from. &lt;&#x2F;p&gt;
+&lt;p&gt;We should also make a base template that our post template can extend from.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;code&gt;templates&#x2F;base.html&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;html&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-html &quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span&gt;&amp;lt;!&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;DOCTYPE &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;html&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
 &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;html &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;lang&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;en&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
@@ -1462,7 +1501,7 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;div&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
 &lt;&#x2F;span&gt;&lt;span&gt;{% endblock post %}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;We need a handler to serve our static CSS. Fortunately, &lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tower&#x2F;latest&#x2F;tower&#x2F;&quot;&gt;Tower&lt;&#x2F;a&gt; has middleware we can use including &lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tower-http&#x2F;latest&#x2F;tower_http&#x2F;&quot;&gt;tower_http&lt;&#x2F;a&gt; to take care of this.&lt;&#x2F;p&gt;
+&lt;p&gt;We need a handler to serve our static CSS. Fortunately, &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tower&#x2F;latest&#x2F;tower&#x2F;&quot;&gt;Tower&lt;&#x2F;a&gt; has middleware we can use including &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tower-http&#x2F;latest&#x2F;tower_http&#x2F;&quot;&gt;tower_http&lt;&#x2F;a&gt; to take care of this.&lt;&#x2F;p&gt;
 &lt;p&gt;First create a folder titled &lt;code&gt;assets&lt;&#x2F;code&gt; in the same spot that main.rs resides. Inside of assets create &lt;code&gt;post.css&lt;&#x2F;code&gt; with some CSS.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;code&gt;assets&#x2F;post.css&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;css&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-css &quot;&gt;&lt;code class=&quot;language-css&quot; data-lang=&quot;css&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;body &lt;&#x2F;span&gt;&lt;span&gt;{
@@ -1521,7 +1560,7 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;&#x2F;span&gt;&lt;span&gt;    }
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Ok great, but how will the user ever find our posts? &lt;&#x2F;p&gt;
+&lt;p&gt;Ok great, but how will the user ever find our posts?&lt;&#x2F;p&gt;
 &lt;p&gt;How about sending them a list of links to all our posts.&lt;&#x2F;p&gt;
 &lt;p&gt;edit &lt;code&gt;main.rs&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; create an Axum template for our homepage
@@ -1576,20 +1615,20 @@ and also &lt;a href=&quot;https:&#x2F;&#x2F;wiki.archlinux.org&#x2F;title&#x2F;S
 &lt;&#x2F;span&gt;&lt;span&gt;	&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;body&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
 &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;html&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Remember to insert your markdown into the database with this command &lt;&#x2F;p&gt;
+&lt;p&gt;Remember to insert your markdown into the database with this command&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; run&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --bin&lt;&#x2F;span&gt;&lt;span&gt; markd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Some title&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt; .&#x2F;post.md
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;And now we run the server&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; run&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --bin&lt;&#x2F;span&gt;&lt;span&gt; blog-rs 
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;We&#x27;re pretty much done, but I want to demonstrate how to create a custom Askama filter. &lt;&#x2F;p&gt;
+&lt;p&gt;We&#x27;re pretty much done, but I want to demonstrate how to create a custom Askama filter.&lt;&#x2F;p&gt;
 &lt;p&gt;I&#x27;ll be adding dashes to the titles to make them more URL friendly.&lt;&#x2F;p&gt;
 &lt;p&gt;Because this:&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;code&gt;localhost:4000&#x2F;post&#x2F;Some-Title&lt;&#x2F;code&gt; &lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;localhost:4000&#x2F;post&#x2F;Some-Title&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;is more readable than this:&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;code&gt;localhost:4000&#x2F;post&#x2F;Some&amp;amp;20Title&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
-&lt;p&gt;However, this will also make each post title have dashes. My simple &amp;quot;rmdashes&amp;quot; filter will remove the dashes to make the titles appear more pleasant in the page. &lt;&#x2F;p&gt;
-&lt;p&gt;Askama searches for custom filters inside of &lt;code&gt;mod filters {}&lt;&#x2F;code&gt; &lt;&#x2F;p&gt;
+&lt;p&gt;However, this will also make each post title have dashes. My simple &quot;rmdashes&quot; filter will remove the dashes to make the titles appear more pleasant in the page.&lt;&#x2F;p&gt;
+&lt;p&gt;Askama searches for custom filters inside of &lt;code&gt;mod filters {}&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;edit &lt;code&gt;main.rs&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;mod &lt;&#x2F;span&gt;&lt;span&gt;filters {
 &lt;&#x2F;span&gt;&lt;span&gt;
@@ -1629,16 +1668,17 @@ want the dashes in the web page. Only in the URL.&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;optimizing-the-final-binary&quot;&gt;Optimizing the final binary&lt;&#x2F;h2&gt;
 &lt;p&gt;Use this command to view file sizes, on linux: &lt;code&gt;ls -lh blog-rs&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;My binary, inside of &lt;code&gt;target&#x2F;debug&#x2F;blog-rs&lt;&#x2F;code&gt; , is at 126M.&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;nnethercote.github.io&#x2F;perf-book&#x2F;build-configuration.html&quot;&gt;Here&#x27;s&lt;&#x2F;a&gt; an excellent guide on optimizing your binary.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;nnethercote.github.io&#x2F;perf-book&#x2F;build-configuration.html&quot;&gt;Here&#x27;s&lt;&#x2F;a&gt; an excellent guide on optimizing your binary.&lt;&#x2F;p&gt;
 &lt;p&gt;Building my binary with the --release flag reduces the size to only 13M.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; build&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --release 
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;An optimized binary now resides in &lt;code&gt;target&#x2F;release&#x2F;blog-rs&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
-&lt;p&gt;Want a smaller binary size? &lt;&#x2F;p&gt;
-&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;upx.github.io&#x2F;&quot;&gt;UPX&lt;&#x2F;a&gt; gets my binary down further to 3.9M&lt;&#x2F;p&gt;
+&lt;p&gt;Want a smaller binary size?&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;upx.github.io&#x2F;&quot;&gt;UPX&lt;&#x2F;a&gt; gets my binary down further to 3.9M&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;upx&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;target&#x2F;release&#x2F;blog-rs
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Here&#x27;s the full code for this project: &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;rust-blog-example&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;rust-blog-example&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Here&#x27;s the full code for this project: &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;rust-blog-example&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;rust-blog-example&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 </content>
+        
     </entry>
 </feed>
