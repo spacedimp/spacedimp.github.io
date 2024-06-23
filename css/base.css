@@ -435,7 +435,9 @@ nav ul li a:hover {
 }
 
 .logo {
-	height: 106px;
+	height: 30%;
+	width: 100%;
+	text-align: center;
 }
 
 .footer {
