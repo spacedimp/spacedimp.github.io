@@ -4,8 +4,239 @@
     <link rel="self" type="application/atom+xml" href="https://spacedimp.com/atom.xml"/>
     <link rel="alternate" type="text/html" href="https://spacedimp.com"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2023-08-06T00:00:00+00:00</updated>
+    <updated>2024-11-29T00:00:00+00:00</updated>
     <id>https://spacedimp.com/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Getting Started with SurrealDB 2 and Axum for Web Development</title>
+        <published>2024-11-29T00:00:00+00:00</published>
+        <updated>2024-11-29T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://spacedimp.com/blog/using-rust-axum-surrealdb-to-build-a-webapp/"/>
+        <id>https://spacedimp.com/blog/using-rust-axum-surrealdb-to-build-a-webapp/</id>
+        
+        <content type="html" xml:base="https://spacedimp.com/blog/using-rust-axum-surrealdb-to-build-a-webapp/">&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;gif&#x2F;surreal.gif&quot; alt=&quot;Alt text&quot; title=&quot;demo of Rust, Axum, SurrealDB&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The goal of this blog post is to help beginners grasp the basics of using SurrealDB 2 and Axum for web development.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;I find the technology fascinating, but readers should be aware that SurrealDB v1 upset many users due to the lack of documentation and poor performance&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;However, version 2 fixes several performance and bug issues. One such improvement is that the in-memory storage is now powered by SurrealKV, which is concurrent, meaning that read&#x2F;write operations scale with the number of CPUs.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;understanding-surrealdb-s-architecture&quot;&gt;Understanding SurrealDB&#x27;s Architecture&lt;&#x2F;h2&gt;
+&lt;p&gt;SurrealDB separates its query language (called &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;docs&#x2F;surrealql&quot;&gt;SurrealQL&lt;&#x2F;a&gt;) from its data storage backend. This flexibility allows you to choose the best storage option for your project. While I&#x27;ll be using SurrealKV locally for simplicity, &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;surrealdb&#x2F;latest&#x2F;surrealdb&#x2F;engine&#x2F;any&#x2F;fn.connect.html#examples&quot;&gt;other options&lt;&#x2F;a&gt; are available, such as TikV for distributed storage or other in-memory solutions.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;docs&#x2F;surrealql&quot;&gt;SurrealQL&lt;&#x2F;a&gt; from the data storage. I&#x27;ll be using SurrealKV locally but there are other options including TikV for distributed and in memory to name a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;surrealdb&#x2F;latest&#x2F;surrealdb&#x2F;engine&#x2F;any&#x2F;fn.connect.html#examples&quot;&gt;few&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Check out the SurrealDB &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;docs&#x2F;surrealdb&#x2F;introduction&#x2F;start&quot;&gt;getting started&lt;&#x2F;a&gt; page to start up an in memory data store. I would recommend clicking on &quot;Using CLI&quot; to learn how to connect to the database in the terminal.&lt;&#x2F;p&gt;
+&lt;p&gt;I found the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;learn&#x2F;book&quot;&gt;book&lt;&#x2F;a&gt; very helpful in learning the language.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;&#x2F;h2&gt;
+&lt;p&gt;Before getting started, make sure you have the following installed:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.rust-lang.org&#x2F;tools&#x2F;install&quot;&gt;Rust&lt;&#x2F;a&gt; installed&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;surrealdb&#x2F;surrealdb?tab=readme-ov-file#installation&quot;&gt;SurrealDB&lt;&#x2F;a&gt; installed&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;step-1-create-the-project&quot;&gt;Step 1. Create the Project&lt;&#x2F;h2&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; new webapp
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;add dependencies&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;cd&lt;&#x2F;span&gt;&lt;span&gt; webapp
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; add axum
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; add serde&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --features&lt;&#x2F;span&gt;&lt;span&gt; derive
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; add surrealdb&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --features&lt;&#x2F;span&gt;&lt;span&gt; kv-surrealkv
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; add thiserror
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; add tokio&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --features&lt;&#x2F;span&gt;&lt;span&gt; full
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; add serde_json
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;br&gt;
+&lt;p&gt;Now start up a SurrealKV storage engine at localhost:8080&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;surreal&lt;&#x2F;span&gt;&lt;span&gt; start&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --user&lt;&#x2F;span&gt;&lt;span&gt; root&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --pass&lt;&#x2F;span&gt;&lt;span&gt; password&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --bind&lt;&#x2F;span&gt;&lt;span&gt; 127.0.0.1:8080 surrealkv:&#x2F;&#x2F;mydb
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;In depth examples of using surreal start &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;docs&#x2F;surrealdb&#x2F;cli&#x2F;start&quot;&gt;here&lt;&#x2F;a&gt;. Make sure to select V2.x&lt;&#x2F;p&gt;
+&lt;p&gt;From a second terminal, connect to the engine and set the database to test_db and namespace to test_ns&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;surreal&lt;&#x2F;span&gt;&lt;span&gt; sql&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --endpoint&lt;&#x2F;span&gt;&lt;span&gt; http:&#x2F;&#x2F;127.0.0.1:8080&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --user&lt;&#x2F;span&gt;&lt;span&gt; root&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --pass&lt;&#x2F;span&gt;&lt;span&gt; password&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --ns&lt;&#x2F;span&gt;&lt;span&gt; test_ns&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --db&lt;&#x2F;span&gt;&lt;span&gt; test_db
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;In depth examples of using surreal sql &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;docs&#x2F;surrealdb&#x2F;cli&#x2F;sql&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;step-2-insert-some-data-in-the-database&quot;&gt;Step 2. Insert some data in the database&lt;&#x2F;h2&gt;
+&lt;p&gt;After the last surreal sql ... statement you should be connected:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;test_ns&#x2F;test_db&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;I will create a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;docs&#x2F;surrealql&#x2F;statements&#x2F;define&#x2F;table&quot;&gt;TABLE&lt;&#x2F;a&gt; called users and set the table to have structured, predictable data types with a &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;docs&#x2F;tutorials&#x2F;define-a-schema&quot;&gt;Schema&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sql&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-sql &quot;&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span&gt;DEFINE TABLE IF NOT EXISTS users SCHEMAFULL;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Scrolling down in that last Schema link will show the user that at any point we can add a field to our table that is schemaless using FLELXIBLE. Perhaps for metatdata.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s add a username &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;docs&#x2F;surrealql&#x2F;statements&#x2F;define&#x2F;field&quot;&gt;FIELD&lt;&#x2F;a&gt; to the table that&#x27;s only allowed to be under 14 characters long&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sql&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-sql &quot;&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span&gt;DEFINE FIELD username ON TABLE users TYPE string ASSERT string::len($value) &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;14&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Next we can define an &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;docs&#x2F;surrealql&#x2F;statements&#x2F;define&#x2F;indexes&quot;&gt;INDEX&lt;&#x2F;a&gt; for the username to make it a unique field.&lt;&#x2F;p&gt;
+&lt;p&gt;Reading through the docs tells us that indexes are used to speed up query execution times dramatically.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sql&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-sql &quot;&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span&gt;DEFINE INDEX usernameIndex ON TABLE users COLUMNS username UNIQUE;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now let&#x27;s &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;docs&#x2F;surrealql&#x2F;statements&#x2F;create&quot;&gt;CREATE&lt;&#x2F;a&gt; a user&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sql&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-sql &quot;&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span&gt;CREATE users &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;SET&lt;&#x2F;span&gt;&lt;span&gt; username = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;User1&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;and we can see from the output that SurrealDB automatically gives us an id field&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;[[{&lt;&#x2F;span&gt;&lt;span&gt; id: users:2272f7xnqi502d9it9q4, username: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;User1&amp;#39; &lt;&#x2F;span&gt;&lt;span&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;]]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;we could have also created the unique id with this command (skip, just for example):&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sql&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-sql &quot;&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span&gt;CREATE users:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;1 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;SET&lt;&#x2F;span&gt;&lt;span&gt; username = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;User1&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;br&gt;
+&lt;h2 id=&quot;step-3-write-some-rust-code&quot;&gt;Step 3. Write some Rust code&lt;&#x2F;h2&gt;
+&lt;p&gt;Open src&#x2F;main.rs and grab all the dependencies we added&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::{extract::State, routing::get, Router, Json, extract::Path, response::IntoResponse };
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;surrealdb::Surreal;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;serde::{Deserialize, Serialize};
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;std::sync::Arc;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;tokio::sync::Mutex;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;surrealdb::engine::any::Any;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We should pause here and take a look at the official SurrealDB example of using the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;docs&#x2F;sdk&#x2F;rust&#x2F;frameworks&#x2F;axum&quot;&gt;Rust SDK&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Ok so it says we should convert Surreal errors into Axum responses (copy paste the boilerplate)&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;mod &lt;&#x2F;span&gt;&lt;span&gt;error {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::http::StatusCode;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::response::IntoResponse;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::response::Response;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::Json;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;thiserror::Error;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    #[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;derive&lt;&#x2F;span&gt;&lt;span&gt;(Error, Debug)]
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub enum &lt;&#x2F;span&gt;&lt;span&gt;Error {
+&lt;&#x2F;span&gt;&lt;span&gt;        #[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;error&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;database error&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)]
+&lt;&#x2F;span&gt;&lt;span&gt;        Db,
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;impl &lt;&#x2F;span&gt;&lt;span&gt;IntoResponse &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;Error {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;into_response&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; Response {
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;match &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;self &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;            Error::Db=&amp;gt; (StatusCode::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;INTERNAL_SERVER_ERROR&lt;&#x2F;span&gt;&lt;span&gt;, Json(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;An error has occurred. Please try again later.&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;to_string&lt;&#x2F;span&gt;&lt;span&gt;())).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;into_response&lt;&#x2F;span&gt;&lt;span&gt;(),
+&lt;&#x2F;span&gt;&lt;span&gt;            }
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;impl &lt;&#x2F;span&gt;&lt;span&gt;From&amp;lt;surrealdb::Error&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;Error {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;from&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;error&lt;&#x2F;span&gt;&lt;span&gt;: surrealdb::Error) -&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;Self &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;            eprintln!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{error}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;Self&lt;&#x2F;span&gt;&lt;span&gt;::Db
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Alright with the boilerplate out of the way I want to discuss &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;blog&#x2F;introducing-surrealany-dynamic-support-for-any-engine-in-rust&quot;&gt;surrealdb::engine::any&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;I mentioned that I would be using SurrealKV as the database engine, but really SurrealDB doesn&#x27;t force us to stick with one. The link right above explains how the query language is completely separate from the database engine.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; make sure our database is accessible from all routes
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;derive&lt;&#x2F;span&gt;&lt;span&gt;(Clone)]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;struct &lt;&#x2F;span&gt;&lt;span&gt;AppState {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;db&lt;&#x2F;span&gt;&lt;span&gt;: Arc&amp;lt;Mutex&amp;lt;Surreal&amp;lt;Any&amp;gt;&amp;gt;&amp;gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;tokio&lt;&#x2F;span&gt;&lt;span&gt;::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;() -&amp;gt; Result&amp;lt;(), error::Error&amp;gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; any allows us to swap between rocksdb:&#x2F;&#x2F;mydb, mem:&#x2F;&#x2F;, etc. 
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; db = surrealdb::engine::any::connect(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;surrealkv:&#x2F;&#x2F;mydb&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;).await?;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; authenticate
+&lt;&#x2F;span&gt;&lt;span&gt;db.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;signin&lt;&#x2F;span&gt;&lt;span&gt;(surrealdb::opt::auth::Root {
+&lt;&#x2F;span&gt;&lt;span&gt;    username: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;root&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    password: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;password&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;}).await?;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; select a namespace and a database inside that namespace
+&lt;&#x2F;span&gt;&lt;span&gt;db.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;use_ns&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;test_ns&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;use_db&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;test_db&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;).await?;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; for routes to access the database, Axum provides AppState
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; app_state = AppState {
+&lt;&#x2F;span&gt;&lt;span&gt;    db: Arc::new(Mutex::new(db))
+&lt;&#x2F;span&gt;&lt;span&gt;};
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; define our routes to create, delete, get users
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; app = Router::new()
+&lt;&#x2F;span&gt;&lt;span&gt;    .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;route&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(get_users))
+&lt;&#x2F;span&gt;&lt;span&gt;    .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;route&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;create&#x2F;:uname&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(create_user))
+&lt;&#x2F;span&gt;&lt;span&gt;    .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;route&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;delete&#x2F;:uname&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(delete_user))
+&lt;&#x2F;span&gt;&lt;span&gt;    .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;with_state&lt;&#x2F;span&gt;&lt;span&gt;(app_state);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; listener = tokio::net::TcpListener::bind(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.0.0.0:3000&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;).await.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;axum::serve(listener, app).await.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Ok(())
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;For brevity I&#x27;ll just use get requests with the data directly in the path.&lt;&#x2F;p&gt;
+&lt;p&gt;However, you can use RESTful APIs such as delete, post, etc. Then access the &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;surrealdb.com&#x2F;docs&#x2F;surrealdb&#x2F;integration&#x2F;http&quot;&gt;endpoints&lt;&#x2F;a&gt; with curl&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;curl -I&lt;&#x2F;span&gt;&lt;span&gt; http:&#x2F;&#x2F;localhost:8080&#x2F;status
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;HTTP&#x2F;1.1&lt;&#x2F;span&gt;&lt;span&gt; 200 OK
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;content-length:&lt;&#x2F;span&gt;&lt;span&gt; 0
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;vary:&lt;&#x2F;span&gt;&lt;span&gt; origin, access-control-request-method, access-control-request-headers
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;access-control-allow-origin: &lt;&#x2F;span&gt;&lt;span&gt;*
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;surreal-version:&lt;&#x2F;span&gt;&lt;span&gt; surrealdb-2.0.0+20240910.8f30ee08
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;server:&lt;&#x2F;span&gt;&lt;span&gt; SurrealDB
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;x-request-id:&lt;&#x2F;span&gt;&lt;span&gt; 3dedcc96-4d8a-451e-b60d-4eaac14fa3f8
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;date:&lt;&#x2F;span&gt;&lt;span&gt; Wed, 11 Sep 2024 00:52:49 GMT
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now we should write a database query to define our table if it doesn&#x27;t exist. Just like we did manually at the start of the tutorial.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;db.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;query&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;DEFINE TABLE IF NOT EXISTS users SCHEMAFULL;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;    DEFINE FIELD IF NOT EXISTS username ON TABLE users TYPE string ASSERT string::len($value) &amp;lt; 14;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;    DEFINE INDEX IF NOT EXISTS usernameIndex ON TABLE users COLUMNS username UNIQUE;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;    &amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;).await?;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And now we create the routes&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; schema to insert or get users 
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;derive&lt;&#x2F;span&gt;&lt;span&gt;(Serialize, Deserialize, Clone)]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub struct &lt;&#x2F;span&gt;&lt;span&gt;User {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;username&lt;&#x2F;span&gt;&lt;span&gt;: String,
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; retrieve all users 
+&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; 127.0.0.1:3000&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;get_users&lt;&#x2F;span&gt;&lt;span&gt;(State(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;state&lt;&#x2F;span&gt;&lt;span&gt;): State&amp;lt;AppState&amp;gt;) -&amp;gt; Result&amp;lt;Json&amp;lt;Vec&amp;lt;User&amp;gt;&amp;gt;, error::Error&amp;gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; db = state.db.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;lock&lt;&#x2F;span&gt;&lt;span&gt;().await;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let mut&lt;&#x2F;span&gt;&lt;span&gt; response = db.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;query&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;SELECT * FROM users&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;).await?;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; result: Vec&amp;lt;User&amp;gt; = response.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;take&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;)?;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    Ok(Json(result))
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now to create a user at localhost:3000&#x2F;create&#x2F;newusername&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;create_user&lt;&#x2F;span&gt;&lt;span&gt;(Path(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;uname&lt;&#x2F;span&gt;&lt;span&gt;): Path&amp;lt;String&amp;gt;, State(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;state&lt;&#x2F;span&gt;&lt;span&gt;): State&amp;lt;AppState&amp;gt;) -&amp;gt; Result&amp;lt;impl IntoResponse, error::Error&amp;gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; db = state.db.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;lock&lt;&#x2F;span&gt;&lt;span&gt;().await;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; newUser: Option&amp;lt;User&amp;gt; = db.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;create&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;users&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;content&lt;&#x2F;span&gt;&lt;span&gt;(User {
+&lt;&#x2F;span&gt;&lt;span&gt;        username: uname,
+&lt;&#x2F;span&gt;&lt;span&gt;    }).await?;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    Ok(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Success creating new user&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And we can delete a user at localhost:3000&#x2F;delete&#x2F;newusername&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;delete_user&lt;&#x2F;span&gt;&lt;span&gt;(Path(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;uname&lt;&#x2F;span&gt;&lt;span&gt;): Path&amp;lt;String&amp;gt;, State(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;state&lt;&#x2F;span&gt;&lt;span&gt;): State&amp;lt;AppState&amp;gt;) -&amp;gt; Result&amp;lt;impl IntoResponse, error::Error&amp;gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; db = state.db.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;lock&lt;&#x2F;span&gt;&lt;span&gt;().await;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    db.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;query&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;DELETE FROM users WHERE username = $username&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;bind&lt;&#x2F;span&gt;&lt;span&gt;((&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;username&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, uname)).await?;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    Ok(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Success deleting user&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;With this basic setup in place, you can start experimenting with more complex queries, adding authentication, or introducing new features to your app. The full code is available on &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;Rust-Axum-SurrealDB-example&#x2F;tree&#x2F;master&quot;&gt;Github&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Happy coding!&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>How to Properly Learn Rust Programming</title>
         <published>2023-08-06T00:00:00+00:00</published>

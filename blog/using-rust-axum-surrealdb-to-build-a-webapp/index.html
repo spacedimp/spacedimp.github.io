@@ -1,0 +1,140 @@
+<!doctype html><html lang=en><head><title> Getting Started with SurrealDB 2 and Axum for Web Development </title><meta charset=UTF-8><link href=/css/base.css rel=stylesheet><meta content="width=device-width,initial-scale=1" name=viewport><link href=/favicon.svg rel=icon><body><nav><ul><li class=logo><a href=https://spacedimp.com/><img src=/splashscreen.png></a><li><a href=https://spacedimp.com/>Home</a><li><a href=https://spacedimp.com/blog/>Blog</a></ul></nav><h1>Getting Started with SurrealDB 2 and Axum for Web Development</h1><p>2024-11-29<p><img alt="Alt text" title="demo of Rust, Axum, SurrealDB" src=/img/gif/surreal.gif><p>The goal of this blog post is to help beginners grasp the basics of using SurrealDB 2 and Axum for web development.<blockquote><p>I find the technology fascinating, but readers should be aware that SurrealDB v1 upset many users due to the lack of documentation and poor performance</blockquote><p>However, version 2 fixes several performance and bug issues. One such improvement is that the in-memory storage is now powered by SurrealKV, which is concurrent, meaning that read/write operations scale with the number of CPUs.<h2 id=understanding-surrealdb-s-architecture>Understanding SurrealDB's Architecture</h2><p>SurrealDB separates its query language (called <a href=https://surrealdb.com/docs/surrealql rel=noopener target=_blank>SurrealQL</a>) from its data storage backend. This flexibility allows you to choose the best storage option for your project. While I'll be using SurrealKV locally for simplicity, <a href=https://docs.rs/surrealdb/latest/surrealdb/engine/any/fn.connect.html#examples rel=noopener target=_blank>other options</a> are available, such as TikV for distributed storage or other in-memory solutions.<p><a href=https://surrealdb.com/docs/surrealql rel=noopener target=_blank>SurrealQL</a> from the data storage. I'll be using SurrealKV locally but there are other options including TikV for distributed and in memory to name a <a href=https://docs.rs/surrealdb/latest/surrealdb/engine/any/fn.connect.html#examples rel=noopener target=_blank>few</a>.<p>Check out the SurrealDB <a href=https://surrealdb.com/docs/surrealdb/introduction/start rel=noopener target=_blank>getting started</a> page to start up an in memory data store. I would recommend clicking on "Using CLI" to learn how to connect to the database in the terminal.<p>I found the <a href=https://surrealdb.com/learn/book rel=noopener target=_blank>book</a> very helpful in learning the language.<h2 id=prerequisites>Prerequisites</h2><p>Before getting started, make sure you have the following installed:<ul><li><p><a href=https://www.rust-lang.org/tools/install rel=noopener target=_blank>Rust</a> installed</p><li><p><a href="https://github.com/surrealdb/surrealdb?tab=readme-ov-file#installation" rel=noopener target=_blank>SurrealDB</a> installed</p></ul><h2 id=step-1-create-the-project>Step 1. Create the Project</h2><pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>cargo</span><span> new webapp
+</span></code></pre><p>add dependencies<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#56b6c2>cd</span><span> webapp
+</span><span>
+</span><span style=color:#e06c75>cargo</span><span> add axum
+</span><span style=color:#e06c75>cargo</span><span> add serde</span><span style=color:#e06c75> --features</span><span> derive
+</span><span style=color:#e06c75>cargo</span><span> add surrealdb</span><span style=color:#e06c75> --features</span><span> kv-surrealkv
+</span><span style=color:#e06c75>cargo</span><span> add thiserror
+</span><span style=color:#e06c75>cargo</span><span> add tokio</span><span style=color:#e06c75> --features</span><span> full
+</span><span style=color:#e06c75>cargo</span><span> add serde_json
+</span></code></pre><br><p>Now start up a SurrealKV storage engine at localhost:8080<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>surreal</span><span> start</span><span style=color:#e06c75> --user</span><span> root</span><span style=color:#e06c75> --pass</span><span> password</span><span style=color:#e06c75> --bind</span><span> 127.0.0.1:8080 surrealkv://mydb
+</span></code></pre><p>In depth examples of using surreal start <a href=https://surrealdb.com/docs/surrealdb/cli/start rel=noopener target=_blank>here</a>. Make sure to select V2.x<p>From a second terminal, connect to the engine and set the database to test_db and namespace to test_ns<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>surreal</span><span> sql</span><span style=color:#e06c75> --endpoint</span><span> http://127.0.0.1:8080</span><span style=color:#e06c75> --user</span><span> root</span><span style=color:#e06c75> --pass</span><span> password</span><span style=color:#e06c75> --ns</span><span> test_ns</span><span style=color:#e06c75> --db</span><span> test_db
+</span></code></pre><p>In depth examples of using surreal sql <a href=https://surrealdb.com/docs/surrealdb/cli/sql rel=noopener target=_blank>here</a><h2 id=step-2-insert-some-data-in-the-database>Step 2. Insert some data in the database</h2><p>After the last surreal sql ... statement you should be connected:<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>test_ns/test_db</span><span>>
+</span></code></pre><p>I will create a <a href=https://surrealdb.com/docs/surrealql/statements/define/table rel=noopener target=_blank>TABLE</a> called users and set the table to have structured, predictable data types with a <a href=https://surrealdb.com/docs/tutorials/define-a-schema rel=noopener target=_blank>Schema</a>.<pre class=language-sql data-lang=sql style=color:#abb2bf;background-color:#282c34><code class=language-sql data-lang=sql><span>DEFINE TABLE IF NOT EXISTS users SCHEMAFULL;
+</span></code></pre><p>Scrolling down in that last Schema link will show the user that at any point we can add a field to our table that is schemaless using FLELXIBLE. Perhaps for metatdata.<p>Let's add a username <a href=https://surrealdb.com/docs/surrealql/statements/define/field rel=noopener target=_blank>FIELD</a> to the table that's only allowed to be under 14 characters long<pre class=language-sql data-lang=sql style=color:#abb2bf;background-color:#282c34><code class=language-sql data-lang=sql><span>DEFINE FIELD username ON TABLE users TYPE string ASSERT string::len($value) < </span><span style=color:#d19a66>14</span><span>;
+</span></code></pre><p>Next we can define an <a href=https://surrealdb.com/docs/surrealql/statements/define/indexes rel=noopener target=_blank>INDEX</a> for the username to make it a unique field.<p>Reading through the docs tells us that indexes are used to speed up query execution times dramatically.<pre class=language-sql data-lang=sql style=color:#abb2bf;background-color:#282c34><code class=language-sql data-lang=sql><span>DEFINE INDEX usernameIndex ON TABLE users COLUMNS username UNIQUE;
+</span></code></pre><p>Now let's <a href=https://surrealdb.com/docs/surrealql/statements/create rel=noopener target=_blank>CREATE</a> a user<pre class=language-sql data-lang=sql style=color:#abb2bf;background-color:#282c34><code class=language-sql data-lang=sql><span>CREATE users </span><span style=color:#c678dd>SET</span><span> username = </span><span style=color:#98c379>"User1"</span><span>;
+</span></code></pre><p>and we can see from the output that SurrealDB automatically gives us an id field<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>[[{</span><span> id: users:2272f7xnqi502d9it9q4, username: </span><span style=color:#98c379>'User1' </span><span>}</span><span style=color:#e06c75>]]
+</span></code></pre><p>we could have also created the unique id with this command (skip, just for example):<pre class=language-sql data-lang=sql style=color:#abb2bf;background-color:#282c34><code class=language-sql data-lang=sql><span>CREATE users:</span><span style=color:#d19a66>1 </span><span style=color:#c678dd>SET</span><span> username = </span><span style=color:#98c379>"User1"</span><span>;
+</span></code></pre><br><h2 id=step-3-write-some-rust-code>Step 3. Write some Rust code</h2><p>Open src/main.rs and grab all the dependencies we added<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>use </span><span>axum::{extract::State, routing::get, Router, Json, extract::Path, response::IntoResponse };
+</span><span style=color:#c678dd>use </span><span>surrealdb::Surreal;
+</span><span style=color:#c678dd>use </span><span>serde::{Deserialize, Serialize};
+</span><span style=color:#c678dd>use </span><span>std::sync::Arc;
+</span><span style=color:#c678dd>use </span><span>tokio::sync::Mutex;
+</span><span style=color:#c678dd>use </span><span>surrealdb::engine::any::Any;
+</span></code></pre><p>We should pause here and take a look at the official SurrealDB example of using the <a href=https://surrealdb.com/docs/sdk/rust/frameworks/axum rel=noopener target=_blank>Rust SDK</a><p>Ok so it says we should convert Surreal errors into Axum responses (copy paste the boilerplate)<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>mod </span><span>error {
+</span><span>    </span><span style=color:#c678dd>use </span><span>axum::http::StatusCode;
+</span><span>    </span><span style=color:#c678dd>use </span><span>axum::response::IntoResponse;
+</span><span>    </span><span style=color:#c678dd>use </span><span>axum::response::Response;
+</span><span>    </span><span style=color:#c678dd>use </span><span>axum::Json;
+</span><span>    </span><span style=color:#c678dd>use </span><span>thiserror::Error;
+</span><span>
+</span><span>    #[</span><span style=color:#e06c75>derive</span><span>(Error, Debug)]
+</span><span>    </span><span style=color:#c678dd>pub enum </span><span>Error {
+</span><span>        #[</span><span style=color:#e06c75>error</span><span>(</span><span style=color:#98c379>"database error"</span><span>)]
+</span><span>        Db,
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#c678dd>impl </span><span>IntoResponse </span><span style=color:#c678dd>for </span><span>Error {
+</span><span>        </span><span style=color:#c678dd>fn </span><span style=color:#61afef>into_response</span><span>(</span><span style=color:#e06c75>self</span><span>) -> Response {
+</span><span>            </span><span style=color:#c678dd>match </span><span style=color:#e06c75>self </span><span>{
+</span><span>            Error::Db=> (StatusCode::</span><span style=color:#d19a66>INTERNAL_SERVER_ERROR</span><span>, Json(</span><span style=color:#98c379>"An error has occurred. Please try again later."</span><span>.</span><span style=color:#56b6c2>to_string</span><span>())).</span><span style=color:#56b6c2>into_response</span><span>(),
+</span><span>            }
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#c678dd>impl </span><span>From&LTsurrealdb::Error> </span><span style=color:#c678dd>for </span><span>Error {
+</span><span>        </span><span style=color:#c678dd>fn </span><span style=color:#61afef>from</span><span>(</span><span style=color:#e06c75>error</span><span>: surrealdb::Error) -> </span><span style=color:#c678dd>Self </span><span>{
+</span><span>            eprintln!(</span><span style=color:#98c379>"</span><span style=color:#d19a66>{error}</span><span style=color:#98c379>"</span><span>);
+</span><span>            </span><span style=color:#c678dd>Self</span><span>::Db
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span></code></pre><p>Alright with the boilerplate out of the way I want to discuss <a href=https://surrealdb.com/blog/introducing-surrealany-dynamic-support-for-any-engine-in-rust rel=noopener target=_blank>surrealdb::engine::any</a><p>I mentioned that I would be using SurrealKV as the database engine, but really SurrealDB doesn't force us to stick with one. The link right above explains how the query language is completely separate from the database engine.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#5c6370;font-style:italic>// make sure our database is accessible from all routes
+</span><span>#[</span><span style=color:#e06c75>derive</span><span>(Clone)]
+</span><span style=color:#c678dd>struct </span><span>AppState {
+</span><span>    </span><span style=color:#e06c75>db</span><span>: Arc&LTMutex&LTSurreal&LTAny>>>,
+</span><span>}
+</span></code></pre><pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>#[</span><span style=color:#e06c75>tokio</span><span>::</span><span style=color:#e06c75>main</span><span>]
+</span><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() -> Result<(), error::Error>{
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// any allows us to swap between rocksdb://mydb, mem://, etc. 
+</span><span>    </span><span style=color:#c678dd>let</span><span> db = surrealdb::engine::any::connect(</span><span style=color:#98c379>"surrealkv://mydb"</span><span>).await?;
+</span><span>
+</span><span style=color:#5c6370;font-style:italic>// authenticate
+</span><span>db.</span><span style=color:#56b6c2>signin</span><span>(surrealdb::opt::auth::Root {
+</span><span>    username: </span><span style=color:#98c379>"root"</span><span>,
+</span><span>    password: </span><span style=color:#98c379>"password"</span><span>,
+</span><span>}).await?;
+</span><span>
+</span><span style=color:#5c6370;font-style:italic>// select a namespace and a database inside that namespace
+</span><span>db.</span><span style=color:#56b6c2>use_ns</span><span>(</span><span style=color:#98c379>"test_ns"</span><span>).</span><span style=color:#56b6c2>use_db</span><span>(</span><span style=color:#98c379>"test_db"</span><span>).await?;
+</span><span>
+</span><span style=color:#5c6370;font-style:italic>// for routes to access the database, Axum provides AppState
+</span><span style=color:#c678dd>let</span><span> app_state = AppState {
+</span><span>    db: Arc::new(Mutex::new(db))
+</span><span>};
+</span><span>
+</span><span style=color:#5c6370;font-style:italic>// define our routes to create, delete, get users
+</span><span style=color:#c678dd>let</span><span> app = Router::new()
+</span><span>    .</span><span style=color:#56b6c2>route</span><span>(</span><span style=color:#98c379>"/"</span><span>, </span><span style=color:#56b6c2>get</span><span>(get_users))
+</span><span>    .</span><span style=color:#56b6c2>route</span><span>(</span><span style=color:#98c379>"/create/:uname"</span><span>, </span><span style=color:#56b6c2>get</span><span>(create_user))
+</span><span>    .</span><span style=color:#56b6c2>route</span><span>(</span><span style=color:#98c379>"/delete/:uname"</span><span>, </span><span style=color:#56b6c2>get</span><span>(delete_user))
+</span><span>    .</span><span style=color:#56b6c2>with_state</span><span>(app_state);
+</span><span>
+</span><span style=color:#c678dd>let</span><span> listener = tokio::net::TcpListener::bind(</span><span style=color:#98c379>"0.0.0.0:3000"</span><span>).await.</span><span style=color:#56b6c2>unwrap</span><span>();
+</span><span>
+</span><span>axum::serve(listener, app).await.</span><span style=color:#56b6c2>unwrap</span><span>();
+</span><span>
+</span><span>Ok(())
+</span><span>}
+</span></code></pre><p>For brevity I'll just use get requests with the data directly in the path.<p>However, you can use RESTful APIs such as delete, post, etc. Then access the <a href=https://surrealdb.com/docs/surrealdb/integration/http rel=noopener target=_blank>endpoints</a> with curl<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>curl -I</span><span> http://localhost:8080/status
+</span><span>
+</span><span style=color:#e06c75>HTTP/1.1</span><span> 200 OK
+</span><span style=color:#e06c75>content-length:</span><span> 0
+</span><span style=color:#e06c75>vary:</span><span> origin, access-control-request-method, access-control-request-headers
+</span><span style=color:#e06c75>access-control-allow-origin: </span><span>*
+</span><span style=color:#e06c75>surreal-version:</span><span> surrealdb-2.0.0+20240910.8f30ee08
+</span><span style=color:#e06c75>server:</span><span> SurrealDB
+</span><span style=color:#e06c75>x-request-id:</span><span> 3dedcc96-4d8a-451e-b60d-4eaac14fa3f8
+</span><span style=color:#e06c75>date:</span><span> Wed, 11 Sep 2024 00:52:49 GMT
+</span></code></pre><p>Now we should write a database query to define our table if it doesn't exist. Just like we did manually at the start of the tutorial.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>db.</span><span style=color:#56b6c2>query</span><span>(
+</span><span>    </span><span style=color:#98c379>"DEFINE TABLE IF NOT EXISTS users SCHEMAFULL;
+</span><span style=color:#98c379>    DEFINE FIELD IF NOT EXISTS username ON TABLE users TYPE string ASSERT string::len($value) < 14;
+</span><span style=color:#98c379>    DEFINE INDEX IF NOT EXISTS usernameIndex ON TABLE users COLUMNS username UNIQUE;
+</span><span style=color:#98c379>    "
+</span><span>).await?;
+</span></code></pre><p>And now we create the routes<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#5c6370;font-style:italic>// schema to insert or get users 
+</span><span>#[</span><span style=color:#e06c75>derive</span><span>(Serialize, Deserialize, Clone)]
+</span><span style=color:#c678dd>pub struct </span><span>User {
+</span><span>    </span><span style=color:#e06c75>username</span><span>: String,
+</span><span>}
+</span><span>
+</span><span style=color:#5c6370;font-style:italic>// retrieve all users 
+</span><span style=color:#5c6370;font-style:italic>// 127.0.0.1:3000/
+</span><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>get_users</span><span>(State(</span><span style=color:#e06c75>state</span><span>): State&LTAppState>) -> Result&LTJson&LTVec&LTUser>>, error::Error>{
+</span><span>    </span><span style=color:#c678dd>let</span><span> db = state.db.</span><span style=color:#56b6c2>lock</span><span>().await;
+</span><span>    </span><span style=color:#c678dd>let mut</span><span> response = db.</span><span style=color:#56b6c2>query</span><span>(</span><span style=color:#98c379>"SELECT * FROM users"</span><span>).await?;
+</span><span>
+</span><span>    </span><span style=color:#c678dd>let</span><span> result: Vec&LTUser> = response.</span><span style=color:#56b6c2>take</span><span>(</span><span style=color:#d19a66>0</span><span>)?;
+</span><span>
+</span><span>    Ok(Json(result))
+</span><span>
+</span><span>}
+</span></code></pre><p>Now to create a user at localhost:3000/create/newusername<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>create_user</span><span>(Path(</span><span style=color:#e06c75>uname</span><span>): Path&LTString>, State(</span><span style=color:#e06c75>state</span><span>): State&LTAppState>) -> Result&LTimpl IntoResponse, error::Error>{
+</span><span>   </span><span style=color:#c678dd>let</span><span> db = state.db.</span><span style=color:#56b6c2>lock</span><span>().await;
+</span><span>
+</span><span>   </span><span style=color:#c678dd>let</span><span> newUser: Option&LTUser> = db.</span><span style=color:#56b6c2>create</span><span>(</span><span style=color:#98c379>"users"</span><span>).</span><span style=color:#56b6c2>content</span><span>(User {
+</span><span>        username: uname,
+</span><span>    }).await?;
+</span><span>
+</span><span>    Ok(</span><span style=color:#98c379>"Success creating new user"</span><span>)
+</span><span>}
+</span></code></pre><p>And we can delete a user at localhost:3000/delete/newusername<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>delete_user</span><span>(Path(</span><span style=color:#e06c75>uname</span><span>): Path&LTString>, State(</span><span style=color:#e06c75>state</span><span>): State&LTAppState>) -> Result&LTimpl IntoResponse, error::Error>{
+</span><span>   </span><span style=color:#c678dd>let</span><span> db = state.db.</span><span style=color:#56b6c2>lock</span><span>().await;
+</span><span>
+</span><span>    db.</span><span style=color:#56b6c2>query</span><span>(</span><span style=color:#98c379>"DELETE FROM users WHERE username = $username"</span><span>)
+</span><span>        .</span><span style=color:#56b6c2>bind</span><span>((</span><span style=color:#98c379>"username"</span><span>, uname)).await?;
+</span><span>
+</span><span>    Ok(</span><span style=color:#98c379>"Success deleting user"</span><span>)
+</span><span>}
+</span></code></pre><p>With this basic setup in place, you can start experimenting with more complex queries, adding authentication, or introducing new features to your app. The full code is available on <a href=https://github.com/spacedimp/Rust-Axum-SurrealDB-example/tree/master rel=noopener target=_blank>Github</a><p>Happy coding!</p><script src=https://storage.ko-fi.com/cdn/scripts/overlay-widget.js></script><script>kofiWidgetOverlay.draw(`spacedimp`,{'type':`floating-chat`,'floating-chat.donateButton.text':`Support Me`,'floating-chat.donateButton.background-color':`#00b9fe`,'floating-chat.donateButton.text-color':`#fff`})</script><script async data-id=101404969 src=//static.getclicky.com/js></script><footer class=footer><p>Spacedimp<div class=footer-donate><p>Support spacedimp's growth by donating!</div><div class=rss-footer><p>Follow via <a href=/atom.xml>RSS</a><p>BTC: bc1qspads00vpdvsfaq7jwegrx8la8j9mz2qxuahfu<p>ETH: 0x42e598E67cB9b3F4bEB05c76B3838ba3477fB656<p>XMR: 89L5emwBMbzdrNuMN5NwPVSSztdrWLaWAYnZy95mV3RHPgyLCge9RqvMnu4X6eu8aTMocsq7Tw2ViBHSamQaEWjk5toNx1m<p><a href=/gpg>GPG</a> fingerprint: 040B FE93 9DF9 D855 404D 80BE C674 E53F EB54 B7F0</div></footer>

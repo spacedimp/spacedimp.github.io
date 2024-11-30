@@ -23,6 +23,10 @@
         <lastmod>2023-03-11</lastmod>
     </url>
     <url>
+        <loc>https://spacedimp.com/blog/using-rust-axum-surrealdb-to-build-a-webapp/</loc>
+        <lastmod>2024-11-29</lastmod>
+    </url>
+    <url>
         <loc>https://spacedimp.com/blog/using-rust-tauri-and-sveltekit-to-build-a-note-taking-app/</loc>
         <lastmod>2023-04-05</lastmod>
     </url>
