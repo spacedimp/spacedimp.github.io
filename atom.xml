@@ -232,7 +232,7 @@
 &lt;&#x2F;span&gt;&lt;span&gt;    Ok(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Success deleting user&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;With this basic setup in place, you can start experimenting with more complex queries, adding authentication, or introducing new features to your app. The full code is available on &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;Rust-Axum-SurrealDB-example&#x2F;tree&#x2F;master&quot;&gt;Github&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;With this basic setup in place, you can start experimenting with more complex queries, adding authentication, or introducing new features to your app. The full code is available on &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;Rust-Axum-SurrealDB-example&#x2F;tree&#x2F;main&quot;&gt;Github&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 &lt;p&gt;Happy coding!&lt;&#x2F;p&gt;
 </content>
         
