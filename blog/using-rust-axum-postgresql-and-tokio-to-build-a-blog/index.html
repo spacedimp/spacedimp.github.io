@@ -1,34 +1,33 @@
-<!doctype html><html lang=en><head><title> Using Rust, Axum, PostgreSQL, and Tokio to build a Blog </title><meta charset=UTF-8><link href=/css/base.css rel=stylesheet><meta content="width=device-width,initial-scale=1" name=viewport><link href=/favicon.svg rel=icon><body><nav><ul><li class=logo><a href=https://spacedimp.com/><img src=/img/splashscreen.png></a><li><a href=https://spacedimp.com/>Home</a><li><a href=https://spacedimp.com/blog/>Blog</a></ul></nav><h1>Using Rust, Axum, PostgreSQL, and Tokio to build a Blog</h1><p>2023-03-11<h3 id=in-this-tutorial-we-ll-be-creating-a-very-basic-blog-to-get-the-hang-of-axum>In this tutorial we'll be creating a very basic blog to get the hang of Axum.</h3><h3 id=sure-you-could-just-use-a-static-site-generator-and-push-the-files-up-to-github-pages-but-where-s-the-fun-in-that>Sure, you could just use a static site generator and push the files up to Github pages, but where's the fun in that?</h3><p><img alt="Alt text" title="demo of Rust, Axum, Tokio, PostgreSQL blog" src=/img/gif/blog_demo.gif><hr><h2 id=setting-up-the-project>Setting up the project</h2><pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>cargo</span><span> new blog-rs</span><span style=color:#e06c75> --bin
-</span></code></pre><p>The dependencies I'll be using go in <code>Cargo.toml</code><pre class=language-toml data-lang=toml style=color:#abb2bf;background-color:#282c34><code class=language-toml data-lang=toml><span>[package]
+<!doctype html><html lang=en><head><title> Using Rust, Axum, PostgreSQL, and Tokio to build a Blog </title><meta charset=UTF-8><link href=/css/base.css rel=stylesheet><meta content="width=device-width,initial-scale=1" name=viewport><link href=/favicon.svg rel=icon><body><nav><ul><li class=logo><a href=https://spacedimp.com/><img src=/img/splashscreen.png></a><li><a href=https://spacedimp.com/>Home</a><li><a href=https://spacedimp.com/blog/>Blog</a></ul></nav><h1>Using Rust, Axum, PostgreSQL, and Tokio to build a Blog</h1><p class=publish_date>Published on: 2023-03-11<p class=publish_up_dates>Last updated on: 2024-02-08<h3 id=in-this-demonstration-we-ll-be-using-axum-to-make-a-very-mininmal-blog>In this demonstration, we'll be using Axum to make a very mininmal blog.</h3><h3 id=storing-the-blogs-written-in-markdown-into-postgresql-and-lastly-using-askama-to-render-those-blog-posts>Storing the blogs written in markdown into PostgreSQL, and lastly using Askama to render those blog posts.</h3><p><img alt="Alt text" title="demo of Rust, Axum, Tokio, PostgreSQL blog" src=/img/gif/blog_demo.gif><hr><h2 id=setup-up-a-new-project>Setup up a new project</h2><p>Create a Rust binary (--bin is default and we could omit)<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>cargo</span><span> new blog-rs</span><span style=color:#e06c75> --bin
+</span></code></pre><p>Add the following modules in <code>Cargo.toml</code><pre class=language-toml data-lang=toml style=color:#abb2bf;background-color:#282c34><code class=language-toml data-lang=toml><span>[package]
 </span><span style=color:#e06c75>name </span><span>= </span><span style=color:#98c379>"blog-rs"
 </span><span style=color:#e06c75>version </span><span>= </span><span style=color:#98c379>"0.1.0"
 </span><span style=color:#e06c75>edition </span><span>= </span><span style=color:#98c379>"2021"
 </span><span>
 </span><span>[dependencies]
-</span><span style=color:#e06c75>tokio </span><span>= {</span><span style=color:#e06c75>version</span><span>=</span><span style=color:#98c379>"1.28.0"</span><span>, </span><span style=color:#e06c75>features </span><span>= [</span><span style=color:#98c379>"macros"</span><span>, </span><span style=color:#98c379>"rt-multi-thread"</span><span>]}
+</span><span style=color:#e06c75>tokio </span><span>= {</span><span style=color:#e06c75>version </span><span>= </span><span style=color:#98c379>"1.28.0"</span><span>, </span><span style=color:#e06c75>features </span><span>= [</span><span style=color:#98c379>"macros"</span><span>, </span><span style=color:#98c379>"rt-multi-thread"</span><span>]}
 </span><span style=color:#e06c75>axum </span><span>= </span><span style=color:#98c379>"0.6.17"
-</span><span style=color:#e06c75>askama </span><span>= {</span><span style=color:#e06c75>version</span><span>=</span><span style=color:#98c379>"0.12.0"</span><span>, </span><span style=color:#e06c75>features</span><span>=[</span><span style=color:#98c379>"markdown"</span><span>]}
+</span><span style=color:#e06c75>askama </span><span>= {</span><span style=color:#e06c75>version </span><span>= </span><span style=color:#98c379>"0.12.0"</span><span>, </span><span style=color:#e06c75>features</span><span>=[</span><span style=color:#98c379>"markdown"</span><span>]}
 </span><span style=color:#e06c75>sqlx </span><span>= {</span><span style=color:#e06c75>version </span><span>= </span><span style=color:#98c379>"0.6.3"</span><span>, </span><span style=color:#e06c75>features </span><span>= [</span><span style=color:#98c379>"runtime-tokio-rustls"</span><span>, </span><span style=color:#98c379>"postgres"</span><span>, </span><span style=color:#98c379>"macros"</span><span>, </span><span style=color:#98c379>"time"</span><span>]}</span><span style=color:#272b33;background-color:#f2777a> </span><span>
-</span><span style=color:#e06c75>tower-http </span><span>= {</span><span style=color:#e06c75>version </span><span>= </span><span style=color:#98c379>"0.4"</span><span>, </span><span style=color:#e06c75>features</span><span>=[</span><span style=color:#98c379>"full"</span><span>]}
-</span></code></pre><p>Edit <code>main.rs</code> and create a server at localhost:4000/<pre class=language-rs data-lang=rs style=color:#abb2bf;background-color:#282c34><code class=language-rs data-lang=rs><span style=color:#c678dd>use </span><span>axum::{http::StatusCode, routing::get, Router};
+</span><span style=color:#e06c75>tower-http </span><span>= {</span><span style=color:#e06c75>version </span><span>= </span><span style=color:#98c379>"0.4"</span><span>, </span><span style=color:#e06c75>features </span><span>= [</span><span style=color:#98c379>"full"</span><span>]}
+</span></code></pre><p>Edit <code>main.rs</code> and create a server at localhost:4000/<pre class=language-rs data-lang=rs style=color:#abb2bf;background-color:#282c34><code class=language-rs data-lang=rs><span style=color:#c678dd>use </span><span>axum::{http::StatusCode, response::IntoResponse};
+</span><span style=color:#c678dd>use </span><span>axum::{routing::get, Router};
+</span><span style=color:#c678dd>use </span><span>tokio::net::TcpListener;
 </span><span>
-</span><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>index</span><span>() -> String {
-</span><span>    String::from(</span><span style=color:#98c379>"homepage"</span><span>) 
+</span><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>index</span><span>() -> impl IntoResponse {
+</span><span>    (StatusCode::</span><span style=color:#d19a66>OK</span><span>, </span><span style=color:#98c379>"Homepage"</span><span>)
 </span><span>}
 </span><span>
 </span><span>#[</span><span style=color:#e06c75>tokio</span><span>::</span><span style=color:#e06c75>main</span><span>]
 </span><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
-</span><span>    </span><span style=color:#c678dd>let</span><span> app = Router::new()
-</span><span>        .</span><span style=color:#56b6c2>route</span><span>(</span><span style=color:#98c379>"/"</span><span>, </span><span style=color:#56b6c2>get</span><span>(index));
+</span><span>    </span><span style=color:#c678dd>let</span><span> app = Router::new().</span><span style=color:#56b6c2>route</span><span>(</span><span style=color:#98c379>"/"</span><span>, </span><span style=color:#56b6c2>get</span><span>(index));
 </span><span>
-</span><span>    axum::Server::bind(&</span><span style=color:#98c379>"0.0.0.0:4000"</span><span>.</span><span style=color:#56b6c2>parse</span><span>().</span><span style=color:#56b6c2>unwrap</span><span>())
-</span><span>        .</span><span style=color:#56b6c2>serve</span><span>(app.</span><span style=color:#56b6c2>into_make_service</span><span>())
-</span><span>        .await
-</span><span>        .</span><span style=color:#56b6c2>unwrap</span><span>();
+</span><span>    </span><span style=color:#c678dd>let</span><span> listener = TcpListener::bind(</span><span style=color:#98c379>"0.0.0.0:4000"</span><span>).await.</span><span style=color:#56b6c2>unwrap</span><span>();
+</span><span>
+</span><span>    axum::serve(listener, app).await.</span><span style=color:#56b6c2>unwrap</span><span>();
 </span><span>}
 </span></code></pre><p>Spin up the server with:<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>cargo</span><span> run main.rs
-</span></code></pre><br><h2 id=a-brief-introduction-to-tokio-and-axum>A brief introduction to Tokio and Axum</h2><p>Let's unpack Axum and Tokio a bit.<p><a href=https://docs.rs/axum/latest/axum/ rel=noopener target=_blank>Axum</a> is a web framework built with Tokio, Hyper, and Tower.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>use </span><span>axum::{http::StatusCode, routing::get, Router};
-</span></code></pre><br><p><a href=https://docs.rs/tokio/latest/tokio/ rel=noopener target=_blank>Tokio</a> allows us to run asynchronous non-blocking code (but it can also run blocking code if needed). Its componets include:<ul><li>A scheduler that manages tasks pushed onto a run queue.<li>An async I/O driver that enables using <a href=https://docs.rs/tokio/latest/tokio/net/index.html rel=noopener target=_blank>net</a>, <a href=https://docs.rs/tokio/latest/tokio/process/index.html rel=noopener target=_blank>process</a>, <a href=https://docs.rs/tokio/latest/tokio/signal/index.html rel=noopener target=_blank>signal</a>.<li>A time driver that enables using <code>tokio::time</code> on the runtime.<li>Core threads that should have no blocking code and <a href=https://docs.rs/tokio/latest/tokio/task/fn.spawn_blocking.html rel=noopener target=_blank>blocking</a> threads that can be spawned on demand to handle any blocking code.</ul><br><pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>#[</span><span style=color:#e06c75>tokio</span><span>::</span><span style=color:#e06c75>spawn</span><span>]
+</span></code></pre><br><h2 id=a-brief-introduction-to-tokio-and-axum>A brief introduction to Tokio and Axum</h2><p>Let's unpack Axum and Tokio a bit.<p><a href=https://docs.rs/axum/latest/axum/ rel=noopener target=_blank>Axum</a> is a web framework built with Tokio, Hyper, and Tower.</p><br><p><a href=https://docs.rs/tokio/latest/tokio/ rel=noopener target=_blank>Tokio</a> allows us to run asynchronous non-blocking code (but it can also run blocking code if needed). Its componets include:<ul><li>A scheduler that manages tasks pushed onto a run queue.<li>An async I/O driver that enables using <a href=https://docs.rs/tokio/latest/tokio/net/index.html rel=noopener target=_blank>net</a>, <a href=https://docs.rs/tokio/latest/tokio/process/index.html rel=noopener target=_blank>process</a>, <a href=https://docs.rs/tokio/latest/tokio/signal/index.html rel=noopener target=_blank>signal</a>.<li>A time driver that enables using <code>tokio::time</code> on the runtime.<li>Core threads that should have no blocking code and <a href=https://docs.rs/tokio/latest/tokio/task/fn.spawn_blocking.html rel=noopener target=_blank>blocking</a> threads that can be spawned on demand to handle any blocking code.</ul><br><pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>#[</span><span style=color:#e06c75>tokio</span><span>::</span><span style=color:#e06c75>spawn</span><span>]
 </span><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
 </span><span>	</span><span style=color:#5c6370;font-style:italic>// code here should never block
 </span><span>	</span><span style=color:#5c6370;font-style:italic>// unless in a closure and passed to tokio::task::spawn_blocking()
@@ -42,34 +41,30 @@
 </span><span>			</span><span style=color:#5c6370;font-style:italic>// Runtime's entry point
 </span><span>		})
 </span><span>}
-</span></code></pre><p>Axum's Router matches a path to handler.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>let</span><span> app = Router::new()
+</span></code></pre><p>Axum's <a href=https://docs.rs/axum/latest/axum/struct.Router.html rel=noopener target=_blank>Router</a> matches a path to handler.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>let</span><span> app = Router::new()
 </span><span>        .</span><span style=color:#56b6c2>route</span><span>(</span><span style=color:#98c379>"/"</span><span>, </span><span style=color:#56b6c2>get</span><span>(index));
-</span></code></pre><p>Handlers can accept zero or more extractors as arguments.<p>The ordering of the extractors is important as only one extractor can consume the request's body. It should be placed as the last argument furthest to the right in your handler.<p>Anything that implements the IntoResponse trait can be returned by handlers. Axum takes care of implementing it for common types.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>index</span><span>() -> String {
-</span><span>    String::from(</span><span style=color:#98c379>"homepage"</span><span>) 
+</span></code></pre><p>Handlers can accept zero or more <a href=https://docs.rs/axum/latest/axum/extract/index.html rel=noopener target=_blank>extractors</a> as arguments.<p>As the name suggests they extract request data (like path parameters, query strings, JSON bodies, headers, etc.) and pass them as arguments to your handlers.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>greet</span><span>(Path(</span><span style=color:#e06c75>name</span><span>): Path&LTString>) -> String {
+</span><span>	format!(</span><span style=color:#98c379>"Hello, </span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, name)
 </span><span>}
-</span></code></pre><p>Just as an example, let's use Axum's TypedHeader extractor to send the user back their User-Agent (I'll remove this extractor and feature after this demonstration).<p>First I enable the headers feature in <code>Cargo.toml</code><pre class=language-toml data-lang=toml style=color:#abb2bf;background-color:#282c34><code class=language-toml data-lang=toml><span style=color:#e06c75>axum </span><span>= {</span><span style=color:#e06c75>version</span><span>= </span><span style=color:#98c379>"0.6.17"</span><span>, </span><span style=color:#e06c75>features </span><span>= [</span><span style=color:#98c379>"headers"</span><span>]}
-</span></code></pre><p>Next I import the extractor and edit the index handler to extract the user agent and send it back to the user as a response.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>use </span><span>axum::{
-</span><span>    http::StatusCode, routing::get, Router,
-</span><span>    extract::{TypedHeader},
-</span><span>    headers::UserAgent,
-</span><span>};
-</span><span>
-</span><span style=color:#5c6370;font-style:italic>// go ahead and run "cargo run main.rs"
-</span><span style=color:#5c6370;font-style:italic>// localhost:4000 should now print out your user agent
-</span><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>index</span><span>(TypedHeader(</span><span style=color:#e06c75>user_agent</span><span>): TypedHeader&LTUserAgent>) -> String {
-</span><span>    String::from(user_agent.</span><span style=color:#56b6c2>as_str</span><span>()) 
+</span></code></pre><p>The ordering of the extractors is important as only one extractor can consume the request's body. It should be placed as the last argument furthest to the right in your handler.<p>Anything that implements the IntoResponse trait can be returned by handlers. Axum takes care of implementing it for common types.<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>index</span><span>() -> String {
+</span><span>    String::from(</span><span style=color:#98c379>"homepage"</span><span>) 
 </span><span>}
 </span></code></pre><h2 id=configuring-the-database>Configuring the database</h2><p>Let's get our database up and running. First make sure to <a href=https://www.postgresql.org/download/ rel=noopener target=_blank>download</a> and install PostgreSQL.<p>Make sure the service is started (I'm running linux so here's how I'd do it)<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>sudo</span><span> systemctl start postgresql
 </span></code></pre><p>Login using psql<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>sudo -u</span><span> postgres psql postgres
-</span></code></pre><p>Setup a user and database (inside of psql run the following commands with your own username and password)<pre class=language-sql data-lang=sql style=color:#abb2bf;background-color:#282c34><code class=language-sql data-lang=sql><span>CREATE ROLE myuser LOGIN PASSWORD </span><span style=color:#98c379>'mypass'</span><span>;
-</span><span style=color:#c678dd>CREATE DATABASE </span><span>mydb WITH </span><span style=color:#61afef>OWNER </span><span>= myuser;
-</span><span>\q
+</span><span style=color:#e06c75>sudo -u</span><span> postgres psql 
+</span></code></pre><p>Setup a user and database (inside of psql run the following commands with your own username and password)<pre class=language-sql data-lang=sql style=color:#abb2bf;background-color:#282c34><code class=language-sql data-lang=sql><span style=color:#c678dd>CREATE USER </span><span>myuser WITH PASSWORD '</span><span style=color:#61afef>mypass</span><span>';
+</span><span style=color:#c678dd>CREATE DATABASE </span><span>mydb OWNER </span><span style=color:#61afef>myuser</span><span>;
 </span></code></pre><p>Login with the new user and type in your password when prompted. In my case "mypass".<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>psql -h</span><span> localhost</span><span style=color:#e06c75> -d</span><span> mydb</span><span style=color:#e06c75> -U</span><span> myuser
+</span></code></pre><blockquote><p>If you get the error: Ident authentication failed for user "myuser"</blockquote><blockquote><p>You'll need to change your pg_hba.conf from ident to md5</blockquote><p>Edit pg_hba.conf<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>sudo</span><span> vi /var/lib/pgsql/data/pg_hba.conf
+</span></code></pre><p>Look for these lines<pre class=language-conf data-lang=conf style=color:#abb2bf;background-color:#282c34><code class=language-conf data-lang=conf><span style=color:#e06c75>local	</span><span>all	all	</span><span style=color:#d19a66>127.0.0.1/32</span><span>	ident
+</span><span style=color:#e06c75>host	</span><span>all	all	::</span><span style=color:#d19a66>1</span><span>/</span><span style=color:#d19a66>128</span><span>		ident
+</span></code></pre><p>change to<pre class=language-conf data-lang=conf style=color:#abb2bf;background-color:#282c34><code class=language-conf data-lang=conf><span style=color:#e06c75>local	</span><span>all	all	</span><span style=color:#d19a66>127.0.0.1/32</span><span>	md5
+</span><span style=color:#e06c75>host	</span><span>all	all	::</span><span style=color:#d19a66>1</span><span>/</span><span style=color:#d19a66>128</span><span>		md5
 </span></code></pre><p>Create a table that will store our blog posts.<pre class=language-sql data-lang=sql style=color:#abb2bf;background-color:#282c34><code class=language-sql data-lang=sql><span style=color:#c678dd>CREATE TABLE </span><span style=color:#61afef>myposts</span><span>(
 </span><span>post_id </span><span style=color:#c678dd>SERIAL PRIMARY KEY</span><span>,
 </span><span>post_date </span><span style=color:#c678dd>DATE </span><span>NOT </span><span style=color:#d19a66>NULL </span><span style=color:#c678dd>DEFAULT </span><span style=color:#56b6c2>CURRENT_DATE</span><span>,
 </span><span>post_title </span><span style=color:#c678dd>TEXT</span><span>,
-</span><span>post_body </span><span style=color:#c678dd>TEXT</span><span>)	
+</span><span>post_body </span><span style=color:#c678dd>TEXT	
 </span><span>);
 </span></code></pre><p>Great! Personally, I enjoy creating blog posts in <a href=https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax rel=noopener target=_blank>markdown</a> format. For my editor I use <a href=https://ghostwriter.kde.org/ rel=noopener target=_blank>Ghostwriter</a>.<p>I say this because I'll be storing raw markdown into the field labeled post_body.<p>We can now connect our app to PostgreSQL<p><code>main.rs</code><pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>use </span><span>sqlx::postgres::PgPoolOptions;
 </span><span style=color:#c678dd>use </span><span>sqlx::FromRow;
@@ -166,13 +161,13 @@
 </span><span>
 </span><span>    Ok(())
 </span><span>}
-</span></code></pre><p>We can now use this separate binary to insert our posts into the database using the following command:<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>cargo</span><span> run</span><span style=color:#e06c75> --bin</span><span> markd </span><span style=color:#98c379>"My post's title"</span><span> ./post.md
+</span></code></pre><p>We can now use this separate binary to insert our posts into the database using the following command:<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>cargo</span><span> run</span><span style=color:#e06c75> --bin</span><span> markd </span><span style=color:#98c379>"My post's title"</span><span> ./src/bin/post.md
 </span></code></pre><p>Of course you'd give a different title for each new post.<h2 id=using-askama-to-render-markdown-into-templates>Using Askama to render markdown into templates</h2><p>So far so good. How about we add <a href=https://github.com/djc/askama rel=noopener target=_blank>Askama</a> template engine to render our markdown posts into html.<p>edit <code>main.rs</code><pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>use </span><span>askama::Template;
 </span><span>
 </span><span style=color:#5c6370;font-style:italic>// Each post template will be populated with the values 
 </span><span style=color:#5c6370;font-style:italic>// located in the shared state of the handlers. 
 </span><span>
-</span><span>#[</span><span style=color:#e06c75>derive</span><span>(Debug)]
+</span><span>#[</span><span style=color:#e06c75>derive</span><span>(Template)]
 </span><span>#[</span><span style=color:#e06c75>template</span><span>(path = </span><span style=color:#98c379>"posts.html"</span><span>)]
 </span><span style=color:#c678dd>pub struct </span><span>PostTemplate<</span><span style=color:#c678dd>'a</span><span>> {
 </span><span>    </span><span style=color:#c678dd>pub </span><span style=color:#e06c75>post_title</span><span>: &</span><span style=color:#c678dd>'a str</span><span>,
@@ -225,6 +220,9 @@
 </span><span>        
 </span></code></pre><p>We now need some logic in the post handler to match the user's query to any post with the same title.<p>edit <code>main.rs</code><pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#5c6370;font-style:italic>// We use two extractors in the arguments
 </span><span style=color:#5c6370;font-style:italic>// Path to grab the query and State that has all our posts 
+</span><span>
+</span><span style=color:#c678dd>use </span><span>axum::extract::Path;
+</span><span style=color:#c678dd>use </span><span>axum::extract::State;
 </span><span>
 </span><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>post</span><span>(Path(</span><span style=color:#e06c75>query_title</span><span>): Path&LTString>, State(</span><span style=color:#e06c75>state</span><span>): State&LTArc&LTVec&LTPost>>>) -> impl IntoResponse {
 </span><span>
@@ -339,4 +337,139 @@
 </span><span>{% endblock post %}
 </span></code></pre><h2 id=optimizing-the-final-binary>Optimizing the final binary</h2><p>Use this command to view file sizes, on linux: <code>ls -lh blog-rs</code><p>My binary, inside of <code>target/debug/blog-rs</code> , is at 126M.<p><a href=https://nnethercote.github.io/perf-book/build-configuration.html rel=noopener target=_blank>Here's</a> an excellent guide on optimizing your binary.<p>Building my binary with the --release flag reduces the size to only 13M.<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>cargo</span><span> build</span><span style=color:#e06c75> --release 
 </span></code></pre><p>An optimized binary now resides in <code>target/release/blog-rs</code><p>Want a smaller binary size?<p><a href=https://upx.github.io/ rel=noopener target=_blank>UPX</a> gets my binary down further to 3.9M<pre class=language-bash data-lang=bash style=color:#abb2bf;background-color:#282c34><code class=language-bash data-lang=bash><span style=color:#e06c75>upx</span><span> /target/release/blog-rs
-</span></code></pre><p>Here's the full code for this project: <a href=https://github.com/spacedimp/rust-blog-example rel=noopener target=_blank>https://github.com/spacedimp/rust-blog-example</a></p><script src=https://storage.ko-fi.com/cdn/scripts/overlay-widget.js></script><script>kofiWidgetOverlay.draw(`spacedimp`,{'type':`floating-chat`,'floating-chat.donateButton.text':`Support Me`,'floating-chat.donateButton.background-color':`#00b9fe`,'floating-chat.donateButton.text-color':`#fff`})</script><script async data-id=101404969 src=//static.getclicky.com/js></script><footer class=footer><p>Spacedimp<div class=footer-donate><p>Support spacedimp's growth by donating!</div><div class=rss-footer><p>Follow via <a href=/atom.xml>RSS</a> 
+</span></code></pre><p>Here's the full project: <a href=https://github.com/spacedimp/rust-blog-example rel=noopener target=_blank>https://github.com/spacedimp/rust-blog-example</a><p>And here is the finished main.rs source code for quick reference:<pre class=language-rust data-lang=rust style=color:#abb2bf;background-color:#282c34><code class=language-rust data-lang=rust><span style=color:#c678dd>use </span><span>axum::{http::StatusCode, response::Html, response::IntoResponse};
+</span><span style=color:#c678dd>use </span><span>axum::{routing::get, Router};
+</span><span style=color:#c678dd>use </span><span>tokio::net::TcpListener;
+</span><span>
+</span><span style=color:#c678dd>use </span><span>sqlx::postgres::PgPoolOptions;
+</span><span style=color:#c678dd>use </span><span>sqlx::types::time::Date;
+</span><span style=color:#c678dd>use </span><span>sqlx::FromRow;
+</span><span>
+</span><span style=color:#c678dd>use </span><span>axum::extract::Path;
+</span><span style=color:#c678dd>use </span><span>axum::extract::State;
+</span><span>
+</span><span style=color:#c678dd>use </span><span>std::sync::Arc;
+</span><span>
+</span><span style=color:#c678dd>use </span><span>askama::Template;
+</span><span>
+</span><span style=color:#c678dd>use </span><span>tower_http::services::ServeDir;
+</span><span>
+</span><span>#[</span><span style=color:#e06c75>derive</span><span>(Template)]
+</span><span>#[</span><span style=color:#e06c75>template</span><span>(path = </span><span style=color:#98c379>"posts.html"</span><span>)]
+</span><span style=color:#c678dd>pub struct </span><span>PostTemplate<</span><span style=color:#c678dd>'a</span><span>> {
+</span><span>    </span><span style=color:#c678dd>pub </span><span style=color:#e06c75>post_title</span><span>: &</span><span style=color:#c678dd>'a str</span><span>,
+</span><span>    </span><span style=color:#c678dd>pub </span><span style=color:#e06c75>post_date</span><span>: String,
+</span><span>    </span><span style=color:#c678dd>pub </span><span style=color:#e06c75>post_body</span><span>: &</span><span style=color:#c678dd>'a str</span><span>,
+</span><span>}
+</span><span>
+</span><span>#[</span><span style=color:#e06c75>derive</span><span>(Template)]
+</span><span>#[</span><span style=color:#e06c75>template</span><span>(path = </span><span style=color:#98c379>"index.html"</span><span>)]
+</span><span style=color:#c678dd>pub struct </span><span>IndexTemplate<</span><span style=color:#c678dd>'a</span><span>> {
+</span><span>    </span><span style=color:#c678dd>pub </span><span style=color:#e06c75>index_title</span><span>: String,
+</span><span>    </span><span style=color:#c678dd>pub </span><span style=color:#e06c75>index_links</span><span>: &</span><span style=color:#c678dd>'a </span><span>Vec&LTString>,
+</span><span>}
+</span><span>
+</span><span>#[</span><span style=color:#e06c75>derive</span><span>(FromRow, Debug, Clone)]
+</span><span style=color:#c678dd>pub struct </span><span>Post {
+</span><span>    </span><span style=color:#c678dd>pub </span><span style=color:#e06c75>post_title</span><span>: String,
+</span><span>    </span><span style=color:#c678dd>pub </span><span style=color:#e06c75>post_date</span><span>: Date,
+</span><span>    </span><span style=color:#c678dd>pub </span><span style=color:#e06c75>post_body</span><span>: String,
+</span><span>}
+</span><span>
+</span><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>post</span><span>(
+</span><span>    Path(</span><span style=color:#e06c75>query_title</span><span>): Path&LTString>,
+</span><span>    State(</span><span style=color:#e06c75>state</span><span>): State&LTArc&LTVec&LTPost>>>,
+</span><span>) -> impl IntoResponse {
+</span><span>    </span><span style=color:#c678dd>let mut</span><span> template = PostTemplate {
+</span><span>        post_title: </span><span style=color:#98c379>"none"</span><span>,
+</span><span>        post_date: </span><span style=color:#98c379>"none"</span><span>.</span><span style=color:#56b6c2>to_string</span><span>(),
+</span><span>        post_body: </span><span style=color:#98c379>"none"</span><span>,
+</span><span>    };
+</span><span>
+</span><span>    </span><span style=color:#c678dd>for</span><span> i in </span><span style=color:#d19a66>0</span><span>..state.</span><span style=color:#56b6c2>len</span><span>() {
+</span><span>        </span><span style=color:#c678dd>if</span><span> query_title == state[i].post_title {
+</span><span>            template = PostTemplate {
+</span><span>                post_title: &state[i].post_title,
+</span><span>                post_date: state[i].post_date.</span><span style=color:#56b6c2>to_string</span><span>(),
+</span><span>                post_body: &state[i].post_body,
+</span><span>            };
+</span><span>            </span><span style=color:#c678dd>break</span><span>;
+</span><span>        } </span><span style=color:#c678dd>else </span><span>{
+</span><span>            </span><span style=color:#c678dd>continue</span><span>;
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// 404 if no title found matching the user's query
+</span><span>    </span><span style=color:#c678dd>if </span><span>&template.post_title == &</span><span style=color:#98c379>"none" </span><span>{
+</span><span>        </span><span style=color:#c678dd>return </span><span>(StatusCode::</span><span style=color:#d19a66>NOT_FOUND</span><span>, </span><span style=color:#98c379>"404 not found"</span><span>).</span><span style=color:#56b6c2>into_response</span><span>();
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// render the template into HTML and return it to the user
+</span><span>    </span><span style=color:#c678dd>match</span><span> template.</span><span style=color:#56b6c2>render</span><span>() {
+</span><span>        Ok(html) => Html(html).</span><span style=color:#56b6c2>into_response</span><span>(),
+</span><span>        Err(_) => (StatusCode::</span><span style=color:#d19a66>INTERNAL_SERVER_ERROR</span><span>, </span><span style=color:#98c379>"try again later"</span><span>).</span><span style=color:#56b6c2>into_response</span><span>(),
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>index</span><span>(State(</span><span style=color:#e06c75>state</span><span>): State&LTArc&LTVec&LTPost>>>) -> impl IntoResponse {
+</span><span>    </span><span style=color:#c678dd>let</span><span> s = state.</span><span style=color:#56b6c2>clone</span><span>();
+</span><span>    </span><span style=color:#c678dd>let mut</span><span> plinks: Vec&LTString> = Vec::new();
+</span><span>
+</span><span>    </span><span style=color:#c678dd>for</span><span> i in </span><span style=color:#d19a66>0</span><span>..s.</span><span style=color:#56b6c2>len</span><span>() {
+</span><span>        plinks.</span><span style=color:#56b6c2>push</span><span>(s[i].post_title.</span><span style=color:#56b6c2>clone</span><span>());
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#c678dd>let</span><span> template = IndexTemplate {
+</span><span>        index_title: String::from(</span><span style=color:#98c379>"My blog"</span><span>),
+</span><span>        index_links: &plinks,
+</span><span>    };
+</span><span>
+</span><span>    </span><span style=color:#c678dd>match</span><span> template.</span><span style=color:#56b6c2>render</span><span>() {
+</span><span>        Ok(html) => Html(html).</span><span style=color:#56b6c2>into_response</span><span>(),
+</span><span>        Err(err) => (
+</span><span>            StatusCode::</span><span style=color:#d19a66>INTERNAL_SERVER_ERROR</span><span>,
+</span><span>            format!(</span><span style=color:#98c379>"Failed to render template. Error </span><span style=color:#d19a66>{}</span><span style=color:#98c379>"</span><span>, err),
+</span><span>        )
+</span><span>            .</span><span style=color:#56b6c2>into_response</span><span>(),
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span style=color:#c678dd>mod </span><span>filters {
+</span><span>
+</span><span>    </span><span style=color:#5c6370;font-style:italic>// This filter removes the dashes that I will be adding in main()
+</span><span>    </span><span style=color:#c678dd>pub fn </span><span style=color:#61afef>rmdashes</span><span>(</span><span style=color:#e06c75>title</span><span>: &</span><span style=color:#c678dd>str</span><span>) -> askama::Result&LTString> {
+</span><span>        Ok(title.</span><span style=color:#56b6c2>replace</span><span>(</span><span style=color:#98c379>"-"</span><span>, </span><span style=color:#98c379>" "</span><span>).</span><span style=color:#56b6c2>into</span><span>())
+</span><span>    }
+</span><span>}
+</span><span>
+</span><span>#[</span><span style=color:#e06c75>tokio</span><span>::</span><span style=color:#e06c75>main</span><span>]
+</span><span>async </span><span style=color:#c678dd>fn </span><span style=color:#61afef>main</span><span>() {
+</span><span>    </span><span style=color:#c678dd>let</span><span> pool = PgPoolOptions::new()
+</span><span>        .</span><span style=color:#56b6c2>max_connections</span><span>(</span><span style=color:#d19a66>5</span><span>)
+</span><span>        .</span><span style=color:#56b6c2>connect</span><span>(</span><span style=color:#98c379>"postgres://myuser:mypass@localhost/mydb"</span><span>)
+</span><span>        .await
+</span><span>        .</span><span style=color:#56b6c2>expect</span><span>(</span><span style=color:#98c379>"couldn't connect to the database"</span><span>);
+</span><span>
+</span><span>    </span><span style=color:#c678dd>let mut</span><span> posts =
+</span><span>        sqlx::query_as::<_, Post>(</span><span style=color:#98c379>"SELECT post_title, post_date, post_body FROM myposts"</span><span>)
+</span><span>            .</span><span style=color:#56b6c2>fetch_all</span><span>(&pool)
+</span><span>            .await
+</span><span>            .</span><span style=color:#56b6c2>unwrap</span><span>();
+</span><span>
+</span><span>    </span><span style=color:#c678dd>for</span><span> post in &</span><span style=color:#c678dd>mut</span><span> posts {
+</span><span>        post.post_title = post.post_title.</span><span style=color:#56b6c2>replace</span><span>(</span><span style=color:#98c379>" "</span><span>, </span><span style=color:#98c379>"-"</span><span>);
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#c678dd>let</span><span> shared_state = Arc::new(posts);
+</span><span>
+</span><span>    </span><span style=color:#c678dd>let</span><span> app = Router::new()
+</span><span>        .</span><span style=color:#56b6c2>route</span><span>(</span><span style=color:#98c379>"/"</span><span>, </span><span style=color:#56b6c2>get</span><span>(index))
+</span><span>        .</span><span style=color:#56b6c2>route</span><span>(</span><span style=color:#98c379>"/post/{query_title}"</span><span>, </span><span style=color:#56b6c2>get</span><span>(post))
+</span><span>        .</span><span style=color:#56b6c2>with_state</span><span>(shared_state)
+</span><span>        .</span><span style=color:#56b6c2>nest_service</span><span>(</span><span style=color:#98c379>"/assets"</span><span>, ServeDir::new(</span><span style=color:#98c379>"assets"</span><span>));
+</span><span>
+</span><span>    </span><span style=color:#c678dd>let</span><span> listener = TcpListener::bind(</span><span style=color:#98c379>"0.0.0.0:4000"</span><span>).await.</span><span style=color:#56b6c2>unwrap</span><span>();
+</span><span>
+</span><span>    axum::serve(listener, app).await.</span><span style=color:#56b6c2>unwrap</span><span>();
+</span><span>}
+</span></code></pre><script src=https://storage.ko-fi.com/cdn/scripts/overlay-widget.js></script><script>kofiWidgetOverlay.draw(`spacedimp`,{'type':`floating-chat`,'floating-chat.donateButton.text':`Support Me`,'floating-chat.donateButton.background-color':`#00b9fe`,'floating-chat.donateButton.text-color':`#fff`})</script><script async data-id=101404969 src=//static.getclicky.com/js></script><footer class=footer><p>Spacedimp<div class=footer-donate><p>Support spacedimp's growth by donating!</div><div class=rss-footer><p>Follow via <a href=/atom.xml>RSS</a> 

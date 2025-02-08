@@ -386,6 +386,16 @@ blockquote {
 
 }
 
+/* blog dates */
+.publish_date {
+
+}
+.publish_up_dates {
+	color: #666;
+	font-style: italic;
+}
+/* end */
+
 ul li {
 	font-size: 23px;
 }

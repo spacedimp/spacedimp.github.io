@@ -1442,42 +1442,43 @@ and also &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;htt
         <link rel="alternate" type="text/html" href="https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/"/>
         <id>https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/</id>
         
-        <content type="html" xml:base="https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/">&lt;h3 id=&quot;in-this-tutorial-we-ll-be-creating-a-very-basic-blog-to-get-the-hang-of-axum&quot;&gt;In this tutorial we&#x27;ll be creating a very basic blog to get the hang of Axum.&lt;&#x2F;h3&gt;
-&lt;h3 id=&quot;sure-you-could-just-use-a-static-site-generator-and-push-the-files-up-to-github-pages-but-where-s-the-fun-in-that&quot;&gt;Sure, you could just use a static site generator and push the files up to Github pages, but where&#x27;s the fun in that?&lt;&#x2F;h3&gt;
+        <content type="html" xml:base="https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/">&lt;h3 id=&quot;in-this-demonstration-we-ll-be-using-axum-to-make-a-very-mininmal-blog&quot;&gt;In this demonstration, we&#x27;ll be using Axum to make a very mininmal blog.&lt;&#x2F;h3&gt;
+&lt;h3 id=&quot;storing-the-blogs-written-in-markdown-into-postgresql-and-lastly-using-askama-to-render-those-blog-posts&quot;&gt;Storing the blogs written in markdown into PostgreSQL, and lastly using Askama to render those blog posts.&lt;&#x2F;h3&gt;
 &lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;gif&#x2F;blog_demo.gif&quot; alt=&quot;Alt text&quot; title=&quot;demo of Rust, Axum, Tokio, PostgreSQL blog&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
-&lt;h2 id=&quot;setting-up-the-project&quot;&gt;Setting up the project&lt;&#x2F;h2&gt;
+&lt;h2 id=&quot;setup-up-a-new-project&quot;&gt;Setup up a new project&lt;&#x2F;h2&gt;
+&lt;p&gt;Create a Rust binary (--bin is default and we could omit)&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; new blog-rs&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --bin
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;The dependencies I&#x27;ll be using go in &lt;code&gt;Cargo.toml&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Add the following modules in &lt;code&gt;Cargo.toml&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;toml&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;&lt;span&gt;[package]
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;blog-rs&amp;quot;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;version &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.1.0&amp;quot;
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;edition &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;2021&amp;quot;
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span&gt;[dependencies]
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;tokio &lt;&#x2F;span&gt;&lt;span&gt;= {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;version&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;1.28.0&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;features &lt;&#x2F;span&gt;&lt;span&gt;= [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;macros&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;rt-multi-thread&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]}
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;tokio &lt;&#x2F;span&gt;&lt;span&gt;= {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;version &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;1.28.0&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;features &lt;&#x2F;span&gt;&lt;span&gt;= [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;macros&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;rt-multi-thread&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]}
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;axum &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.6.17&amp;quot;
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;askama &lt;&#x2F;span&gt;&lt;span&gt;= {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;version&lt;&#x2F;span&gt;&lt;span&gt;=&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.12.0&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;features&lt;&#x2F;span&gt;&lt;span&gt;=[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;markdown&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]}
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;askama &lt;&#x2F;span&gt;&lt;span&gt;= {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;version &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.12.0&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;features&lt;&#x2F;span&gt;&lt;span&gt;=[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;markdown&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]}
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sqlx &lt;&#x2F;span&gt;&lt;span&gt;= {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;version &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.6.3&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;features &lt;&#x2F;span&gt;&lt;span&gt;= [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;runtime-tokio-rustls&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;postgres&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;macros&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;time&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]}&lt;&#x2F;span&gt;&lt;span style=&quot;background-color:#f2777a;color:#272b33;&quot;&gt; &lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;tower-http &lt;&#x2F;span&gt;&lt;span&gt;= {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;version &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.4&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;features&lt;&#x2F;span&gt;&lt;span&gt;=[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;full&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]}
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;tower-http &lt;&#x2F;span&gt;&lt;span&gt;= {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;version &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.4&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;features &lt;&#x2F;span&gt;&lt;span&gt;= [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;full&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Edit &lt;code&gt;main.rs&lt;&#x2F;code&gt; and create a server at localhost:4000&#x2F;&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;rs&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rs &quot;&gt;&lt;code class=&quot;language-rs&quot; data-lang=&quot;rs&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::{http::StatusCode, routing::get, Router};
+&lt;pre data-lang=&quot;rs&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rs &quot;&gt;&lt;code class=&quot;language-rs&quot; data-lang=&quot;rs&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::{http::StatusCode, response::IntoResponse};
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::{routing::get, Router};
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;tokio::net::TcpListener;
 &lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;index&lt;&#x2F;span&gt;&lt;span&gt;() -&amp;gt; String {
-&lt;&#x2F;span&gt;&lt;span&gt;    String::from(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;homepage&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;) 
+&lt;&#x2F;span&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;index&lt;&#x2F;span&gt;&lt;span&gt;() -&amp;gt; impl IntoResponse {
+&lt;&#x2F;span&gt;&lt;span&gt;    (StatusCode::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;OK&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Homepage&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;tokio&lt;&#x2F;span&gt;&lt;span&gt;::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;]
 &lt;&#x2F;span&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;() {
-&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; app = Router::new()
-&lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;route&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(index));
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; app = Router::new().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;route&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(index));
 &lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;    axum::Server::bind(&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.0.0.0:4000&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;parse&lt;&#x2F;span&gt;&lt;span&gt;().&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;())
-&lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;serve&lt;&#x2F;span&gt;&lt;span&gt;(app.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;into_make_service&lt;&#x2F;span&gt;&lt;span&gt;())
-&lt;&#x2F;span&gt;&lt;span&gt;        .await
-&lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; listener = TcpListener::bind(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.0.0.0:4000&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;).await.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    axum::serve(listener, app).await.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;();
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Spin up the server with:&lt;&#x2F;p&gt;
@@ -1487,8 +1488,6 @@ and also &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;htt
 &lt;h2 id=&quot;a-brief-introduction-to-tokio-and-axum&quot;&gt;A brief introduction to Tokio and Axum&lt;&#x2F;h2&gt;
 &lt;p&gt;Let&#x27;s unpack Axum and Tokio a bit.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;axum&#x2F;latest&#x2F;axum&#x2F;&quot;&gt;Axum&lt;&#x2F;a&gt; is a web framework built with Tokio, Hyper, and Tower.&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::{http::StatusCode, routing::get, Router};
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;br&gt;
 &lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tokio&#x2F;latest&#x2F;tokio&#x2F;&quot;&gt;Tokio&lt;&#x2F;a&gt; allows us to run asynchronous non-blocking code (but it can also run blocking code if needed). Its componets include:&lt;&#x2F;p&gt;
 &lt;ul&gt;
@@ -1515,32 +1514,20 @@ and also &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;htt
 &lt;&#x2F;span&gt;&lt;span&gt;		})
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Axum&#x27;s Router matches a path to handler.&lt;&#x2F;p&gt;
+&lt;p&gt;Axum&#x27;s &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;axum&#x2F;latest&#x2F;axum&#x2F;struct.Router.html&quot;&gt;Router&lt;&#x2F;a&gt; matches a path to handler.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; app = Router::new()
 &lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;route&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(index));
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Handlers can accept zero or more extractors as arguments.&lt;&#x2F;p&gt;
+&lt;p&gt;Handlers can accept zero or more &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;axum&#x2F;latest&#x2F;axum&#x2F;extract&#x2F;index.html&quot;&gt;extractors&lt;&#x2F;a&gt; as arguments.&lt;&#x2F;p&gt;
+&lt;p&gt;As the name suggests they extract request data (like path parameters, query strings, JSON bodies, headers, etc.) and pass them as arguments to your handlers.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;greet&lt;&#x2F;span&gt;&lt;span&gt;(Path(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;name&lt;&#x2F;span&gt;&lt;span&gt;): Path&amp;lt;String&amp;gt;) -&amp;gt; String {
+&lt;&#x2F;span&gt;&lt;span&gt;	format!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Hello, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, name)
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;The ordering of the extractors is important as only one extractor can consume the request&#x27;s body. It should be placed as the last argument furthest to the right in your handler.&lt;&#x2F;p&gt;
 &lt;p&gt;Anything that implements the IntoResponse trait can be returned by handlers. Axum takes care of implementing it for common types.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;index&lt;&#x2F;span&gt;&lt;span&gt;() -&amp;gt; String {
 &lt;&#x2F;span&gt;&lt;span&gt;    String::from(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;homepage&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;) 
-&lt;&#x2F;span&gt;&lt;span&gt;}
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Just as an example, let&#x27;s use Axum&#x27;s TypedHeader extractor to send the user back their User-Agent (I&#x27;ll remove this extractor and feature after this demonstration).&lt;&#x2F;p&gt;
-&lt;p&gt;First I enable the headers feature in &lt;code&gt;Cargo.toml&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;toml&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;axum &lt;&#x2F;span&gt;&lt;span&gt;= {&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;version&lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.6.17&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;features &lt;&#x2F;span&gt;&lt;span&gt;= [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;headers&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;]}
-&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Next I import the extractor and edit the index handler to extract the user agent and send it back to the user as a response.&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::{
-&lt;&#x2F;span&gt;&lt;span&gt;    http::StatusCode, routing::get, Router,
-&lt;&#x2F;span&gt;&lt;span&gt;    extract::{TypedHeader},
-&lt;&#x2F;span&gt;&lt;span&gt;    headers::UserAgent,
-&lt;&#x2F;span&gt;&lt;span&gt;};
-&lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; go ahead and run &amp;quot;cargo run main.rs&amp;quot;
-&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; localhost:4000 should now print out your user agent
-&lt;&#x2F;span&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;index&lt;&#x2F;span&gt;&lt;span&gt;(TypedHeader(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;user_agent&lt;&#x2F;span&gt;&lt;span&gt;): TypedHeader&amp;lt;UserAgent&amp;gt;) -&amp;gt; String {
-&lt;&#x2F;span&gt;&lt;span&gt;    String::from(user_agent.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;as_str&lt;&#x2F;span&gt;&lt;span&gt;()) 
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;h2 id=&quot;configuring-the-database&quot;&gt;Configuring the database&lt;&#x2F;h2&gt;
@@ -1550,21 +1537,38 @@ and also &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;htt
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Login using psql&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo -u&lt;&#x2F;span&gt;&lt;span&gt; postgres psql postgres
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo -u&lt;&#x2F;span&gt;&lt;span&gt; postgres psql 
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Setup a user and database (inside of psql run the following commands with your own username and password)&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;sql&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-sql &quot;&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span&gt;CREATE ROLE myuser LOGIN PASSWORD &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;#39;mypass&amp;#39;&lt;&#x2F;span&gt;&lt;span&gt;;
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;CREATE DATABASE &lt;&#x2F;span&gt;&lt;span&gt;mydb WITH &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;OWNER &lt;&#x2F;span&gt;&lt;span&gt;= myuser;
-&lt;&#x2F;span&gt;&lt;span&gt;\q
+&lt;pre data-lang=&quot;sql&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-sql &quot;&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;CREATE USER &lt;&#x2F;span&gt;&lt;span&gt;myuser WITH PASSWORD &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;mypass&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;CREATE DATABASE &lt;&#x2F;span&gt;&lt;span&gt;mydb OWNER &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;myuser&lt;&#x2F;span&gt;&lt;span&gt;;
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Login with the new user and type in your password when prompted. In my case &quot;mypass&quot;.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;psql -h&lt;&#x2F;span&gt;&lt;span&gt; localhost&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -d&lt;&#x2F;span&gt;&lt;span&gt; mydb&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; -U&lt;&#x2F;span&gt;&lt;span&gt; myuser
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;If you get the error: Ident authentication failed for user &quot;myuser&quot;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;You&#x27;ll need to change your pg_hba.conf from ident to md5&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Edit pg_hba.conf&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; vi &#x2F;var&#x2F;lib&#x2F;pgsql&#x2F;data&#x2F;pg_hba.conf
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Look for these lines&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;conf&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-conf &quot;&gt;&lt;code class=&quot;language-conf&quot; data-lang=&quot;conf&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;local	&lt;&#x2F;span&gt;&lt;span&gt;all	all	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;127.0.0.1&#x2F;32&lt;&#x2F;span&gt;&lt;span&gt;	ident
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;host	&lt;&#x2F;span&gt;&lt;span&gt;all	all	::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;128&lt;&#x2F;span&gt;&lt;span&gt;		ident
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;change to&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;conf&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-conf &quot;&gt;&lt;code class=&quot;language-conf&quot; data-lang=&quot;conf&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;local	&lt;&#x2F;span&gt;&lt;span&gt;all	all	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;127.0.0.1&#x2F;32&lt;&#x2F;span&gt;&lt;span&gt;	md5
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;host	&lt;&#x2F;span&gt;&lt;span&gt;all	all	::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;128&lt;&#x2F;span&gt;&lt;span&gt;		md5
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Create a table that will store our blog posts.&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;sql&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-sql &quot;&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;CREATE TABLE &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;myposts&lt;&#x2F;span&gt;&lt;span&gt;(
 &lt;&#x2F;span&gt;&lt;span&gt;post_id &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;SERIAL PRIMARY KEY&lt;&#x2F;span&gt;&lt;span&gt;,
 &lt;&#x2F;span&gt;&lt;span&gt;post_date &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;DATE &lt;&#x2F;span&gt;&lt;span&gt;NOT &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;NULL &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;DEFAULT &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;CURRENT_DATE&lt;&#x2F;span&gt;&lt;span&gt;,
 &lt;&#x2F;span&gt;&lt;span&gt;post_title &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;TEXT&lt;&#x2F;span&gt;&lt;span&gt;,
-&lt;&#x2F;span&gt;&lt;span&gt;post_body &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;TEXT&lt;&#x2F;span&gt;&lt;span&gt;)	
+&lt;&#x2F;span&gt;&lt;span&gt;post_body &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;TEXT	
 &lt;&#x2F;span&gt;&lt;span&gt;);
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Great! Personally, I enjoy creating blog posts in &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.github.com&#x2F;en&#x2F;get-started&#x2F;writing-on-github&#x2F;getting-started-with-writing-and-formatting-on-github&#x2F;basic-writing-and-formatting-syntax&quot;&gt;markdown&lt;&#x2F;a&gt; format. For my editor I use &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;ghostwriter.kde.org&#x2F;&quot;&gt;Ghostwriter&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
@@ -1679,7 +1683,7 @@ and also &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;htt
 &lt;&#x2F;span&gt;&lt;span&gt;}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;We can now use this separate binary to insert our posts into the database using the following command:&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; run&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --bin&lt;&#x2F;span&gt;&lt;span&gt; markd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;My post&amp;#39;s title&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt; .&#x2F;post.md
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;cargo&lt;&#x2F;span&gt;&lt;span&gt; run&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt; --bin&lt;&#x2F;span&gt;&lt;span&gt; markd &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;My post&amp;#39;s title&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt; .&#x2F;src&#x2F;bin&#x2F;post.md
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Of course you&#x27;d give a different title for each new post.&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;using-askama-to-render-markdown-into-templates&quot;&gt;Using Askama to render markdown into templates&lt;&#x2F;h2&gt;
@@ -1690,7 +1694,7 @@ and also &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;htt
 &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; Each post template will be populated with the values 
 &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; located in the shared state of the handlers. 
 &lt;&#x2F;span&gt;&lt;span&gt;
-&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;derive&lt;&#x2F;span&gt;&lt;span&gt;(Debug)]
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;derive&lt;&#x2F;span&gt;&lt;span&gt;(Template)]
 &lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;template&lt;&#x2F;span&gt;&lt;span&gt;(path = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;posts.html&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)]
 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub struct &lt;&#x2F;span&gt;&lt;span&gt;PostTemplate&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;&amp;#39;a&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt; {
 &lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;post_title&lt;&#x2F;span&gt;&lt;span&gt;: &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;&amp;#39;a str&lt;&#x2F;span&gt;&lt;span&gt;,
@@ -1758,6 +1762,9 @@ and also &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;htt
 &lt;p&gt;edit &lt;code&gt;main.rs&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; We use two extractors in the arguments
 &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; Path to grab the query and State that has all our posts 
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::extract::Path;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::extract::State;
 &lt;&#x2F;span&gt;&lt;span&gt;
 &lt;&#x2F;span&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;post&lt;&#x2F;span&gt;&lt;span&gt;(Path(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;query_title&lt;&#x2F;span&gt;&lt;span&gt;): Path&amp;lt;String&amp;gt;, State(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;state&lt;&#x2F;span&gt;&lt;span&gt;): State&amp;lt;Arc&amp;lt;Vec&amp;lt;Post&amp;gt;&amp;gt;&amp;gt;) -&amp;gt; impl IntoResponse {
 &lt;&#x2F;span&gt;&lt;span&gt;
@@ -1908,7 +1915,144 @@ want the dashes in the web page. Only in the URL.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;upx.github.io&#x2F;&quot;&gt;UPX&lt;&#x2F;a&gt; gets my binary down further to 3.9M&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;upx&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;target&#x2F;release&#x2F;blog-rs
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
-&lt;p&gt;Here&#x27;s the full code for this project: &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;rust-blog-example&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;rust-blog-example&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Here&#x27;s the full project: &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;rust-blog-example&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;spacedimp&#x2F;rust-blog-example&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;And here is the finished main.rs source code for quick reference:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::{http::StatusCode, response::Html, response::IntoResponse};
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::{routing::get, Router};
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;tokio::net::TcpListener;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;sqlx::postgres::PgPoolOptions;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;sqlx::types::time::Date;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;sqlx::FromRow;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::extract::Path;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;axum::extract::State;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;std::sync::Arc;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;askama::Template;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;use &lt;&#x2F;span&gt;&lt;span&gt;tower_http::services::ServeDir;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;derive&lt;&#x2F;span&gt;&lt;span&gt;(Template)]
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;template&lt;&#x2F;span&gt;&lt;span&gt;(path = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;posts.html&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub struct &lt;&#x2F;span&gt;&lt;span&gt;PostTemplate&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;&amp;#39;a&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt; {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;post_title&lt;&#x2F;span&gt;&lt;span&gt;: &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;&amp;#39;a str&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;post_date&lt;&#x2F;span&gt;&lt;span&gt;: String,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;post_body&lt;&#x2F;span&gt;&lt;span&gt;: &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;&amp;#39;a str&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;derive&lt;&#x2F;span&gt;&lt;span&gt;(Template)]
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;template&lt;&#x2F;span&gt;&lt;span&gt;(path = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;index.html&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub struct &lt;&#x2F;span&gt;&lt;span&gt;IndexTemplate&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;&amp;#39;a&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt; {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;index_title&lt;&#x2F;span&gt;&lt;span&gt;: String,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;index_links&lt;&#x2F;span&gt;&lt;span&gt;: &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;&amp;#39;a &lt;&#x2F;span&gt;&lt;span&gt;Vec&amp;lt;String&amp;gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;derive&lt;&#x2F;span&gt;&lt;span&gt;(FromRow, Debug, Clone)]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub struct &lt;&#x2F;span&gt;&lt;span&gt;Post {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;post_title&lt;&#x2F;span&gt;&lt;span&gt;: String,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;post_date&lt;&#x2F;span&gt;&lt;span&gt;: Date,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;post_body&lt;&#x2F;span&gt;&lt;span&gt;: String,
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;post&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    Path(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;query_title&lt;&#x2F;span&gt;&lt;span&gt;): Path&amp;lt;String&amp;gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    State(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;state&lt;&#x2F;span&gt;&lt;span&gt;): State&amp;lt;Arc&amp;lt;Vec&amp;lt;Post&amp;gt;&amp;gt;&amp;gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; impl IntoResponse {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let mut&lt;&#x2F;span&gt;&lt;span&gt; template = PostTemplate {
+&lt;&#x2F;span&gt;&lt;span&gt;        post_title: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;none&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        post_date: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;none&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;to_string&lt;&#x2F;span&gt;&lt;span&gt;(),
+&lt;&#x2F;span&gt;&lt;span&gt;        post_body: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;none&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    };
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;for&lt;&#x2F;span&gt;&lt;span&gt; i in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;..state.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;if&lt;&#x2F;span&gt;&lt;span&gt; query_title == state[i].post_title {
+&lt;&#x2F;span&gt;&lt;span&gt;            template = PostTemplate {
+&lt;&#x2F;span&gt;&lt;span&gt;                post_title: &amp;amp;state[i].post_title,
+&lt;&#x2F;span&gt;&lt;span&gt;                post_date: state[i].post_date.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;to_string&lt;&#x2F;span&gt;&lt;span&gt;(),
+&lt;&#x2F;span&gt;&lt;span&gt;                post_body: &amp;amp;state[i].post_body,
+&lt;&#x2F;span&gt;&lt;span&gt;            };
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;break&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;continue&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; 404 if no title found matching the user&amp;#39;s query
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;&amp;amp;template.post_title == &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;none&amp;quot; &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span&gt;(StatusCode::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;NOT_FOUND&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;404 not found&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;into_response&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; render the template into HTML and return it to the user
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;match&lt;&#x2F;span&gt;&lt;span&gt; template.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;render&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;        Ok(html) =&amp;gt; Html(html).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;into_response&lt;&#x2F;span&gt;&lt;span&gt;(),
+&lt;&#x2F;span&gt;&lt;span&gt;        Err(_) =&amp;gt; (StatusCode::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;INTERNAL_SERVER_ERROR&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;try again later&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;into_response&lt;&#x2F;span&gt;&lt;span&gt;(),
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;index&lt;&#x2F;span&gt;&lt;span&gt;(State(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;state&lt;&#x2F;span&gt;&lt;span&gt;): State&amp;lt;Arc&amp;lt;Vec&amp;lt;Post&amp;gt;&amp;gt;&amp;gt;) -&amp;gt; impl IntoResponse {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; s = state.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;clone&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let mut&lt;&#x2F;span&gt;&lt;span&gt; plinks: Vec&amp;lt;String&amp;gt; = Vec::new();
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;for&lt;&#x2F;span&gt;&lt;span&gt; i in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;..s.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;        plinks.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;(s[i].post_title.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;clone&lt;&#x2F;span&gt;&lt;span&gt;());
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; template = IndexTemplate {
+&lt;&#x2F;span&gt;&lt;span&gt;        index_title: String::from(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;My blog&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;        index_links: &amp;amp;plinks,
+&lt;&#x2F;span&gt;&lt;span&gt;    };
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;match&lt;&#x2F;span&gt;&lt;span&gt; template.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;render&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;        Ok(html) =&amp;gt; Html(html).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;into_response&lt;&#x2F;span&gt;&lt;span&gt;(),
+&lt;&#x2F;span&gt;&lt;span&gt;        Err(err) =&amp;gt; (
+&lt;&#x2F;span&gt;&lt;span&gt;            StatusCode::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;INTERNAL_SERVER_ERROR&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;            format!(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;Failed to render template. Error &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;{}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, err),
+&lt;&#x2F;span&gt;&lt;span&gt;        )
+&lt;&#x2F;span&gt;&lt;span&gt;            .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;into_response&lt;&#x2F;span&gt;&lt;span&gt;(),
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;mod &lt;&#x2F;span&gt;&lt;span&gt;filters {
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#5c6370;&quot;&gt;&#x2F;&#x2F; This filter removes the dashes that I will be adding in main()
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;pub fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;rmdashes&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;title&lt;&#x2F;span&gt;&lt;span&gt;: &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;str&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; askama::Result&amp;lt;String&amp;gt; {
+&lt;&#x2F;span&gt;&lt;span&gt;        Ok(title.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;replace&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;-&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot; &amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;into&lt;&#x2F;span&gt;&lt;span&gt;())
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;tokio&lt;&#x2F;span&gt;&lt;span&gt;::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;async &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;main&lt;&#x2F;span&gt;&lt;span&gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; pool = PgPoolOptions::new()
+&lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;max_connections&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d19a66;&quot;&gt;5&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;connect&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;postgres:&#x2F;&#x2F;myuser:mypass@localhost&#x2F;mydb&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;        .await
+&lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;expect&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;couldn&amp;#39;t connect to the database&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let mut&lt;&#x2F;span&gt;&lt;span&gt; posts =
+&lt;&#x2F;span&gt;&lt;span&gt;        sqlx::query_as::&amp;lt;_, Post&amp;gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;SELECT post_title, post_date, post_body FROM myposts&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;            .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;fetch_all&lt;&#x2F;span&gt;&lt;span&gt;(&amp;amp;pool)
+&lt;&#x2F;span&gt;&lt;span&gt;            .await
+&lt;&#x2F;span&gt;&lt;span&gt;            .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;for&lt;&#x2F;span&gt;&lt;span&gt; post in &amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;mut&lt;&#x2F;span&gt;&lt;span&gt; posts {
+&lt;&#x2F;span&gt;&lt;span&gt;        post.post_title = post.post_title.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;replace&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot; &amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;-&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; shared_state = Arc::new(posts);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; app = Router::new()
+&lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;route&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(index))
+&lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;route&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;post&#x2F;{query_title}&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;get&lt;&#x2F;span&gt;&lt;span&gt;(post))
+&lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;with_state&lt;&#x2F;span&gt;&lt;span&gt;(shared_state)
+&lt;&#x2F;span&gt;&lt;span&gt;        .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;nest_service&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;&#x2F;assets&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;, ServeDir::new(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;assets&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;));
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; listener = TcpListener::bind(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#98c379;&quot;&gt;&amp;quot;0.0.0.0:4000&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;).await.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    axum::serve(listener, app).await.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;unwrap&lt;&#x2F;span&gt;&lt;span&gt;();
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 </content>
         
     </entry>
