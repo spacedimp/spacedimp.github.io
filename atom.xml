@@ -1536,8 +1536,7 @@ and also &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;htt
 &lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo&lt;&#x2F;span&gt;&lt;span&gt; systemctl start postgresql
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Login using psql&lt;&#x2F;p&gt;
-&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo -u&lt;&#x2F;span&gt;&lt;span&gt; postgres psql postgres
-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo -u&lt;&#x2F;span&gt;&lt;span&gt; postgres psql 
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;sudo -u&lt;&#x2F;span&gt;&lt;span&gt; postgres psql 
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;Setup a user and database (inside of psql run the following commands with your own username and password)&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;sql&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-sql &quot;&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span style=&quot;color:#c678dd;&quot;&gt;CREATE USER &lt;&#x2F;span&gt;&lt;span&gt;myuser WITH PASSWORD &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#61afef;&quot;&gt;mypass&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;;
