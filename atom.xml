@@ -1442,7 +1442,7 @@ and also &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;htt
         <link rel="alternate" type="text/html" href="https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/"/>
         <id>https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/</id>
         
-        <content type="html" xml:base="https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/">&lt;h3 id=&quot;in-this-demonstration-we-ll-be-using-axum-to-make-a-very-mininmal-blog&quot;&gt;In this demonstration, we&#x27;ll be using Axum to make a very mininmal blog.&lt;&#x2F;h3&gt;
+        <content type="html" xml:base="https://spacedimp.com/blog/using-rust-axum-postgresql-and-tokio-to-build-a-blog/">&lt;h3 id=&quot;in-this-demonstration-we-ll-be-using-axum-to-make-a-very-minimal-blog&quot;&gt;In this demonstration, we&#x27;ll be using Axum to make a very minimal blog.&lt;&#x2F;h3&gt;
 &lt;h3 id=&quot;storing-the-blogs-written-in-markdown-into-postgresql-and-lastly-using-askama-to-render-those-blog-posts&quot;&gt;Storing the blogs written in markdown into PostgreSQL, and lastly using Askama to render those blog posts.&lt;&#x2F;h3&gt;
 &lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;gif&#x2F;blog_demo.gif&quot; alt=&quot;Alt text&quot; title=&quot;demo of Rust, Axum, Tokio, PostgreSQL blog&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;hr &#x2F;&gt;
