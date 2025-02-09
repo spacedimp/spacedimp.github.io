@@ -1736,7 +1736,7 @@ and also &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;htt
 &lt;&#x2F;span&gt;&lt;span&gt;{% endblock post %}
 &lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
 &lt;p&gt;We need a handler to serve our static CSS. Fortunately, &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tower&#x2F;latest&#x2F;tower&#x2F;&quot;&gt;Tower&lt;&#x2F;a&gt; has middleware we can use including &lt;a rel=&quot;noopener&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;tower-http&#x2F;latest&#x2F;tower_http&#x2F;&quot;&gt;tower_http&lt;&#x2F;a&gt; to take care of this.&lt;&#x2F;p&gt;
-&lt;p&gt;First create a folder titled &lt;code&gt;assets&lt;&#x2F;code&gt; in the same spot that main.rs resides. Inside of assets create &lt;code&gt;post.css&lt;&#x2F;code&gt; with some CSS.&lt;&#x2F;p&gt;
+&lt;p&gt;First create a folder titled &lt;code&gt;assets&lt;&#x2F;code&gt; in the same spot that Cargo.toml resides. Inside of assets create &lt;code&gt;post.css&lt;&#x2F;code&gt; with some CSS.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;code&gt;assets&#x2F;post.css&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
 &lt;pre data-lang=&quot;css&quot; style=&quot;background-color:#282c34;color:#abb2bf;&quot; class=&quot;language-css &quot;&gt;&lt;code class=&quot;language-css&quot; data-lang=&quot;css&quot;&gt;&lt;span style=&quot;color:#e06c75;&quot;&gt;body &lt;&#x2F;span&gt;&lt;span&gt;{
 &lt;&#x2F;span&gt;&lt;span&gt;	background: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#56b6c2;&quot;&gt;#101010&lt;&#x2F;span&gt;&lt;span&gt;;

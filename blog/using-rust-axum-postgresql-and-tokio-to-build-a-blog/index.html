@@ -201,7 +201,7 @@
 </span><span>		{{ post_body|markdown }}
 </span><span>	&LT/</span><span style=color:#e06c75>div</span><span>>
 </span><span>{% endblock post %}
-</span></code></pre><p>We need a handler to serve our static CSS. Fortunately, <a href=https://docs.rs/tower/latest/tower/ rel=noopener target=_blank>Tower</a> has middleware we can use including <a href=https://docs.rs/tower-http/latest/tower_http/ rel=noopener target=_blank>tower_http</a> to take care of this.<p>First create a folder titled <code>assets</code> in the same spot that main.rs resides. Inside of assets create <code>post.css</code> with some CSS.<p><code>assets/post.css</code><pre class=language-css data-lang=css style=color:#abb2bf;background-color:#282c34><code class=language-css data-lang=css><span style=color:#e06c75>body </span><span>{
+</span></code></pre><p>We need a handler to serve our static CSS. Fortunately, <a href=https://docs.rs/tower/latest/tower/ rel=noopener target=_blank>Tower</a> has middleware we can use including <a href=https://docs.rs/tower-http/latest/tower_http/ rel=noopener target=_blank>tower_http</a> to take care of this.<p>First create a folder titled <code>assets</code> in the same spot that Cargo.toml resides. Inside of assets create <code>post.css</code> with some CSS.<p><code>assets/post.css</code><pre class=language-css data-lang=css style=color:#abb2bf;background-color:#282c34><code class=language-css data-lang=css><span style=color:#e06c75>body </span><span>{
 </span><span>	background: </span><span style=color:#56b6c2>#101010</span><span>;
 </span><span>}
 </span><span style=color:#d19a66>#Post </span><span>{
